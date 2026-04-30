@@ -1,0 +1,9 @@
+시트[0]: "게시중 엔카 차량" -> 행: 86436, 열: 20
+  헤더: ['CarDataCode', 'Displacement', 'GearBoxType', 'Fueltype', 'DrivingSystemType', 'SellPrice', 'ConfirmFlag', 'UserID', 'ExchangeRate', 'DriveDistance', 'IdentifyNumber', 'ModelYear', 'VehicleNumber', 'CarColor', '색상변환', 'CARCategoryNameKO', 'NewCARCategoryNameKO', 'None', 'None', 'None']
+
+시트[1]: "Sheet1" -> 행: 86436, 열: 9
+  헤더: ['모델', '연식', '차대번호', '연료', 'cc', '마일리지', '차대번호', '망고카아이디', '망고카 광고가']
+
+시트[2]: "남미주요차종" -> 행: 8007, 열: 10
+  헤더: ['모델', '연식', '차대번호', '연료', 'cc', '마일리지', '차대번호', '망고카아이디', '망고카 광고가', '비포워드 광고가']
+

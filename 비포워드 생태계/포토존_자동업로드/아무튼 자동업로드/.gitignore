@@ -1,0 +1,7 @@
+.pw-profile-google/
+downloads/
+logs/
+__pycache__/
+*.pyc
+.venv/
+.env

@@ -1,0 +1,611 @@
+2026-04-21 13:43:58,845 [INFO] ============================================================
+2026-04-21 13:43:58,845 [INFO] 망고월드카 지지오토 크롤러 시작
+2026-04-21 13:43:58,845 [INFO] ============================================================
+2026-04-21 13:44:00,095 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 13:44:05,014 [INFO] 로그인 페이지 접속: https://adminv2.mangoworldcar.com/login
+2026-04-21 13:44:21,573 [INFO] 로그인 버튼 클릭
+2026-04-21 13:44:24,581 [INFO] 현재 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 13:44:24,583 [INFO] 관리 페이지 접속: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 13:44:27,822 [INFO] ① 판매중 체크박스 클릭
+2026-04-21 13:44:29,303 [INFO] ② 딜러 드롭다운 클릭
+2026-04-21 13:44:30,877 [INFO]   → '지지오토' 선택됨
+2026-04-21 13:44:31,878 [INFO] ③ 검색 버튼 클릭
+2026-04-21 13:44:35,506 [INFO]   페이지 1 수집 중...
+2026-04-21 13:44:38,944 [INFO]   페이지 1: 10건 수집 (누계 10건)
+2026-04-21 13:44:38,954 [INFO]   마지막 페이지 도달
+2026-04-21 13:44:38,954 [INFO] 총 10건 목록 수집 완료
+2026-04-21 13:44:38,954 [INFO] 상세 크롤링 대상: 10건
+2026-04-21 13:44:38,954 [INFO] [1/10] MGC_260420_10002009
+2026-04-21 13:44:38,954 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 13:44:44,181 [INFO]   → 수집 필드: 3개
+2026-04-21 13:44:45,682 [INFO] [2/10] MGC_260420_10002008
+2026-04-21 13:44:45,682 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 13:44:49,544 [INFO]   → 수집 필드: 3개
+2026-04-21 13:44:51,044 [INFO] [3/10] MGC_260420_10002007
+2026-04-21 13:44:51,044 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 13:44:54,889 [INFO]   → 수집 필드: 3개
+2026-04-21 13:44:56,390 [INFO] [4/10] MGC_260420_10002006
+2026-04-21 13:44:56,390 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-21 13:45:00,081 [INFO]   → 수집 필드: 3개
+2026-04-21 13:45:01,582 [INFO] [5/10] MGC_260420_10002005
+2026-04-21 13:45:01,582 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002005
+2026-04-21 13:45:05,274 [INFO]   → 수집 필드: 3개
+2026-04-21 13:45:06,775 [INFO] [6/10] MGC_260420_10002004
+2026-04-21 13:45:06,775 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002004
+2026-04-21 13:45:10,786 [INFO]   → 수집 필드: 3개
+2026-04-21 13:45:12,287 [INFO] [7/10] MGC_260420_10002003
+2026-04-21 13:45:12,287 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002003
+2026-04-21 13:45:15,921 [INFO]   → 수집 필드: 3개
+2026-04-21 13:45:17,423 [INFO] [8/10] MGC_260420_10002002
+2026-04-21 13:45:17,423 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002002
+2026-04-21 13:45:21,058 [INFO]   → 수집 필드: 3개
+2026-04-21 13:45:22,558 [INFO] [9/10] MGC_260420_10002001
+2026-04-21 13:45:22,558 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002001
+2026-04-21 13:45:26,344 [INFO]   → 수집 필드: 3개
+2026-04-21 13:45:27,845 [INFO] [10/10] MGC_260420_10002000
+2026-04-21 13:45:27,845 [INFO]   상세 페이지: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-21 13:45:31,584 [INFO]   → 수집 필드: 3개
+2026-04-21 13:45:33,175 [INFO] 엑셀 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_134533.xlsx
+2026-04-21 13:45:33,552 [INFO] 드라이버 종료
+2026-04-21 13:51:31,595 [INFO] ============================================================
+2026-04-21 13:51:31,595 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 13:51:31,595 [INFO] ============================================================
+2026-04-21 13:51:32,726 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 13:51:36,554 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 13:51:42,685 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 13:51:42,685 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 13:51:45,917 [INFO] ① 판매중 체크박스
+2026-04-21 13:51:47,032 [INFO] ② 판매자 드롭다운
+2026-04-21 13:51:48,412 [INFO]   → 지지오토 선택
+2026-04-21 13:51:49,213 [INFO] ③ 검색 버튼
+2026-04-21 13:51:52,860 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 13:51:52,861 [INFO]   페이지 1 수집...
+2026-04-21 13:51:56,582 [INFO]   → 10건 (누계 10건)
+2026-04-21 13:51:56,594 [INFO]   마지막 페이지
+2026-04-21 13:51:56,594 [INFO] 목록 수집 완료: 10건
+2026-04-21 13:51:56,594 [INFO] 상세 크롤링: 10건
+2026-04-21 13:51:56,594 [INFO] [1/10] MGC_260420_10002009
+2026-04-21 13:51:56,594 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 13:52:01,012 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:02,513 [INFO] [2/10] MGC_260420_10002008
+2026-04-21 13:52:02,513 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 13:52:05,629 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:07,131 [INFO] [3/10] MGC_260420_10002007
+2026-04-21 13:52:07,131 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 13:52:10,617 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:12,118 [INFO] [4/10] MGC_260420_10002006
+2026-04-21 13:52:12,118 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-21 13:52:15,254 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:16,756 [INFO] [5/10] MGC_260420_10002005
+2026-04-21 13:52:16,756 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002005
+2026-04-21 13:52:19,993 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:21,494 [INFO] [6/10] MGC_260420_10002004
+2026-04-21 13:52:21,494 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002004
+2026-04-21 13:52:24,595 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:26,096 [INFO] [7/10] MGC_260420_10002003
+2026-04-21 13:52:26,096 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002003
+2026-04-21 13:52:29,136 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:30,638 [INFO] [8/10] MGC_260420_10002002
+2026-04-21 13:52:30,638 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002002
+2026-04-21 13:52:34,554 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:36,055 [INFO] [9/10] MGC_260420_10002001
+2026-04-21 13:52:36,055 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002001
+2026-04-21 13:52:39,264 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:40,765 [INFO] [10/10] MGC_260420_10002000
+2026-04-21 13:52:40,765 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-21 13:52:44,026 [INFO]   → 필드 13개 수집
+2026-04-21 13:52:45,773 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_135245.xlsx
+2026-04-21 13:52:46,144 [INFO] 드라이버 종료
+2026-04-21 13:54:35,107 [INFO] ============================================================
+2026-04-21 13:54:35,108 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 13:54:35,108 [INFO] ============================================================
+2026-04-21 13:54:36,546 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 13:54:40,307 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 13:54:46,059 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 13:54:46,059 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 13:54:49,463 [INFO] ① 판매중 체크박스
+2026-04-21 13:54:50,576 [INFO] ② 판매자 드롭다운
+2026-04-21 13:54:51,990 [INFO]   → 지지오토 선택
+2026-04-21 13:54:52,791 [INFO] ③ 검색 버튼
+2026-04-21 13:54:56,472 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 13:54:56,472 [INFO]   페이지 1 수집...
+2026-04-21 13:55:00,407 [INFO]   → 10건 (누계 10건)
+2026-04-21 13:55:00,424 [INFO]   마지막 페이지
+2026-04-21 13:55:00,424 [INFO] 목록 수집 완료: 10건
+2026-04-21 13:55:00,424 [INFO] 상세 크롤링: 10건
+2026-04-21 13:55:00,424 [INFO] [1/10] MGC_260420_10002009
+2026-04-21 13:55:00,424 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 13:55:05,627 [INFO]   → 필드 14개 수집
+2026-04-21 13:55:07,127 [INFO] [2/10] MGC_260420_10002008
+2026-04-21 13:55:07,127 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 13:55:10,589 [INFO]   → 필드 13개 수집
+2026-04-21 13:55:12,090 [INFO] [3/10] MGC_260420_10002007
+2026-04-21 13:55:12,090 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 13:55:16,737 [INFO]   → 필드 14개 수집
+2026-04-21 13:55:18,237 [INFO] [4/10] MGC_260420_10002006
+2026-04-21 13:55:18,237 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-21 13:55:21,733 [INFO]   → 필드 14개 수집
+2026-04-21 13:55:23,234 [INFO] [5/10] MGC_260420_10002005
+2026-04-21 13:55:23,234 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002005
+2026-04-21 13:55:28,010 [INFO]   → 필드 13개 수집
+2026-04-21 13:55:29,511 [INFO] [6/10] MGC_260420_10002004
+2026-04-21 13:55:29,511 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002004
+2026-04-21 13:55:33,053 [INFO]   → 필드 13개 수집
+2026-04-21 13:55:34,554 [INFO] [7/10] MGC_260420_10002003
+2026-04-21 13:55:34,554 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002003
+2026-04-21 13:55:37,937 [INFO]   → 필드 13개 수집
+2026-04-21 13:55:39,439 [INFO] [8/10] MGC_260420_10002002
+2026-04-21 13:55:39,439 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002002
+2026-04-21 13:55:43,945 [INFO]   → 필드 13개 수집
+2026-04-21 13:55:45,446 [INFO] [9/10] MGC_260420_10002001
+2026-04-21 13:55:45,446 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002001
+2026-04-21 13:55:48,921 [INFO]   → 필드 13개 수집
+2026-04-21 13:55:50,422 [INFO] [10/10] MGC_260420_10002000
+2026-04-21 13:55:50,422 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-21 13:55:54,680 [INFO]   → 필드 13개 수집
+2026-04-21 13:55:56,576 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_135556.xlsx
+2026-04-21 13:55:57,132 [INFO] 드라이버 종료
+2026-04-21 13:57:35,571 [INFO] ============================================================
+2026-04-21 13:57:35,571 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 13:57:35,571 [INFO] ============================================================
+2026-04-21 13:57:36,687 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 13:57:40,300 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 13:57:46,207 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 13:57:46,207 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 13:57:49,597 [INFO] ① 판매중 체크박스
+2026-04-21 13:57:50,716 [INFO] ② 판매자 드롭다운
+2026-04-21 13:57:52,087 [INFO]   → 지지오토 선택
+2026-04-21 13:57:52,888 [INFO] ③ 검색 버튼
+2026-04-21 13:57:56,573 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 13:57:56,573 [INFO]   페이지 1 수집...
+2026-04-21 13:58:00,282 [INFO]   → 10건 (누계 10건)
+2026-04-21 13:58:00,295 [INFO]   마지막 페이지
+2026-04-21 13:58:00,295 [INFO] 목록 수집 완료: 10건
+2026-04-21 13:58:00,295 [INFO] 상세 크롤링: 10건
+2026-04-21 13:58:00,295 [INFO] [1/10] MGC_260420_10002009
+2026-04-21 13:58:00,295 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 13:58:05,764 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:07,266 [INFO] [2/10] MGC_260420_10002008
+2026-04-21 13:58:07,266 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 13:58:10,800 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:12,300 [INFO] [3/10] MGC_260420_10002007
+2026-04-21 13:58:12,301 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 13:58:16,168 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:17,669 [INFO] [4/10] MGC_260420_10002006
+2026-04-21 13:58:17,669 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-21 13:58:21,321 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:22,821 [INFO] [5/10] MGC_260420_10002005
+2026-04-21 13:58:22,821 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002005
+2026-04-21 13:58:27,277 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:28,778 [INFO] [6/10] MGC_260420_10002004
+2026-04-21 13:58:28,778 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002004
+2026-04-21 13:58:32,272 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:33,773 [INFO] [7/10] MGC_260420_10002003
+2026-04-21 13:58:33,773 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002003
+2026-04-21 13:58:37,286 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:38,787 [INFO] [8/10] MGC_260420_10002002
+2026-04-21 13:58:38,788 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002002
+2026-04-21 13:58:43,163 [INFO]   → 필드 13개 수집
+2026-04-21 13:58:44,664 [INFO] [9/10] MGC_260420_10002001
+2026-04-21 13:58:44,664 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002001
+2026-04-21 13:58:48,184 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:49,686 [INFO] [10/10] MGC_260420_10002000
+2026-04-21 13:58:49,686 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-21 13:58:53,160 [INFO]   → 필드 14개 수집
+2026-04-21 13:58:55,022 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_135854.xlsx
+2026-04-21 13:58:55,530 [INFO] 드라이버 종료
+2026-04-21 16:20:13,640 [INFO] ============================================================
+2026-04-21 16:20:13,641 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:20:13,641 [INFO] ============================================================
+2026-04-21 16:20:15,436 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:20:21,546 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:20:27,751 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:20:27,752 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:20:31,069 [INFO] ① 판매중 체크박스
+2026-04-21 16:20:32,330 [INFO] ② 판매자 드롭다운
+2026-04-21 16:20:33,834 [INFO]   → 지지오토 선택
+2026-04-21 16:20:34,635 [INFO] ③ 검색 버튼
+2026-04-21 16:20:38,615 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:20:38,616 [INFO]   페이지 1 수집...
+2026-04-21 16:20:44,345 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:20:44,371 [INFO]   마지막 페이지
+2026-04-21 16:20:44,372 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:20:44,372 [INFO] 상세 크롤링: 3건
+2026-04-21 16:20:44,372 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:20:44,372 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:20:51,903 [INFO]   → 필드 14개 수집
+2026-04-21 16:20:53,405 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:20:53,405 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:20:58,643 [INFO]   → 필드 14개 수집
+2026-04-21 16:21:00,145 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:21:00,145 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:21:06,788 [INFO]   → 필드 14개 수집
+2026-04-21 16:21:09,387 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_162108.xlsx
+2026-04-21 16:21:10,299 [INFO] 드라이버 종료
+2026-04-21 16:25:40,357 [INFO] ============================================================
+2026-04-21 16:25:40,358 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:25:40,359 [INFO] ============================================================
+2026-04-21 16:25:41,641 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:25:47,158 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:25:53,438 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:25:53,439 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:25:56,953 [INFO] ① 판매중 체크박스
+2026-04-21 16:25:58,228 [INFO] ② 판매자 드롭다운
+2026-04-21 16:25:59,800 [INFO]   → 지지오토 선택
+2026-04-21 16:26:00,600 [INFO] ③ 검색 버튼
+2026-04-21 16:26:04,692 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:26:04,692 [INFO]   페이지 1 수집...
+2026-04-21 16:26:10,000 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:26:10,029 [INFO]   마지막 페이지
+2026-04-21 16:26:10,031 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:26:10,031 [INFO] 상세 크롤링: 3건
+2026-04-21 16:26:10,031 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:26:10,031 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:26:23,114 [INFO]   → 필드 16개 수집
+2026-04-21 16:26:24,616 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:26:24,616 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:26:35,661 [INFO]   → 필드 16개 수집
+2026-04-21 16:26:37,162 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:26:37,162 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:26:49,100 [INFO]   → 필드 16개 수집
+2026-04-21 16:26:51,253 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_162650.xlsx
+2026-04-21 16:26:51,837 [INFO] 드라이버 종료
+2026-04-21 16:29:47,163 [INFO] ============================================================
+2026-04-21 16:29:47,163 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:29:47,163 [INFO] ============================================================
+2026-04-21 16:29:48,322 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:29:53,555 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:29:59,443 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:29:59,444 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:30:03,082 [INFO] ① 판매중 체크박스
+2026-04-21 16:30:04,326 [INFO] ② 판매자 드롭다운
+2026-04-21 16:30:05,809 [INFO]   → 지지오토 선택
+2026-04-21 16:30:06,609 [INFO] ③ 검색 버튼
+2026-04-21 16:30:10,565 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:30:10,566 [INFO]   페이지 1 수집...
+2026-04-21 16:30:15,826 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:30:15,848 [INFO]   마지막 페이지
+2026-04-21 16:30:15,849 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:30:15,850 [INFO] 상세 크롤링: 3건
+2026-04-21 16:30:15,850 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:30:15,850 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:30:20,158 [INFO]   → 필드 19개 수집
+2026-04-21 16:30:21,659 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:30:21,659 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:30:24,351 [INFO]   → 필드 16개 수집
+2026-04-21 16:30:25,853 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:30:25,853 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:30:29,507 [INFO]   → 필드 19개 수집
+2026-04-21 16:30:31,654 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_163031.xlsx
+2026-04-21 16:30:32,044 [INFO] 드라이버 종료
+2026-04-21 16:32:38,201 [INFO] ============================================================
+2026-04-21 16:32:38,202 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:32:38,202 [INFO] ============================================================
+2026-04-21 16:32:39,493 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:32:44,700 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:32:50,637 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:32:50,639 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:32:53,991 [INFO] ① 판매중 체크박스
+2026-04-21 16:32:55,258 [INFO] ② 판매자 드롭다운
+2026-04-21 16:32:56,795 [INFO]   → 지지오토 선택
+2026-04-21 16:32:57,597 [INFO] ③ 검색 버튼
+2026-04-21 16:33:01,634 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:33:01,634 [INFO]   페이지 1 수집...
+2026-04-21 16:33:08,843 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:33:08,882 [INFO]   마지막 페이지
+2026-04-21 16:33:08,882 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:33:08,883 [INFO] 상세 크롤링: 3건
+2026-04-21 16:33:08,883 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:33:08,883 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:33:19,011 [INFO]   → 필드 19개 수집
+2026-04-21 16:33:20,512 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:33:20,513 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:33:24,382 [INFO]   → 필드 16개 수집
+2026-04-21 16:33:25,884 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:33:25,884 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:33:30,117 [INFO]   → 필드 19개 수집
+2026-04-21 16:33:32,688 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_163331.xlsx
+2026-04-21 16:33:33,752 [INFO] 드라이버 종료
+2026-04-21 16:34:50,174 [INFO] ============================================================
+2026-04-21 16:34:50,174 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:34:50,174 [INFO] ============================================================
+2026-04-21 16:34:51,660 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:34:57,306 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:35:03,636 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:35:03,636 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:35:06,993 [INFO] ① 판매중 체크박스
+2026-04-21 16:35:08,247 [INFO] ② 판매자 드롭다운
+2026-04-21 16:35:09,778 [INFO]   → 지지오토 선택
+2026-04-21 16:35:10,579 [INFO] ③ 검색 버튼
+2026-04-21 16:35:14,686 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:35:14,686 [INFO]   페이지 1 수집...
+2026-04-21 16:35:19,958 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:35:19,976 [INFO]   마지막 페이지
+2026-04-21 16:35:19,976 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:35:19,976 [INFO] 상세 크롤링: 3건
+2026-04-21 16:35:19,976 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:35:19,976 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:35:24,231 [INFO]   → 필드 19개 수집
+2026-04-21 16:35:25,732 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:35:25,732 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:35:28,445 [INFO]   → 필드 16개 수집
+2026-04-21 16:35:29,948 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:35:29,948 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:35:32,721 [INFO]   → 필드 19개 수집
+2026-04-21 16:35:34,684 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_163534.xlsx
+2026-04-21 16:35:35,332 [INFO] 드라이버 종료
+2026-04-21 16:36:22,684 [INFO] ============================================================
+2026-04-21 16:36:22,684 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:36:22,684 [INFO] ============================================================
+2026-04-21 16:36:24,360 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:36:29,858 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:36:35,747 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:36:35,748 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:36:39,105 [INFO] ① 판매중 체크박스
+2026-04-21 16:36:40,465 [INFO] ② 판매자 드롭다운
+2026-04-21 16:36:41,914 [INFO]   → 지지오토 선택
+2026-04-21 16:36:42,716 [INFO] ③ 검색 버튼
+2026-04-21 16:36:46,675 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:36:46,676 [INFO]   페이지 1 수집...
+2026-04-21 16:36:51,732 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:36:51,744 [INFO]   마지막 페이지
+2026-04-21 16:36:51,745 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:36:51,745 [INFO] 상세 크롤링: 3건
+2026-04-21 16:36:51,745 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:36:51,745 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:36:55,810 [INFO]   → 필드 19개 수집
+2026-04-21 16:36:57,311 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:36:57,312 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:37:00,107 [INFO]   → 필드 16개 수집
+2026-04-21 16:37:01,607 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:37:01,607 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:37:04,390 [INFO]   → 필드 19개 수집
+2026-04-21 16:37:06,606 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_163705.xlsx
+2026-04-21 16:37:07,117 [INFO] 드라이버 종료
+2026-04-21 16:38:14,737 [INFO] ============================================================
+2026-04-21 16:38:14,737 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:38:14,737 [INFO] ============================================================
+2026-04-21 16:38:16,081 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:38:19,939 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:38:25,727 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:38:25,727 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:38:29,026 [INFO] ① 판매중 체크박스
+2026-04-21 16:38:30,139 [INFO] ② 판매자 드롭다운
+2026-04-21 16:38:31,497 [INFO]   → 지지오토 선택
+2026-04-21 16:38:32,298 [INFO] ③ 검색 버튼
+2026-04-21 16:38:35,940 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:38:35,940 [INFO]   페이지 1 수집...
+2026-04-21 16:38:39,462 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:38:39,476 [INFO]   마지막 페이지
+2026-04-21 16:38:39,476 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:38:39,476 [INFO] 상세 크롤링: 3건
+2026-04-21 16:38:39,477 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:38:39,477 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:38:43,896 [INFO]   → 필드 24개 수집
+2026-04-21 16:38:45,397 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:38:45,397 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:38:48,349 [INFO]   → 필드 21개 수집
+2026-04-21 16:38:49,850 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:38:49,850 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:38:53,419 [INFO]   → 필드 24개 수집
+2026-04-21 16:38:55,200 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_163854.xlsx
+2026-04-21 16:38:55,568 [INFO] 드라이버 종료
+2026-04-21 16:40:36,761 [INFO] ============================================================
+2026-04-21 16:40:36,761 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:40:36,761 [INFO] ============================================================
+2026-04-21 16:40:37,921 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:40:41,376 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:40:47,148 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:40:47,148 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:40:50,446 [INFO] ① 판매중 체크박스
+2026-04-21 16:40:51,565 [INFO] ② 판매자 드롭다운
+2026-04-21 16:40:52,947 [INFO]   → 지지오토 선택
+2026-04-21 16:40:53,748 [INFO] ③ 검색 버튼
+2026-04-21 16:40:57,446 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:40:57,446 [INFO]   페이지 1 수집...
+2026-04-21 16:41:01,232 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:41:01,245 [INFO]   마지막 페이지
+2026-04-21 16:41:01,245 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:41:01,245 [INFO] 상세 크롤링: 3건
+2026-04-21 16:41:01,245 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:41:01,245 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:41:05,973 [INFO]   → 필드 24개 수집
+2026-04-21 16:41:07,474 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:41:07,474 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:41:10,590 [INFO]   → 필드 21개 수집
+2026-04-21 16:41:12,090 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:41:12,090 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:41:15,745 [INFO]   → 필드 24개 수집
+2026-04-21 16:41:17,576 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_164117.xlsx
+2026-04-21 16:41:17,970 [INFO] 드라이버 종료
+2026-04-21 16:42:58,571 [INFO] ============================================================
+2026-04-21 16:42:58,571 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-21 16:42:58,572 [INFO] ============================================================
+2026-04-21 16:42:59,614 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-21 16:43:03,110 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-21 16:43:09,198 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-21 16:43:09,198 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-21 16:43:12,536 [INFO] ① 판매중 체크박스
+2026-04-21 16:43:13,765 [INFO] ② 판매자 드롭다운
+2026-04-21 16:43:15,188 [INFO]   → 지지오토 선택
+2026-04-21 16:43:15,989 [INFO] ③ 검색 버튼
+2026-04-21 16:43:19,768 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-21 16:43:19,769 [INFO]   페이지 1 수집...
+2026-04-21 16:43:23,616 [INFO]   → 10건 (누계 10건)
+2026-04-21 16:43:23,629 [INFO]   마지막 페이지
+2026-04-21 16:43:23,631 [INFO] 목록 수집 완료: 10건
+2026-04-21 16:43:23,631 [INFO] 상세 크롤링: 3건
+2026-04-21 16:43:23,631 [INFO] [1/3] MGC_260420_10002009
+2026-04-21 16:43:23,631 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-21 16:43:27,991 [INFO]   → 필드 19개 수집
+2026-04-21 16:43:29,492 [INFO] [2/3] MGC_260420_10002008
+2026-04-21 16:43:29,493 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-21 16:43:32,257 [INFO]   → 필드 16개 수집
+2026-04-21 16:43:33,758 [INFO] [3/3] MGC_260420_10002007
+2026-04-21 16:43:33,758 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-21 16:43:36,460 [INFO]   → 필드 19개 수집
+2026-04-21 16:43:38,282 [INFO] 저장 완료: C:\Users\gglee\OneDrive\Desktop\지지오토_자동업로드\지지오토_차량목록_20260421_164337.xlsx
+2026-04-21 16:43:38,657 [INFO] 드라이버 종료
+2026-04-28 10:54:22,391 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 10:54:26,145 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 10:54:30,049 [INFO]   → 필드 20개 수집
+2026-04-28 10:54:43,212 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 10:54:46,954 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 10:54:50,857 [INFO]   → 필드 20개 수집
+2026-04-28 10:55:05,578 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 10:55:09,039 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 10:55:12,896 [INFO]   → 필드 20개 수집
+2026-04-28 10:55:13,131 [INFO] 망고카 옵션 매핑 로드: 13개 (비포워드 엔카 옵션_망고카 추가.xlsx)
+2026-04-28 10:55:13,132 [INFO] 망고카 옵션 매핑: 2/2개 선택 대상
+2026-04-28 15:18:23,675 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:18:27,264 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 15:18:30,381 [INFO]   → 필드 16개 수집
+2026-04-28 15:19:13,719 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:19:50,827 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:21:27,375 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:21:31,224 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 15:21:37,651 [INFO]   → 필드 19개 수집
+2026-04-28 15:21:38,652 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-28 15:21:41,225 [INFO]   → 필드 16개 수집
+2026-04-28 15:21:42,226 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 15:21:44,960 [INFO]   → 필드 3개 수집
+2026-04-28 15:21:45,961 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 15:21:48,479 [INFO]   → 필드 16개 수집
+2026-04-28 15:21:49,480 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002005
+2026-04-28 15:21:52,788 [INFO]   → 필드 18개 수집
+2026-04-28 15:21:53,789 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002004
+2026-04-28 15:21:57,543 [INFO]   → 필드 17개 수집
+2026-04-28 15:21:58,543 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002003
+2026-04-28 15:22:01,951 [INFO]   → 필드 17개 수집
+2026-04-28 15:22:02,953 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002002
+2026-04-28 15:22:06,583 [INFO]   → 필드 16개 수집
+2026-04-28 15:22:07,584 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002001
+2026-04-28 15:22:10,552 [INFO]   → 필드 3개 수집
+2026-04-28 15:22:11,553 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 15:22:15,124 [INFO]   → 필드 17개 수집
+2026-04-29 16:15:23,026 [INFO] ============================================================
+2026-04-29 16:15:23,027 [INFO] 망고월드카 지지오토 크롤러 v2 시작
+2026-04-29 16:15:23,028 [INFO] ============================================================
+2026-04-29 16:15:24,967 [INFO] 옵션 매핑표 로드 완료: 13건
+2026-04-29 16:15:26,206 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-29 16:15:29,925 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-29 16:15:35,610 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/sign-in?redirect=%2F
+2026-04-29 16:15:35,610 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-29 16:15:39,304 [INFO] ① 판매중 체크박스
+2026-04-29 16:15:59,313 [WARNING] 판매중 체크 실패: Message: 
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0x34b373+10553]
+	undetected_chromedriver!GetHandleVerifier [0x34b4a4+10684]
+	undetected_chromedriver!(No symbol) [0x151e10]
+	undetected_chromedriver!(No symbol) [0x19a9da]
+	undetected_chromedriver!(No symbol) [0x19ac7b]
+	undetected_chromedriver!(No symbol) [0x1dd162]
+	undetected_chromedriver!(No symbol) [0x1bd8b4]
+	undetected_chromedriver!(No symbol) [0x1daa36]
+	undetected_chromedriver!(No symbol) [0x1bd606]
+	undetected_chromedriver!(No symbol) [0x190039]
+	undetected_chromedriver!(No symbol) [0x190df4]
+	undetected_chromedriver!GetHandleVerifier [0x5cddb4+292f94]
+	undetected_chromedriver!GetHandleVerifier [0x5c937d+28e55d]
+	undetected_chromedriver!GetHandleVerifier [0x5e8215+2ad3f5]
+	undetected_chromedriver!GetHandleVerifier [0x364c18+29df8]
+	undetected_chromedriver!GetHandleVerifier [0x36c6fd+318dd]
+	undetected_chromedriver!GetHandleVerifier [0x353c78+18e58]
+	undetected_chromedriver!GetHandleVerifier [0x353e42+19022]
+	undetected_chromedriver!GetHandleVerifier [0x33d45f+263f]
+	KERNEL32!BaseThreadInitThunk [0x761b5d49+19]
+	ntdll!RtlInitializeExceptionChain [0x7761d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x7761d7c1+231]
+	(No symbol) [(nil)]
+
+2026-04-29 16:15:59,439 [INFO] ② 판매자 드롭다운
+2026-04-29 16:16:19,481 [WARNING] 드롭다운 실패: Message: 
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0x34b373+10553]
+	undetected_chromedriver!GetHandleVerifier [0x34b4a4+10684]
+	undetected_chromedriver!(No symbol) [0x151e10]
+	undetected_chromedriver!(No symbol) [0x19a9da]
+	undetected_chromedriver!(No symbol) [0x19ac7b]
+	undetected_chromedriver!(No symbol) [0x1dd162]
+	undetected_chromedriver!(No symbol) [0x1bd8b4]
+	undetected_chromedriver!(No symbol) [0x1daa36]
+	undetected_chromedriver!(No symbol) [0x1bd606]
+	undetected_chromedriver!(No symbol) [0x190039]
+	undetected_chromedriver!(No symbol) [0x190df4]
+	undetected_chromedriver!GetHandleVerifier [0x5cddb4+292f94]
+	undetected_chromedriver!GetHandleVerifier [0x5c937d+28e55d]
+	undetected_chromedriver!GetHandleVerifier [0x5e8215+2ad3f5]
+	undetected_chromedriver!GetHandleVerifier [0x364c18+29df8]
+	undetected_chromedriver!GetHandleVerifier [0x36c6fd+318dd]
+	undetected_chromedriver!GetHandleVerifier [0x353c78+18e58]
+	undetected_chromedriver!GetHandleVerifier [0x353e42+19022]
+	undetected_chromedriver!GetHandleVerifier [0x33d45f+263f]
+	KERNEL32!BaseThreadInitThunk [0x761b5d49+19]
+	ntdll!RtlInitializeExceptionChain [0x7761d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x7761d7c1+231]
+	(No symbol) [(nil)]
+
+2026-04-29 16:16:19,607 [INFO] ③ 검색 버튼
+2026-04-29 16:16:59,633 [ERROR] 검색 버튼 실패: Message: 
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0x34b373+10553]
+	undetected_chromedriver!GetHandleVerifier [0x34b4a4+10684]
+	undetected_chromedriver!(No symbol) [0x151e10]
+	undetected_chromedriver!(No symbol) [0x19a9da]
+	undetected_chromedriver!(No symbol) [0x19ac7b]
+	undetected_chromedriver!(No symbol) [0x1dd162]
+	undetected_chromedriver!(No symbol) [0x1bd8b4]
+	undetected_chromedriver!(No symbol) [0x1daa36]
+	undetected_chromedriver!(No symbol) [0x1bd606]
+	undetected_chromedriver!(No symbol) [0x190039]
+	undetected_chromedriver!(No symbol) [0x190df4]
+	undetected_chromedriver!GetHandleVerifier [0x5cddb4+292f94]
+	undetected_chromedriver!GetHandleVerifier [0x5c937d+28e55d]
+	undetected_chromedriver!GetHandleVerifier [0x5e8215+2ad3f5]
+	undetected_chromedriver!GetHandleVerifier [0x364c18+29df8]
+	undetected_chromedriver!GetHandleVerifier [0x36c6fd+318dd]
+	undetected_chromedriver!GetHandleVerifier [0x353c78+18e58]
+	undetected_chromedriver!GetHandleVerifier [0x353e42+19022]
+	undetected_chromedriver!GetHandleVerifier [0x33d45f+263f]
+	KERNEL32!BaseThreadInitThunk [0x761b5d49+19]
+	ntdll!RtlInitializeExceptionChain [0x7761d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x7761d7c1+231]
+	(No symbol) [(nil)]
+
+2026-04-29 16:17:02,919 [INFO] 테이블 헤더: []
+2026-04-29 16:17:02,919 [INFO]   페이지 1 수집...
+2026-04-29 16:17:04,933 [INFO]   행 없음 → 중단
+2026-04-29 16:17:04,934 [INFO] 목록 수집 완료: 0건
+2026-04-29 16:17:04,934 [WARNING] 수집 결과 없음. 스크린샷 확인 요망.
+2026-04-29 16:17:05,170 [ERROR] 치명적 오류: At least one sheet must be visible
+Traceback (most recent call last):
+  File "C:\Users\gglee\OneDrive\Desktop\비포워드 생태계\지지오토_자동업로드\mango_crawler.py", line 830, in main
+    out = save_excel(list_rows, detail_rows)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gglee\OneDrive\Desktop\비포워드 생태계\지지오토_자동업로드\mango_crawler.py", line 753, in save_excel
+    with pd.ExcelWriter(str(path), engine="openpyxl") as writer:
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\io\excel\_base.py", line 1353, in __exit__
+    self.close()
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\io\excel\_base.py", line 1357, in close
+    self._save()
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\io\excel\_openpyxl.py", line 110, in _save
+    self.book.save(self._handles.handle)
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\openpyxl\workbook\workbook.py", line 386, in save
+    save_workbook(self, filename)
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\openpyxl\writer\excel.py", line 294, in save_workbook
+    writer.save()
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\openpyxl\writer\excel.py", line 275, in save
+    self.write_data()
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\openpyxl\writer\excel.py", line 89, in write_data
+    archive.writestr(ARC_WORKBOOK, writer.write())
+                                   ^^^^^^^^^^^^^^
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\openpyxl\workbook\_writer.py", line 150, in write
+    self.write_views()
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\openpyxl\workbook\_writer.py", line 137, in write_views
+    active = get_active_sheet(self.wb)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gglee\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\openpyxl\workbook\_writer.py", line 35, in get_active_sheet
+    raise IndexError("At least one sheet must be visible")
+IndexError: At least one sheet must be visible
+
+2026-04-29 16:17:05,620 [INFO] 드라이버 종료

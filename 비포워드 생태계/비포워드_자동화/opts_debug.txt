@@ -1,0 +1,8 @@
+type=str
+repr='[{"text":"Select","value":""},{"text":"베이지","value":"1001"},{"text":"블랙","value":"202"},{"text":"블루","value":"205"},{"text":"브론즈","value":"1016"},{"text":"브라운","value":"1004"},{"text":"골드","value":"211"},{"text":"그레이","value":"204"},{"text":"그린","value":"207"},{"text":"마룬","value":"1009"},{"text":"오렌지","value":"213"},{"text":"기타","value":"999"},{"text":"펄","value":"209"},{"text":"핑크","value":"216"},{"text":"퍼플","value":"1002"},{"text":"레드","value":"218"},{"text":"실버","value":"203"},{"text":"화이트
+parsed type=list
+  {'text': 'Select', 'value': ''}
+  {'text': '베이지', 'value': '1001'}
+  {'text': '블랙', 'value': '202'}
+  {'text': '블루', 'value': '205'}
+  {'text': '브론즈', 'value': '1016'}

@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# 환경 변수 (시크릿)
+.env
+.env.docker
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Google Cloud 서비스 계정 키 (시크릿)
+*-[a-z0-9]*[a-z0-9].json
+adjustmentdata-*.json

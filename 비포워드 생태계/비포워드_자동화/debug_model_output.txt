@@ -1,0 +1,32 @@
+[OK] LAND ROVER 선택 완료
+
+[1] 현재 페이지의 모든 select 요소:
+   name='language' id='app_language' options=2 first=['English', '한국']
+   name='TempVehDetails[make_id]' id='make-id' options=411 first=['Select', 'TOYOTA', 'NISSAN', 'HONDA', 'MITSUBISHI']
+   name='TempVehDetails[model_id]' id='model-id' options=20 first=['Select', '110', 'Defender', 'DEFENDER 110', 'Discovery']
+   name='TempVehDetails[type_id]' id='' options=20 first=['Select', '버스', '버스 20좌석', '컨버터블', '쿠페']
+   name='TempVehDetails[type_2_id]' id='' options=1 first=['Select']
+   name='TempVehDetails[registration_year]' id='registration-year' options=78 first=['Select', '2026', '2025', '2024', '2023']
+   name='TempVehDetails[registration_month]' id='' options=13 first=['Select', '01', '02', '03', '04']
+   name='TempVehDetails[manufacture_year]' id='' options=78 first=['Select', '2026', '2025', '2024', '2023']
+   name='TempVehDetails[manufacture_month]' id='' options=13 first=['Select', '01', '02', '03', '04']
+   name='TempVehDetails[mileage_unit_type]' id='' options=2 first=['km', 'mile']
+   name='TempVehDetails[fuel_id]' id='' options=13 first=['Select', 'CNG', '경유', 'Diesel+LPG', '전기']
+   name='TempVehDetails[transmission_id]' id='' options=8 first=['Select', 'Automatic', 'CVT', 'DCT', 'Manual']
+   name='TempVehDetails[ext_color_id]' id='' options=19 first=['Select', '베이지', '블랙', '블루', '브론즈']
+   name='TempVehDetails[stock_place_id]' id='stock-place-id' options=2 first=['Select', 'KOREA Others(Dairi Keisai)']
+   name='TempVehDetails[catchphrase]' id='catchphrase' options=6 first=['Select', 'Brand New Vehicle', 'Pre-Order Modified Car', 'BF UK Stock', 'Leather Seat']
+
+[2] 모든 Select2 컨테이너 [id^=select2]:
+   id='select2-make-id-container' text='LAND ROVER'
+
+[3] model-id select 직접 옵션:
+   ["Select","110","Defender","DEFENDER 110","Discovery","DISCOVERY 110","Discovery 3","Discovery 4","Discovery 5","DISCOVERY SPORT","Freelander","Freelander 2","LAND ROVER Others","LR2","LR3","Range Rover","Range Rover Evoque","Range Rover Sport","RANGE ROVER VELAR","Range Rover Vogue"]
+
+[완료] Enter 누르면 종료...
+Traceback (most recent call last):
+  File "C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\debug_model_select.py", line 86, in <module>
+    main()
+  File "C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\debug_model_select.py", line 80, in main
+    input()
+EOFError: EOF when reading a line

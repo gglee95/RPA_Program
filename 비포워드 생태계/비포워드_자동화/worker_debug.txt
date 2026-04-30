@@ -1,0 +1,700 @@
+geckodriver를 PATH에서 찾습니다...
+Firefox 드라이버가 초기화되었습니다.
+
+======================================================================
+               Encar SOLD OUT Monitoring System - Setup               
+======================================================================
+
+
+============================================================
+                   Google Sheets 연결 중...                    
+============================================================
+
+[OK] Google Sheets 연결 성공
+  시트 이름: [48H AUTO]비포워드
+  시작 행: 1265
+
+[OK] All components initialized successfully
+
+
+======================================================================
+                       BeForward Upload Worker                        
+======================================================================
+
+2026-04-03 19:16:16 | INFO | Upload worker started
+[STARTUP] Initial upload run
+
+======================================================================
+                         1단계: 비포워드 매물 업로드 시작                          
+======================================================================
+
+[INFO] 11개 매물 업로드 시작...
+
+  [재원표] 국산차 재원표.xlsx 로드 완료 (6개 시트)
+  [재원표] 수입차 재원표.xlsx 로드 완료 (16개 시트)
+[INFO] 비포워드 로그인 중...
+[INFO] BeForward 업로드 드라이버 초기화 완료 (Chrome/Selenium)
+[INFO] BeForward 로그인: https://external-vendor.beforward.jp/tempVehDetails/edit
+[OK] 로그인 성공: https://external-vendor.beforward.jp/tempVehDetails/edit
+[INFO] 팝업 닫기 완료
+  [OK] S열 하이퍼링크 추출: https://mangoworldcar.com/ko/mit-inspection/WDDSJ0JB6GN353416?readonly=true
+
+[Row 1268] 엔카 크롤링: https://fem.encar.com/cars/detail/41626708...
+geckodriver를 PATH에서 찾습니다...
+Firefox 드라이버가 초기화되었습니다.
+
+============================================================
+                        차량 정보 크롤링 시작                        
+============================================================
+URL: https://fem.encar.com/cars/detail/41626708
+
+차량 ID: 41626708
+
+[ 기본 차량 정보 추출 중... ]
+  [DEBUG] 현재 URL: https://fem.encar.com/cars/detail/41626708
+  [DEBUG] 페이지 제목: CLA-클래스 C117 CLA200 d 경기 중고차 : 내차팔기·내차사기
+[OK] 기본 차량 정보 추출 완료
+  가격: 1,080만원 -> 1080
+  연식: 16년 04월 -> 2016
+  배기량: 2,143cc -> 2143
+  주행거리: 153,000km -> 153000
+  차종: CLA-클래스 C117CLA200 d
+
+[ 판매자 정보 추출 중... ]
+  주소: 경기 수원시 권선구 권선로 308-5
+  연락처 버튼 클릭 성공
+  전화번호 버튼 클릭 성공
+[OK] 판매자 정보 추출 완료
+
+[ 옵션 정보 추출 중... ]
+  옵션 페이지: https://fem.encar.com/cars/option/41626708
+[OK] 옵션 28개 추출 (매핑 14개): ['선루프', '전동접이 사이드 미러', '알루미늄 휠', '패들 시프트', '스티어링 휠 리모컨']
+
+[ 성능점검 정보 추출 중... ]
+성능점검 페이지로 이동: https://www.encar.com/md/sl/mdsl_regcar.do?method=inspectionViewNew&carid=41626708
+[OK] 성능점검 정보 추출 완료
+  성능점검기록부: WDDSJ0JB6GN353416
+
+[OK] 모든 정보 추출 완료
+[Row 1268] [OK] 엔카 크롤링 완료
+[Row 1268] 판매가격 기준(P열): 6703
+[Row 1268] 업로드 가격: 7113
+[Row 1268] 차대번호 설정(시트): GN353416
+[Row 1268] [DEBUG] S열(batch) raw='https://mangoworldcar.com/ko/mit-inspection/WDDSJ0JB6GN353416?readonly=true'
+[Row 1268] [DEBUG] batch 값이 drive URL 아님: 'https://mangoworldcar.com/ko/mit-inspection/WDDSJ0JB6GN353416?readonly=true' → fallback
+  [OK] S열 하이퍼링크 추출: https://mangoworldcar.com/ko/mit-inspection/WDDSJ0JB6GN353416?readonly=true
+[Row 1268] 드라이브 링크 설정: https://mangoworldcar.com/ko/mit-inspection/WDDSJ0JB6GN353416?readonly=true
+[Row 1268] 비포워드 업로드 중...
+
+[INFO] 비포워드 차량 정보 입력 시작
+  차대번호: GN353416
+  연식: 2016
+  주행거리: 153000
+  가격: 7113
+  [INFO] 기존 매물 ID 수집 중...
+  [INFO] 기존 매물: 0개
+  [재원표 매칭] 'A-클래스' → 제조사:MERCEDES-BENZ | 모델:A-Class | 타입:세단 | 문:4 | 좌석:5
+  제조사: 'MERCEDES-BENZ' (유사도: 0.95)
+  모델: 'A-Class'
+  [경고] 모델년도 선택 실패 (value=2016)
+  [경고] 제조년월 선택 실패 (value=2016)
+  [경고] 길이(cm) 필드 없음 (TempVehDetails[length])
+  [경고] 너비(cm) 필드 없음 (TempVehDetails[width])
+  [경고] 높이(cm) 필드 없음 (TempVehDetails[height])
+  [경고] M3 필드 없음 (TempVehDetails[m3])
+  [INFO] CBM 기본값 설정: 470x180x150cm, M3=12.69
+  [경고] 차대번호 필드 없음 (TempVehDetails[chassis_no])
+  [경고] 차량타입 선택 실패: Sedan
+  [경고] 주행거리 필드 없음 (TempVehDetails[mileage])
+  [경고] 배기량 필드 없음 (TempVehDetails[engine_capacity])
+  [경고] 연료 옵션 없음 (검색: '경유')
+  [경고] 변속기 옵션 없음 (검색: 'Automatic')
+  [경고] 핸들(우핸들) 라디오 없음 (name='TempVehDetails[steering]', value='1')
+  [경고] 문개수 입력/선택 실패
+  [경고] 구동방식 라디오 없음 (name='TempVehDetails[drive_type]', value='2')
+  [INFO] 색상 '검정색'→'블랙' 매칭 실패 → '기타' 선택
+  [경고] 색상(기타) 옵션 없음 (검색: '기타')
+  [경고] 좌석수 필드 없음 (TempVehDetails[seats])
+  [경고] 가격 필드 없음 (id=trade-price-input)
+  [경고] 할인가 필드 없음 (TempVehDetails[available_discount])
+  [경고] 재고위치 옵션 없음 (검색: 'KOREA')
+  [INFO] 매핑된 옵션 없음 (총 28개)
+  [INFO] 이미지 다운로드 시작...
+  [OK] 이미지 다운로드 드라이버 초기화 (download → C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\downloaded_images)
+  [드라이브 접속] https://mangoworldcar.com/ko/mit-inspection/WDDSJ0JB6GN353416?readonly=true
+  [INFO] EXTERIOR 폴더 없음 - 현재 폴더 이미지 다운로드
+  [INFO] 기존 row_1268 폴더 정리 완료
+  [경고] 파일 목록을 찾을 수 없습니다
+  [INFO] 드라이브 이미지 다운로드 완료: 0개
+  [INFO] 다운로드 결과: 0개 파일
+  [경고] 드라이브 링크 있으나 이미지 다운로드 실패 - 업로드 중단
+[Row 1268] [ERR] 업로드 실패
+2026-04-03 19:17:05 | ERROR | Row 1268 | UPLOAD_FAILED | ByForward upload failed
+[OK] Row 1268 | Updated COMPLETED: FAILED
+  [OK] S열 하이퍼링크 추출: https://drive.google.com/drive/folders/1ceXGs7NVvRKJKVt06xXHLqf6nnrlOkbH?usp=dri
+
+[Row 1269] 엔카 크롤링: https://fem.encar.com/cars/detail/41735387?advClickPosition=...
+
+============================================================
+                        차량 정보 크롤링 시작                        
+============================================================
+URL: https://fem.encar.com/cars/detail/41735387?advClickPosition=mweb_mhightlight_g2_t56&listAdvType=mhighlight&type=detail&view_type=normal&_gl=1*8prcj2*_gcl_au*OTk3NzY4MjI1LjE3NzQ4NzY2MDA.*_ga*MTE2MjQ0MDE0OC4xNzc0ODc2NjAw*_ga_BQ7RK9J6BZ*czE3NzQ4NzY1OTkkbzEkZzEkdDE3NzQ4NzY2OTYkajMzJGwwJGg5NDc0MzY5Mzg.who
+
+차량 ID: 41735387
+
+[ 기본 차량 정보 추출 중... ]
+  [DEBUG] 현재 URL: https://fem.encar.com/cars/detail/41735387?advClickPosition=mweb_mhightlight_g2_t56&listAdvType=mhighlight&type=detail&view_type=normal&_gl=1*8prcj2*_gcl_au*OTk3NzY4MjI1LjE3NzQ4NzY2MDA.*_ga*MTE2MjQ0MDE0OC4xNzc0ODc2NjAw*_ga_BQ7RK9J6BZ*czE3NzQ4NzY1OTkkbzEkZzEkdDE3NzQ4NzY2OTYkajMzJGwwJGg5NDc0MzY5Mzg.who
+  [DEBUG] 페이지 제목: 뉴 카이엔 3.0 디젤 플래티넘 에디션 958 서울 중고차 : 내차팔기·내차사기
+[OK] 기본 차량 정보 추출 완료
+  가격: 2,399만원(계약중) -> 2399
+  연식: 16년 07월 -> 2016
+  배기량: 2,967cc -> 2967
+  주행거리: 182,316km -> 182316
+  차종: 뉴 카이엔3.0 디젤 플래티넘 에디션958
+
+[ 판매자 정보 추출 중... ]
+  주소: 서울 강서구
+  연락처 버튼 클릭 성공
+  전화번호 버튼 클릭 성공
+[OK] 판매자 정보 추출 완료
+
+[ 옵션 정보 추출 중... ]
+  옵션 페이지: https://fem.encar.com/cars/option/41735387
+[OK] 옵션 35개 추출 (매핑 14개): ['선루프', '파워 전동 트렁크', '고스트 도어 클로징', '전동접이 사이드 미러', '알루미늄 휠']
+
+[ 성능점검 정보 추출 중... ]
+성능점검 페이지로 이동: https://www.encar.com/md/sl/mdsl_regcar.do?method=inspectionViewNew&carid=41735387
+[OK] 성능점검 정보 추출 완료
+  성능점검기록부: WP1AF2926GLA46197
+
+[OK] 모든 정보 추출 완료
+[Row 1269] [OK] 엔카 크롤링 완료
+[Row 1269] 판매가격 기준(P열): 15952
+[Row 1269] 업로드 가격: 16691
+[Row 1269] 차대번호 설정(시트): GLA46197
+[Row 1269] [DEBUG] S열(batch) raw='https://drive.google.com/drive/folders/1ceXGs7NVvRKJKVt06xXHLqf6nnrlOkbH?usp=drive_link'
+[Row 1269] 드라이브 링크 설정: https://drive.google.com/drive/folders/1ceXGs7NVvRKJKVt06xXHLqf6nnrlOkbH?usp=drive_link
+[Row 1269] 비포워드 업로드 중...
+
+[INFO] 비포워드 차량 정보 입력 시작
+  차대번호: GLA46197
+  연식: 2016
+  주행거리: 182316
+  가격: 16691
+  [INFO] 기존 매물 ID 수집 중...
+  [INFO] 기존 매물: 0개
+  제조사: 'Porsche' (유사도: 0.95)
+  [경고] 모델년도 선택 실패 (value=2016)
+  [경고] 제조년월 선택 실패 (value=2016)
+  [경고] 길이(cm) 필드 없음 (TempVehDetails[length])
+  [경고] 너비(cm) 필드 없음 (TempVehDetails[width])
+  [경고] 높이(cm) 필드 없음 (TempVehDetails[height])
+  [경고] M3 필드 없음 (TempVehDetails[m3])
+  [INFO] CBM 기본값 설정: 470x180x150cm, M3=12.69
+  [경고] 차대번호 필드 없음 (TempVehDetails[chassis_no])
+  [경고] 차량타입 선택 실패: Sedan
+  [경고] 주행거리 필드 없음 (TempVehDetails[mileage])
+  [경고] 배기량 필드 없음 (TempVehDetails[engine_capacity])
+  [경고] 연료 옵션 없음 (검색: '경유')
+  [경고] 변속기 옵션 없음 (검색: 'Automatic')
+  [경고] 핸들(우핸들) 라디오 없음 (name='TempVehDetails[steering]', value='1')
+  [경고] 문개수 입력/선택 실패
+  [경고] 구동방식 라디오 없음 (name='TempVehDetails[drive_type]', value='2')
+  [INFO] 색상 '흰색'→'화이트' 매칭 실패 → '기타' 선택
+  [경고] 색상(기타) 옵션 없음 (검색: '기타')
+  [경고] 좌석수 필드 없음 (TempVehDetails[seats])
+  [경고] 가격 필드 없음 (id=trade-price-input)
+  [경고] 할인가 필드 없음 (TempVehDetails[available_discount])
+  [경고] 재고위치 옵션 없음 (검색: 'KOREA')
+  [INFO] 매핑된 옵션 없음 (총 35개)
+  [INFO] 이미지 다운로드 시작...
+  [OK] 이미지 다운로드 드라이버 초기화 (download → C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\downloaded_images)
+  [드라이브 접속] https://drive.google.com/drive/folders/1ceXGs7NVvRKJKVt06xXHLqf6nnrlOkbH?usp=dri
+  [OK] EXTERIOR 폴더 발견, 더블클릭...
+  [OK] EXTERIOR 파일 목록 로딩 완료
+  [INFO] 기존 row_1269 폴더 정리 완료
+  [OK] 2개 파일 발견
+  [OK] 전체 선택 (Ctrl+A)
+  [OK] 다운로드 시작 (툴바 버튼)
+  [대기] 다운로드 완료 대기 (최대 90초)...
+    Phase 1: 다운로드 시작 대기...
+    Phase 1 완료: 새 파일 감지 ['EXTERIOR-20260403T101746Z-3-001.zip']
+    Phase 2: 다운로드 완료 대기...
+    Phase 2 완료: 다운로드 완료
+  [DEBUG] 다운로드 폴더 신규 파일: ['EXTERIOR-20260403T101746Z-3-001.zip']
+  [OK] ZIP 발견: EXTERIOR-20260403T101746Z-3-001.zip
+    [OK] KakaoTalk_20260331_120948659.jpg
+    [OK] KakaoTalk_20260331_120948659_01.jpg
+    [OK] KakaoTalk_20260331_120948659_02.jpg
+    [OK] KakaoTalk_20260331_120948659_03.jpg
+    [OK] KakaoTalk_20260331_120948659_04.jpg
+    [OK] KakaoTalk_20260331_120948659_05.jpg
+    [OK] KakaoTalk_20260331_120948659_06.jpg
+    [OK] KakaoTalk_20260331_120948659_08.jpg
+    [OK] KakaoTalk_20260331_120948659_09.jpg
+    [OK] KakaoTalk_20260331_120956029.jpg
+    [OK] KakaoTalk_20260331_120956029_01.jpg
+    [OK] KakaoTalk_20260331_120956029_02.jpg
+    [OK] KakaoTalk_20260331_120956029_03.jpg
+  [완료] 총 13개 이미지 다운로드
+  [INFO] 드라이브 이미지 다운로드 완료: 13개
+    - KakaoTalk_20260331_120948659.jpg (509435 bytes)
+    - KakaoTalk_20260331_120948659_01.jpg (491968 bytes)
+    - KakaoTalk_20260331_120948659_02.jpg (446204 bytes)
+    - KakaoTalk_20260331_120948659_03.jpg (408301 bytes)
+    - KakaoTalk_20260331_120948659_04.jpg (423161 bytes)
+  [INFO] 다운로드 결과: 13개 파일
+  [OK] 클릭 완료: //*[@id="chk-compensation-agree"]
+[OK] 저장 버튼 클릭 완료
+  [DEBUG] 저장 후 URL: https://external-vendor.beforward.jp/tempVehDetails/edit
+  [DEBUG] 캡처된 alert: None
+  [경고] listing ID를 찾을 수 없음 (chassis=GLA46197)
+  [경고] listing ID 추출 실패
+[Row 1269] [ERR] 업로드 실패
+2026-04-03 19:18:04 | ERROR | Row 1269 | UPLOAD_FAILED | ByForward upload failed
+[OK] Row 1269 | Updated COMPLETED: FAILED
+  [OK] S열 하이퍼링크 추출: https://mangoworldcar.com/ko/mit-inspection/WVWZZZAUZGW187399?readonly=true
+
+[Row 1270] 엔카 크롤링: https://fem.encar.com/cars/detail/41470896?advClickPosition=...
+
+============================================================
+                        차량 정보 크롤링 시작                        
+============================================================
+URL: https://fem.encar.com/cars/detail/41470896?advClickPosition=mweb_mhightlight_g24_t1228&listAdvType=mhighlight&type=detail&view_type=checked&_gl=1*ehk82c*_gcl_au*NzU0ODE1MTEyLjE3NzM2MzExNDA.*_ga*NTA5MzI3NTIxLjE3NzM2MzExNDA.*_ga_BQ7RK9J6BZ*czE3NzM3OTcxODAkbzE0JGcxJHQxNzczODEwMjE0JGoyNyRsMCRoMTQxNjE0NzAwOA
+
+차량 ID: 41470896
+
+[ 기본 차량 정보 추출 중... ]
+  [DEBUG] 현재 URL: https://fem.encar.com/cars/detail/41470896?advClickPosition=mweb_mhightlight_g24_t1228&listAdvType=mhighlight&type=detail&view_type=checked&_gl=1*ehk82c*_gcl_au*NzU0ODE1MTEyLjE3NzM2MzExNDA.*_ga*NTA5MzI3NTIxLjE3NzM2MzExNDA.*_ga_BQ7RK9J6BZ*czE3NzM3OTcxODAkbzE0JGcxJHQxNzczODEwMjE0JGoyNyRsMCRoMTQxNjE0NzAwOA
+  [DEBUG] 페이지 제목: 골프 7세대 2.0 GTD 익스트림 에디션 경기 중고차 : 내차팔기·내차사기
+[OK] 기본 차량 정보 추출 완료
+  가격: 1,429만원 -> 1429
+  연식: 16년 05월 -> 2016
+  배기량: 1,968cc -> 1968
+  주행거리: 144,128km -> 144128
+  차종: 골프 7세대2.0 GTD 익스트림 에디션
+
+[ 판매자 정보 추출 중... ]
+  주소: 경기 부천시 오정구
+  연락처 버튼 클릭 성공
+  전화번호 버튼 클릭 성공
+[OK] 판매자 정보 추출 완료
+
+[ 옵션 정보 추출 중... ]
+  옵션 페이지: https://fem.encar.com/cars/option/41470896
+[OK] 옵션 24개 추출 (매핑 13개): ['선루프', '전동접이 사이드 미러', '알루미늄 휠', '패들 시프트', '스티어링 휠 리모컨']
+
+[ 성능점검 정보 추출 중... ]
+성능점검 페이지로 이동: https://www.encar.com/md/sl/mdsl_regcar.do?method=inspectionViewNew&carid=41470896
+[경고] 성능점검기록부 요소를 찾을 수 없습니다.
+[경고] 성능점검 페이지를 찾을 수 없습니다.
+
+[OK] 모든 정보 추출 완료
+[Row 1270] [OK] 엔카 크롤링 완료
+[Row 1270] 판매가격 기준(P열): 9471
+[Row 1270] 업로드 가격: 9966
+[Row 1270] 차대번호 설정(시트): GW187399
+[Row 1270] [DEBUG] S열(batch) raw='https://mangoworldcar.com/ko/mit-inspection/WVWZZZAUZGW187399?readonly=true'
+[Row 1270] [DEBUG] batch 값이 drive URL 아님: 'https://mangoworldcar.com/ko/mit-inspection/WVWZZZAUZGW187399?readonly=true' → fallback
+  [OK] S열 하이퍼링크 추출: https://mangoworldcar.com/ko/mit-inspection/WVWZZZAUZGW187399?readonly=true
+[Row 1270] 드라이브 링크 설정: https://mangoworldcar.com/ko/mit-inspection/WVWZZZAUZGW187399?readonly=true
+[Row 1270] 비포워드 업로드 중...
+
+[INFO] 비포워드 차량 정보 입력 시작
+  차대번호: GW187399
+  연식: 2016
+  주행거리: 144128
+  가격: 9966
+  [INFO] 기존 매물 ID 수집 중...
+  [INFO] 기존 매물: 0개
+  [재원표 매칭] '골프' → 제조사:VOLKSWAGEN | 모델:Golf | 타입:세단 | 문:4 | 좌석:5
+  제조사: 'VOLKSWAGEN' (유사도: 0.95)
+  모델: 'Golf'
+  [경고] 모델년도 선택 실패 (value=2016)
+  [경고] 제조년월 선택 실패 (value=2016)
+  [경고] 길이(cm) 필드 없음 (TempVehDetails[length])
+  [경고] 너비(cm) 필드 없음 (TempVehDetails[width])
+  [경고] 높이(cm) 필드 없음 (TempVehDetails[height])
+  [경고] M3 필드 없음 (TempVehDetails[m3])
+  [INFO] CBM 기본값 설정: 470x180x150cm, M3=12.69
+  [경고] 차대번호 필드 없음 (TempVehDetails[chassis_no])
+  [경고] 차량타입 선택 실패: Sedan
+  [경고] 주행거리 필드 없음 (TempVehDetails[mileage])
+  [경고] 배기량 필드 없음 (TempVehDetails[engine_capacity])
+  [경고] 연료 옵션 없음 (검색: '경유')
+  [경고] 변속기 옵션 없음 (검색: 'Automatic')
+  [경고] 핸들(우핸들) 라디오 없음 (name='TempVehDetails[steering]', value='1')
+  [경고] 문개수 입력/선택 실패
+  [경고] 구동방식 라디오 없음 (name='TempVehDetails[drive_type]', value='2')
+  [INFO] 색상 '쥐색'→'쥐색' 매칭 실패 → '기타' 선택
+  [경고] 색상(기타) 옵션 없음 (검색: '기타')
+  [경고] 좌석수 필드 없음 (TempVehDetails[seats])
+  [경고] 가격 필드 없음 (id=trade-price-input)
+  [경고] 할인가 필드 없음 (TempVehDetails[available_discount])
+  [경고] 재고위치 옵션 없음 (검색: 'KOREA')
+  [INFO] 매핑된 옵션 없음 (총 24개)
+  [INFO] 이미지 다운로드 시작...
+  [OK] 이미지 다운로드 드라이버 초기화 (download → C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\downloaded_images)
+  [드라이브 접속] https://mangoworldcar.com/ko/mit-inspection/WVWZZZAUZGW187399?readonly=true
+  [INFO] EXTERIOR 폴더 없음 - 현재 폴더 이미지 다운로드
+  [INFO] 기존 row_1270 폴더 정리 완료
+  [경고] 파일 목록을 찾을 수 없습니다
+  [INFO] 드라이브 이미지 다운로드 완료: 0개
+  [INFO] 다운로드 결과: 0개 파일
+  [경고] 드라이브 링크 있으나 이미지 다운로드 실패 - 업로드 중단
+[Row 1270] [ERR] 업로드 실패
+2026-04-03 19:18:53 | ERROR | Row 1270 | UPLOAD_FAILED | ByForward upload failed
+[OK] Row 1270 | Updated COMPLETED: FAILED
+  [OK] S열 하이퍼링크 추출: https://drive.google.com/drive/folders/1x317FyRMzKtbcCMQ6JSx_o_4e_4laEsn?usp=dri
+
+[Row 1271] 엔카 크롤링: https://fem.encar.com/cars/detail/41325914...
+
+============================================================
+                        차량 정보 크롤링 시작                        
+============================================================
+URL: https://fem.encar.com/cars/detail/41325914
+
+차량 ID: 41325914
+
+[ 기본 차량 정보 추출 중... ]
+  [DEBUG] 현재 URL: https://fem.encar.com/cars/detail/41325914
+  [DEBUG] 페이지 제목: 뉴 A4 30 TDI B8 경기 중고차 : 내차팔기·내차사기
+[OK] 기본 차량 정보 추출 완료
+  가격: 550만원 -> 550
+  연식: 14년 08월 (15년형) -> 2014
+  배기량: 1,968cc -> 1968
+  주행거리: 122,854km -> 122854
+  차종: 뉴 A430 TDIB8
+
+[ 판매자 정보 추출 중... ]
+  주소: 경기 안산시 단원구
+  연락처 버튼 클릭 성공
+  전화번호 버튼 클릭 성공
+[OK] 판매자 정보 추출 완료
+
+[ 옵션 정보 추출 중... ]
+  옵션 페이지: https://fem.encar.com/cars/option/41325914
+[OK] 옵션 24개 추출 (매핑 14개): ['선루프', '전동접이 사이드 미러', '알루미늄 휠', 'ECM 룸미러', '파워 도어록']
+
+[ 성능점검 정보 추출 중... ]
+성능점검 페이지로 이동: https://www.encar.com/md/sl/mdsl_regcar.do?method=inspectionViewNew&carid=41325914
+[OK] 성능점검 정보 추출 완료
+  성능점검기록부: WAUZZZ8K4FN001622
+
+[OK] 모든 정보 추출 완료
+[Row 1271] [OK] 엔카 크롤링 완료
+[Row 1271] 판매가격 기준(P열): 3705
+[Row 1271] 업로드 가격: 4063
+[Row 1271] 차대번호 설정(시트): FN001622
+[Row 1271] [DEBUG] S열(batch) raw='https://drive.google.com/drive/folders/1x317FyRMzKtbcCMQ6JSx_o_4e_4laEsn?usp=drive_link'
+[Row 1271] 드라이브 링크 설정: https://drive.google.com/drive/folders/1x317FyRMzKtbcCMQ6JSx_o_4e_4laEsn?usp=drive_link
+[Row 1271] 비포워드 업로드 중...
+
+[INFO] 비포워드 차량 정보 입력 시작
+  차대번호: FN001622
+  연식: 2014
+  주행거리: 122854
+  가격: 4063
+  [INFO] 기존 매물 ID 수집 중...
+  [INFO] 기존 매물: 0개
+  [재원표 매칭] 'A4' → 제조사:AUDI | 모델:A4 | 타입:세단 | 문:4 | 좌석:5
+  제조사: 'AUDI' (유사도: 0.95)
+  모델: 'A4'
+  [경고] 모델년도 선택 실패 (value=2014)
+  [경고] 제조년월 선택 실패 (value=2014)
+  [경고] 길이(cm) 필드 없음 (TempVehDetails[length])
+  [경고] 너비(cm) 필드 없음 (TempVehDetails[width])
+  [경고] 높이(cm) 필드 없음 (TempVehDetails[height])
+  [경고] M3 필드 없음 (TempVehDetails[m3])
+  [INFO] CBM 기본값 설정: 470x180x150cm, M3=12.69
+  [경고] 차대번호 필드 없음 (TempVehDetails[chassis_no])
+  [경고] 차량타입 선택 실패: Sedan
+  [경고] 주행거리 필드 없음 (TempVehDetails[mileage])
+  [경고] 배기량 필드 없음 (TempVehDetails[engine_capacity])
+  [경고] 연료 옵션 없음 (검색: '경유')
+  [경고] 변속기 옵션 없음 (검색: 'Automatic')
+  [경고] 핸들(우핸들) 라디오 없음 (name='TempVehDetails[steering]', value='1')
+  [경고] 문개수 입력/선택 실패
+  [경고] 구동방식 라디오 없음 (name='TempVehDetails[drive_type]', value='2')
+  [INFO] 색상 '흰색'→'화이트' 매칭 실패 → '기타' 선택
+  [경고] 색상(기타) 옵션 없음 (검색: '기타')
+  [경고] 좌석수 필드 없음 (TempVehDetails[seats])
+  [경고] 가격 필드 없음 (id=trade-price-input)
+  [경고] 할인가 필드 없음 (TempVehDetails[available_discount])
+  [경고] 재고위치 옵션 없음 (검색: 'KOREA')
+  [INFO] 매핑된 옵션 없음 (총 24개)
+  [INFO] 이미지 다운로드 시작...
+  [OK] 이미지 다운로드 드라이버 초기화 (download → C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\downloaded_images)
+  [드라이브 접속] https://drive.google.com/drive/folders/1x317FyRMzKtbcCMQ6JSx_o_4e_4laEsn?usp=dri
+  [OK] EXTERIOR 폴더 발견, 더블클릭...
+  [OK] EXTERIOR 파일 목록 로딩 완료
+  [INFO] 기존 row_1271 폴더 정리 완료
+  [OK] 2개 파일 발견
+  [OK] 전체 선택 (Ctrl+A)
+  [OK] 다운로드 시작 (툴바 버튼)
+  [대기] 다운로드 완료 대기 (최대 90초)...
+    Phase 1: 다운로드 시작 대기...
+    Phase 1 완료: 새 파일 감지 ['미확인 752907.crdownload']
+    Phase 2: 다운로드 완료 대기...
+    Phase 2 완료: 다운로드 완료
+  [DEBUG] 다운로드 폴더 신규 파일: ['EXTERIOR-20260403T101935Z-3-001.zip']
+  [OK] ZIP 발견: EXTERIOR-20260403T101935Z-3-001.zip
+    [OK] KakaoTalk_20260331_181218825.jpg
+    [OK] KakaoTalk_20260331_181218825_01.jpg
+    [OK] KakaoTalk_20260331_181218825_02.jpg
+    [OK] KakaoTalk_20260331_181218825_03.jpg
+    [OK] KakaoTalk_20260331_181218825_04.jpg
+    [OK] KakaoTalk_20260331_181218825_05.jpg
+    [OK] KakaoTalk_20260331_181218825_06.jpg
+    [OK] KakaoTalk_20260331_181218825_07.jpg
+    [OK] KakaoTalk_20260331_181231487.jpg
+    [OK] KakaoTalk_20260331_181231487_01.jpg
+    [OK] KakaoTalk_20260331_181231487_02.jpg
+    [OK] KakaoTalk_20260331_181231487_03.jpg
+  [완료] 총 12개 이미지 다운로드
+  [INFO] 드라이브 이미지 다운로드 완료: 12개
+    - KakaoTalk_20260331_181218825.jpg (3484276 bytes)
+    - KakaoTalk_20260331_181218825_01.jpg (3615216 bytes)
+    - KakaoTalk_20260331_181218825_02.jpg (3700543 bytes)
+    - KakaoTalk_20260331_181218825_03.jpg (3558464 bytes)
+    - KakaoTalk_20260331_181218825_04.jpg (3233653 bytes)
+  [INFO] 다운로드 결과: 12개 파일
+  [OK] 클릭 완료: //*[@id="chk-compensation-agree"]
+[OK] 저장 버튼 클릭 완료
+  [DEBUG] 저장 후 URL: https://external-vendor.beforward.jp/tempVehDetails/edit
+  [DEBUG] 캡처된 alert: None
+  [경고] listing ID를 찾을 수 없음 (chassis=FN001622)
+  [경고] listing ID 추출 실패
+[Row 1271] [ERR] 업로드 실패
+2026-04-03 19:20:10 | ERROR | Row 1271 | UPLOAD_FAILED | ByForward upload failed
+[OK] Row 1271 | Updated COMPLETED: FAILED
+  [OK] S열 하이퍼링크 추출: https://drive.google.com/drive/folders/1125_CEYTlgsK9cD4YLDrF51wyGdp2Btw?usp=dri
+
+[Row 1272] 엔카 크롤링: https://fem.encar.com/cars/detail/41709354?pageid=fc_carsear...
+
+============================================================
+                        차량 정보 크롤링 시작                        
+============================================================
+URL: https://fem.encar.com/cars/detail/41709354?pageid=fc_carsearch&listAdvType=normal&carid=41709354&view_type=checked&adv_attribute=&wtClick_forList=019&advClickPosition=imp_normal_p3_g21&tempht_arg=rS13m6PLh4X8_20
+
+차량 ID: 41709354
+
+[ 기본 차량 정보 추출 중... ]
+  [DEBUG] 현재 URL: https://fem.encar.com/cars/detail/41709354?pageid=fc_carsearch&listAdvType=normal&carid=41709354&view_type=checked&adv_attribute=&wtClick_forList=019&advClickPosition=imp_normal_p3_g21&tempht_arg=rS13m6PLh4X8_20
+  [DEBUG] 페이지 제목: 5시리즈 GT (F07) GT 인천 중고차 : 내차팔기·내차사기
+[OK] 기본 차량 정보 추출 완료
+  가격: 630만원 -> 630
+  연식: 11년 04월 -> 2011
+  배기량: 2,979cc -> 2979
+  주행거리: 112,662km -> 112662
+  차종: 5시리즈 GT (F07)GT
+
+[ 판매자 정보 추출 중... ]
+  주소: 인천 서구
+  연락처 버튼 클릭 성공
+  전화번호 버튼 클릭 성공
+[OK] 판매자 정보 추출 완료
+
+[ 옵션 정보 추출 중... ]
+  옵션 페이지: https://fem.encar.com/cars/option/41709354
+[OK] 옵션 32개 추출 (매핑 15개): ['선루프', '전동접이 사이드 미러', '알루미늄 휠', '전동 조절 스티어링 휠', '스티어링 휠 리모컨']
+
+[ 성능점검 정보 추출 중... ]
+성능점검 페이지로 이동: https://www.encar.com/md/sl/mdsl_regcar.do?method=inspectionViewNew&carid=41709354
+[OK] 성능점검 정보 추출 완료
+  성능점검기록부: WBASN2104BC900760
+
+[OK] 모든 정보 추출 완료
+[Row 1272] [OK] 엔카 크롤링 완료
+[Row 1272] 판매가격 기준(P열): 3896
+[Row 1272] 업로드 가격: 4254
+[Row 1272] 차대번호 설정(시트): BC900760
+[Row 1272] [DEBUG] S열(batch) raw='https://drive.google.com/drive/folders/1125_CEYTlgsK9cD4YLDrF51wyGdp2Btw?usp=drive_link'
+[Row 1272] 드라이브 링크 설정: https://drive.google.com/drive/folders/1125_CEYTlgsK9cD4YLDrF51wyGdp2Btw?usp=drive_link
+[Row 1272] 비포워드 업로드 중...
+
+[INFO] 비포워드 차량 정보 입력 시작
+  차대번호: BC900760
+  연식: 2011
+  주행거리: 112662
+  가격: 4254
+  [INFO] 기존 매물 ID 수집 중...
+  [INFO] 기존 매물: 0개
+  [재원표 매칭] '5시리즈' → 제조사:BMW | 모델:5 Series | 타입:세단 | 문:4 | 좌석:5
+  제조사: 'BMW' (유사도: 0.95)
+  모델: '5 Series'
+  [경고] 모델년도 선택 실패 (value=2011)
+  [경고] 제조년월 선택 실패 (value=2011)
+  [경고] 길이(cm) 필드 없음 (TempVehDetails[length])
+  [경고] 너비(cm) 필드 없음 (TempVehDetails[width])
+  [경고] 높이(cm) 필드 없음 (TempVehDetails[height])
+  [경고] M3 필드 없음 (TempVehDetails[m3])
+  [INFO] CBM 기본값 설정: 470x180x150cm, M3=12.69
+  [경고] 차대번호 필드 없음 (TempVehDetails[chassis_no])
+  [경고] 차량타입 선택 실패: Sedan
+  [경고] 주행거리 필드 없음 (TempVehDetails[mileage])
+  [경고] 배기량 필드 없음 (TempVehDetails[engine_capacity])
+  [경고] 연료 옵션 없음 (검색: '휘발유')
+  [경고] 변속기 옵션 없음 (검색: 'Automatic')
+  [경고] 핸들(우핸들) 라디오 없음 (name='TempVehDetails[steering]', value='1')
+  [경고] 문개수 입력/선택 실패
+  [경고] 구동방식 라디오 없음 (name='TempVehDetails[drive_type]', value='2')
+  [INFO] 색상 '은회색'→'실버' 매칭 실패 → '기타' 선택
+  [경고] 색상(기타) 옵션 없음 (검색: '기타')
+  [경고] 좌석수 필드 없음 (TempVehDetails[seats])
+  [경고] 가격 필드 없음 (id=trade-price-input)
+  [경고] 할인가 필드 없음 (TempVehDetails[available_discount])
+  [경고] 재고위치 옵션 없음 (검색: 'KOREA')
+  [INFO] 매핑된 옵션 없음 (총 32개)
+  [INFO] 이미지 다운로드 시작...
+  [OK] 이미지 다운로드 드라이버 초기화 (download → C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\downloaded_images)
+  [드라이브 접속] https://drive.google.com/drive/folders/1125_CEYTlgsK9cD4YLDrF51wyGdp2Btw?usp=dri
+  [OK] EXTERIOR 폴더 발견, 더블클릭...
+  [OK] EXTERIOR 파일 목록 로딩 완료
+  [INFO] 기존 row_1272 폴더 정리 완료
+  [OK] 2개 파일 발견
+  [OK] 전체 선택 (Ctrl+A)
+  [OK] 다운로드 시작 (툴바 버튼)
+  [대기] 다운로드 완료 대기 (최대 90초)...
+    Phase 1: 다운로드 시작 대기...
+    Phase 1 완료: 새 파일 감지 ['EXTERIOR-20260403T102054Z-3-001.zip']
+    Phase 2: 다운로드 완료 대기...
+    Phase 2 완료: 다운로드 완료
+  [DEBUG] 다운로드 폴더 신규 파일: ['EXTERIOR-20260403T102054Z-3-001.zip']
+  [OK] ZIP 발견: EXTERIOR-20260403T102054Z-3-001.zip
+    [OK] KakaoTalk_20260331_180926533.jpg
+    [OK] KakaoTalk_20260331_180926533_02.jpg
+    [OK] KakaoTalk_20260331_180926533_04.jpg
+    [OK] KakaoTalk_20260331_180926533_06.jpg
+    [OK] KakaoTalk_20260331_181118272.jpg
+    [OK] KakaoTalk_20260331_181118272_01.jpg
+    [OK] KakaoTalk_20260331_181118272_02.jpg
+    [OK] KakaoTalk_20260331_181118272_03.jpg
+    [OK] KakaoTalk_20260331_181118272_04.jpg
+    [OK] KakaoTalk_20260331_181118272_05.jpg
+    [OK] KakaoTalk_20260331_181118272_06.jpg
+    [OK] KakaoTalk_20260331_181118272_07.jpg
+  [완료] 총 12개 이미지 다운로드
+  [INFO] 드라이브 이미지 다운로드 완료: 12개
+    - KakaoTalk_20260331_180926533.jpg (221375 bytes)
+    - KakaoTalk_20260331_180926533_02.jpg (228377 bytes)
+    - KakaoTalk_20260331_180926533_04.jpg (192584 bytes)
+    - KakaoTalk_20260331_180926533_06.jpg (223893 bytes)
+    - KakaoTalk_20260331_181118272.jpg (216080 bytes)
+  [INFO] 다운로드 결과: 12개 파일
+  [OK] 클릭 완료: //*[@id="chk-compensation-agree"]
+[OK] 저장 버튼 클릭 완료
+  [DEBUG] 저장 후 URL: https://external-vendor.beforward.jp/photo/upload/12750912
+  [DEBUG] 캡처된 alert: None
+  [OK] 팝업 닫기 완료 (lightbox)
+  [OK] listing ID (URL에서 추출): 12750912
+  [INFO] 수정 페이지: https://external-vendor.beforward.jp/TempVehDetails/edit/12750912
+  [OK] 클릭 완료: 이미지 업로드 버튼
+  [DEBUG] 이미지 페이지 URL: https://external-vendor.beforward.jp/photo/upload/12750912
+  [DEBUG] 업로드 페이지 URL: https://external-vendor.beforward.jp/photo/upload/12750912
+  [INFO] 파일명 변환: KakaoTalk_20260331_180926533.jpg → bf1775211687_826c2186_0.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_180926533_02.jpg → bf1775211687_8602faed_1.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_180926533_04.jpg → bf1775211687_df33decd_2.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_180926533_06.jpg → bf1775211687_bc81ea04_3.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272.jpg → bf1775211687_e9bf72d9_4.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272_01.jpg → bf1775211687_36620552_5.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272_02.jpg → bf1775211687_21333e09_6.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272_03.jpg → bf1775211687_746dec34_7.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272_04.jpg → bf1775211687_fbdaa7af_8.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272_05.jpg → bf1775211687_d6c0dbaf_9.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272_06.jpg → bf1775211687_fbedd17e_10.jpg
+  [INFO] 파일명 변환: KakaoTalk_20260331_181118272_07.jpg → bf1775211687_56476d60_11.jpg
+  [OK] 이미지 1/12: bf1775211687_826c2186_0.jpg
+  [OK] 이미지 2/12: bf1775211687_8602faed_1.jpg
+  [OK] 이미지 3/12: bf1775211687_df33decd_2.jpg
+  [OK] 이미지 4/12: bf1775211687_bc81ea04_3.jpg
+  [OK] 이미지 5/12: bf1775211687_e9bf72d9_4.jpg
+  [OK] 이미지 6/12: bf1775211687_36620552_5.jpg
+  [OK] 이미지 7/12: bf1775211687_21333e09_6.jpg
+  [OK] 이미지 8/12: bf1775211687_746dec34_7.jpg
+  [OK] 이미지 9/12: bf1775211687_fbdaa7af_8.jpg
+  [OK] 이미지 10/12: bf1775211687_d6c0dbaf_9.jpg
+  [OK] 이미지 11/12: bf1775211687_fbedd17e_10.jpg
+  [OK] 이미지 12/12: bf1775211687_56476d60_11.jpg
+  [OK] 이미지 업로드 완료: 12/12개
+  [INFO] 전체 업로드 완료 대기 중...
+  [경고] 이미지 저장 버튼을 찾지 못함 - 계속 진행
+  [INFO] 이미지 저장 대기 (2분)...
+  [OK] 이미지 업로드 완료 (listing=12750912)
+  [OK] 이미지 업로드 완료
+  [INFO] 성능 페이지 이동: https://external-vendor.beforward.jp/ConditionsSheet/edit/12750912
+  [OK] 클릭 완료: 부식 NO
+  [OK] 클릭 완료: 2륜용 버튼
+  [경고] 성능 페이지 저장 버튼을 찾지 못함
+  [OK] 완료: 차량 저장 + 이미지 + 성능 (ID=12750912)
+[Row 1272] [OK] 업로드 성공! (ID=12750912)
+2026-04-03 19:24:08 | INFO | Row 1272 | Uploaded (ID=12750912)
+[OK] Row 1272 | Updated COMPLETED: UPLOADED
+  [정리] 삭제: KakaoTalk_20260331_180926533.jpg
+  [정리] 삭제: KakaoTalk_20260331_180926533_02.jpg
+  [정리] 삭제: KakaoTalk_20260331_180926533_04.jpg
+  [정리] 삭제: KakaoTalk_20260331_180926533_06.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272_01.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272_02.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272_03.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272_04.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272_05.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272_06.jpg
+  [정리] 삭제: KakaoTalk_20260331_181118272_07.jpg
+  [정리] 폴더 삭제: C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\downloaded_images\row_1272\EXTERIOR
+  [OK] S열 하이퍼링크 추출: https://mangoworldcar.com/ko/mit-inspection/WDDWF0FB7HR231721?readonly=true
+
+[Row 1274] 엔카 크롤링: https://fem.encar.com/cars/detail/41714740...
+
+============================================================
+                        차량 정보 크롤링 시작                        
+============================================================
+URL: https://fem.encar.com/cars/detail/41714740
+
+차량 ID: 41714740
+
+[ 기본 차량 정보 추출 중... ]
+  [DEBUG] 현재 URL: https://fem.encar.com/cars/detail/41714740
+  [DEBUG] 페이지 제목: C-클래스 W205 C220 d 4MATIC 경기 중고차 : 내차팔기·내차사기
+[OK] 기본 차량 정보 추출 완료
+  가격: 1,550만원 -> 1550
+  연식: 16년 11월 (17년형) -> 2016
+  배기량: 2,143cc -> 2143
+  주행거리: 111,858km -> 111858
+  차종: C-클래스 W205C220 d 4MATIC
+
+[ 판매자 정보 추출 중... ]
+  주소: 경기 수원시 권선구 권선로 308-5
+  연락처 버튼 클릭 성공
+  전화번호 버튼 클릭 성공
+[OK] 판매자 정보 추출 완료
+
+[ 옵션 정보 추출 중... ]
+  옵션 페이지: https://fem.encar.com/cars/option/41714740
+[OK] 옵션 33개 추출 (매핑 15개): ['선루프', '전동접이 사이드 미러', '알루미늄 휠', '전동 조절 스티어링 휠', '패들 시프트']
+
+[ 성능점검 정보 추출 중... ]
+성능점검 페이지로 이동: https://www.encar.com/md/sl/mdsl_regcar.do?method=inspectionViewNew&carid=41714740
+[OK] 성능점검 정보 추출 완료
+  성능점검기록부: WDDWF0FB7HR231721
+
+[OK] 모든 정보 추출 완료
+[Row 1274] [OK] 엔카 크롤링 완료
+[Row 1274] 판매가격 기준(P열): 9701
+[Row 1274] 업로드 가격: 10196
+[Row 1274] 차대번호 설정(시트): HR231721
+[Row 1274] [DEBUG] S열(batch) raw='https://mangoworldcar.com/ko/mit-inspection/WDDWF0FB7HR231721?readonly=true'
+[Row 1274] [DEBUG] batch 값이 drive URL 아님: 'https://mangoworldcar.com/ko/mit-inspection/WDDWF0FB7HR231721?readonly=true' → fallback
+  [OK] S열 하이퍼링크 추출: https://mangoworldcar.com/ko/mit-inspection/WDDWF0FB7HR231721?readonly=true
+[Row 1274] 드라이브 링크 설정: https://mangoworldcar.com/ko/mit-inspection/WDDWF0FB7HR231721?readonly=true
+[Row 1274] 비포워드 업로드 중...
+
+[INFO] 비포워드 차량 정보 입력 시작
+  차대번호: HR231721
+  연식: 2016
+  주행거리: 111858
+  가격: 10196
+  [INFO] 기존 매물 ID 수집 중...
+  [INFO] 기존 매물: 0개
+  [재원표 매칭] 'C-클래스' → 제조사:MERCEDES-BENZ | 모델:C-Class | 타입:세단 | 문:4 | 좌석:5

@@ -1,0 +1,21 @@
+services:
+  beforward-upload:
+    build: .
+    container_name: beforward-upload
+    restart: unless-stopped
+    command: ["python", "beforward_upload_worker.py"]
+    env_file:
+      - .env.docker
+    volumes:
+      - ./soldout_logs:/app/soldout_logs
+      - ./downloaded_images:/app/downloaded_images
+
+  beforward-monitor:
+    build: .
+    container_name: beforward-monitor
+    restart: unless-stopped
+    command: ["python", "beforward_monitor_worker.py"]
+    env_file:
+      - .env.docker
+    volumes:
+      - ./soldout_logs:/app/soldout_logs

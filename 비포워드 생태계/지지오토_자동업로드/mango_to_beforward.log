@@ -1,0 +1,615 @@
+2026-04-28 09:24:32,732 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:24:36,076 [INFO] ensuring close
+2026-04-28 09:25:10,359 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:25:13,468 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-28 09:25:19,003 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/sign-in?redirect=%2F
+2026-04-28 09:25:19,005 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-28 09:25:22,338 [INFO] ① 판매중 체크박스
+2026-04-28 09:25:42,808 [WARNING] 판매중 체크 실패: Message: 
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0xdbb373+10553]
+	undetected_chromedriver!GetHandleVerifier [0xdbb4a4+10684]
+	undetected_chromedriver!(No symbol) [0xbc1e10]
+	undetected_chromedriver!(No symbol) [0xc0a9da]
+	undetected_chromedriver!(No symbol) [0xc0ac7b]
+	undetected_chromedriver!(No symbol) [0xc4d162]
+	undetected_chromedriver!(No symbol) [0xc2d8b4]
+	undetected_chromedriver!(No symbol) [0xc4aa36]
+	undetected_chromedriver!(No symbol) [0xc2d606]
+	undetected_chromedriver!(No symbol) [0xc00039]
+	undetected_chromedriver!(No symbol) [0xc00df4]
+	undetected_chromedriver!GetHandleVerifier [0x103ddb4+292f94]
+	undetected_chromedriver!GetHandleVerifier [0x103937d+28e55d]
+	undetected_chromedriver!GetHandleVerifier [0x1058215+2ad3f5]
+	undetected_chromedriver!GetHandleVerifier [0xdd4c18+29df8]
+	undetected_chromedriver!GetHandleVerifier [0xddc6fd+318dd]
+	undetected_chromedriver!GetHandleVerifier [0xdc3c78+18e58]
+	undetected_chromedriver!GetHandleVerifier [0xdc3e42+19022]
+	undetected_chromedriver!GetHandleVerifier [0xdad45f+263f]
+	KERNEL32!BaseThreadInitThunk [0x763f5d49+19]
+	ntdll!RtlInitializeExceptionChain [0x77a9d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x77a9d7c1+231]
+
+2026-04-28 09:25:42,959 [INFO] ② 판매자 드롭다운
+2026-04-28 09:26:03,468 [WARNING] 드롭다운 실패: Message: 
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0xdbb373+10553]
+	undetected_chromedriver!GetHandleVerifier [0xdbb4a4+10684]
+	undetected_chromedriver!(No symbol) [0xbc1e10]
+	undetected_chromedriver!(No symbol) [0xc0a9da]
+	undetected_chromedriver!(No symbol) [0xc0ac7b]
+	undetected_chromedriver!(No symbol) [0xc4d162]
+	undetected_chromedriver!(No symbol) [0xc2d8b4]
+	undetected_chromedriver!(No symbol) [0xc4aa36]
+	undetected_chromedriver!(No symbol) [0xc2d606]
+	undetected_chromedriver!(No symbol) [0xc00039]
+	undetected_chromedriver!(No symbol) [0xc00df4]
+	undetected_chromedriver!GetHandleVerifier [0x103ddb4+292f94]
+	undetected_chromedriver!GetHandleVerifier [0x103937d+28e55d]
+	undetected_chromedriver!GetHandleVerifier [0x1058215+2ad3f5]
+	undetected_chromedriver!GetHandleVerifier [0xdd4c18+29df8]
+	undetected_chromedriver!GetHandleVerifier [0xddc6fd+318dd]
+	undetected_chromedriver!GetHandleVerifier [0xdc3c78+18e58]
+	undetected_chromedriver!GetHandleVerifier [0xdc3e42+19022]
+	undetected_chromedriver!GetHandleVerifier [0xdad45f+263f]
+	KERNEL32!BaseThreadInitThunk [0x763f5d49+19]
+	ntdll!RtlInitializeExceptionChain [0x77a9d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x77a9d7c1+231]
+
+2026-04-28 09:26:03,580 [INFO] ③ 검색 버튼
+2026-04-28 09:26:44,359 [ERROR] 검색 버튼 실패: Message: 
+Stacktrace:
+	undetected_chromedriver!GetHandleVerifier [0xdbb373+10553]
+	undetected_chromedriver!GetHandleVerifier [0xdbb4a4+10684]
+	undetected_chromedriver!(No symbol) [0xbc1e10]
+	undetected_chromedriver!(No symbol) [0xc0a9da]
+	undetected_chromedriver!(No symbol) [0xc0ac7b]
+	undetected_chromedriver!(No symbol) [0xc4d162]
+	undetected_chromedriver!(No symbol) [0xc2d8b4]
+	undetected_chromedriver!(No symbol) [0xc4aa36]
+	undetected_chromedriver!(No symbol) [0xc2d606]
+	undetected_chromedriver!(No symbol) [0xc00039]
+	undetected_chromedriver!(No symbol) [0xc00df4]
+	undetected_chromedriver!GetHandleVerifier [0x103ddb4+292f94]
+	undetected_chromedriver!GetHandleVerifier [0x103937d+28e55d]
+	undetected_chromedriver!GetHandleVerifier [0x1058215+2ad3f5]
+	undetected_chromedriver!GetHandleVerifier [0xdd4c18+29df8]
+	undetected_chromedriver!GetHandleVerifier [0xddc6fd+318dd]
+	undetected_chromedriver!GetHandleVerifier [0xdc3c78+18e58]
+	undetected_chromedriver!GetHandleVerifier [0xdc3e42+19022]
+	undetected_chromedriver!GetHandleVerifier [0xdad45f+263f]
+	KERNEL32!BaseThreadInitThunk [0x763f5d49+19]
+	ntdll!RtlInitializeExceptionChain [0x77a9d83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x77a9d7c1+231]
+
+2026-04-28 09:26:47,526 [INFO] 테이블 헤더: []
+2026-04-28 09:26:47,527 [INFO]   페이지 1 수집...
+2026-04-28 09:26:49,538 [INFO]   행 없음 → 중단
+2026-04-28 09:26:49,539 [INFO] 목록 수집 완료: 0건
+2026-04-28 09:26:49,740 [INFO] ensuring close
+2026-04-28 09:27:41,931 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:27:45,106 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 09:27:53,960 [INFO]   → 필드 19개 수집
+2026-04-28 09:27:55,649 [INFO] 비포워드 로그인...
+2026-04-28 09:28:01,848 [INFO] [1/1] 업로드: MGC_260420_10002009
+2026-04-28 09:28:01,849 [INFO]   차종: 2018 Renault Korea (Samsung) SM5 Nova | 연식: 2018 | 주행: 48245 | 가격: $3327 | VIN: KNMA4C2BMJP166142
+2026-04-28 09:28:02,899 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2018 Renault Korea (Samsung) SM5 Nova' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-28 09:28:11,097 [INFO] ensuring close
+2026-04-28 09:29:07,324 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:29:10,731 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002008
+2026-04-28 09:29:13,620 [INFO]   → 필드 16개 수집
+2026-04-28 09:29:14,970 [INFO] 비포워드 로그인...
+2026-04-28 09:29:21,742 [INFO] [1/1] 업로드: MGC_260420_10002008
+2026-04-28 09:29:21,742 [INFO]   차종: 2023 Genesis GV80 | 연식: 2023 | 주행: 45992 | 가격: $40903 | VIN: KMTHA81BDPU144272
+2026-04-28 09:30:10,301 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMTHA81BDPU144272, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 09:30:18,539 [INFO] ensuring close
+2026-04-28 09:34:32,536 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:34:35,520 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 09:34:41,228 [INFO]   → 필드 19개 수집
+2026-04-28 09:34:43,621 [INFO] 비포워드 로그인...
+2026-04-28 09:34:50,592 [INFO] [1/1] 업로드: MGC_260420_10002009
+2026-04-28 09:34:50,593 [INFO]   차종: 2018 Renault Korea (Samsung) SM5 Nova | 연식: 2018 | 주행: 48245 | 가격: $3327 | VIN: KNMA4C2BMJP166142
+2026-04-28 09:34:51,720 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2018 Renault Korea (Samsung) SM5 Nova' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-28 09:34:59,959 [INFO] ensuring close
+2026-04-28 09:36:39,986 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:36:43,236 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 09:36:47,452 [INFO]   → 필드 3개 수집
+2026-04-28 09:36:47,452 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 09:36:50,893 [INFO]   → 필드 16개 수집
+2026-04-28 09:36:53,431 [INFO] 비포워드 로그인...
+2026-04-28 09:36:59,803 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 09:36:59,803 [INFO]   차종: 2012 Hyundai Grandeur HG | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 09:37:00,999 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2012 Hyundai Grandeur HG' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-28 09:37:09,288 [INFO] ensuring close
+2026-04-28 09:38:27,789 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:38:31,128 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 09:38:34,119 [INFO]   → 필드 3개 수집
+2026-04-28 09:38:34,120 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 09:38:36,779 [INFO]   → 필드 16개 수집
+2026-04-28 09:38:39,666 [INFO] 비포워드 로그인...
+2026-04-28 09:38:47,362 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 09:38:47,362 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 09:39:37,419 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFF41CBCA190045, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 09:39:45,703 [INFO] ensuring close
+2026-04-28 09:42:00,771 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:42:03,977 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 09:42:08,325 [INFO]   → 필드 3개 수집
+2026-04-28 09:42:08,325 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 09:42:11,738 [INFO]   → 필드 16개 수집
+2026-04-28 09:42:14,545 [INFO] 비포워드 로그인...
+2026-04-28 09:42:21,299 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 09:42:21,299 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 09:42:57,830 [INFO]   [OK] 업로드 성공 | ID=13030256
+2026-04-28 09:43:06,053 [INFO] ensuring close
+2026-04-28 09:50:44,525 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:50:47,751 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 09:50:51,806 [INFO]   → 필드 3개 수집
+2026-04-28 09:50:51,806 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 09:50:55,101 [INFO]   → 필드 16개 수집
+2026-04-28 09:50:57,333 [INFO] 비포워드 로그인...
+2026-04-28 09:51:04,079 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 09:51:04,079 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 09:51:47,465 [INFO]   [OK] 업로드 성공 | ID=13030300
+2026-04-28 09:51:55,691 [INFO] ensuring close
+2026-04-28 09:55:19,783 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:55:23,179 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 09:55:26,467 [INFO]   → 필드 3개 수집
+2026-04-28 09:55:26,468 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 09:55:29,082 [INFO]   → 필드 16개 수집
+2026-04-28 09:55:30,525 [INFO] 비포워드 로그인...
+2026-04-28 09:55:37,152 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 09:55:37,153 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 09:56:33,443 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFF41CBCA190045, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 09:56:41,750 [INFO] ensuring close
+2026-04-28 09:57:36,192 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 09:57:40,211 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 09:57:45,651 [INFO]   → 필드 3개 수집
+2026-04-28 09:57:45,652 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 09:57:50,484 [INFO]   → 필드 16개 수집
+2026-04-28 09:57:53,574 [INFO] 비포워드 로그인...
+2026-04-28 09:58:01,110 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 09:58:01,112 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 09:59:27,336 [INFO]   [OK] 업로드 성공 | ID=13030335
+2026-04-28 09:59:35,656 [INFO] ensuring close
+2026-04-28 10:37:39,522 [INFO] 망고카 옵션 매핑 로드: 13개 (비포워드 엔카 옵션_망고카 추가.xlsx)
+2026-04-28 10:37:45,440 [INFO] 망고카 옵션 매핑 로드: 13개 (비포워드 엔카 옵션_망고카 추가.xlsx)
+2026-04-28 10:37:49,970 [INFO] 망고카 옵션 매핑 로드: 13개 (비포워드 엔카 옵션_망고카 추가.xlsx)
+2026-04-28 10:37:56,897 [INFO] 망고카 옵션 매핑 로드: 13개 (비포워드 엔카 옵션_망고카 추가.xlsx)
+2026-04-28 10:37:56,897 [INFO] 망고카 옵션 매핑: 4/5개 선택 대상
+2026-04-28 10:51:35,745 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 10:51:39,637 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 10:51:43,389 [INFO]   → 필드 3개 수집
+2026-04-28 10:51:43,389 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 10:51:46,050 [INFO]   → 필드 16개 수집
+2026-04-28 10:51:46,284 [INFO] ensuring close
+2026-04-28 10:52:04,976 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 10:52:08,743 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 10:52:11,806 [INFO]   → 필드 3개 수집
+2026-04-28 10:52:11,807 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 10:52:14,366 [INFO]   → 필드 16개 수집
+2026-04-28 10:52:16,704 [INFO] 비포워드 로그인...
+2026-04-28 10:52:23,639 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 10:52:23,639 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 10:53:17,711 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFF41CBCA190045, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 10:53:26,070 [INFO] ensuring close
+2026-04-28 10:58:58,846 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 10:59:02,217 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 10:59:06,124 [INFO]   → 필드 20개 수집
+2026-04-28 10:59:06,135 [INFO] 망고카 옵션 매핑 로드: 13개 (비포워드 엔카 옵션_망고카 추가.xlsx)
+2026-04-28 10:59:06,135 [INFO] 망고카 옵션 매핑: 2/2개 선택 대상
+2026-04-28 10:59:06,332 [INFO] 망고카 옵션 매핑: 2/2개 선택 대상
+2026-04-28 11:00:31,834 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 11:00:35,344 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002009
+2026-04-28 11:00:39,271 [INFO]   → 필드 20개 수집
+2026-04-28 11:00:39,280 [INFO] 망고카 옵션 매핑 로드: 13개 (비포워드 엔카 옵션_망고카 추가.xlsx)
+2026-04-28 11:00:39,280 [INFO] 망고카 옵션 매핑: 2/2개 선택 대상
+2026-04-28 11:00:39,467 [INFO] 망고카 옵션 매핑: 2/2개 선택 대상
+2026-04-28 11:02:59,448 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 11:03:02,744 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 11:03:05,750 [INFO]   → 필드 16개 수집
+2026-04-28 11:22:00,555 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 11:22:03,663 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 11:22:06,689 [INFO]   → 필드 16개 수집
+2026-04-28 11:23:14,458 [INFO] ensuring close
+2026-04-28 15:01:39,382 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:01:39,383 [INFO]   옵션 매핑: 6/7 건 매핑됨
+2026-04-28 15:01:39,383 [INFO]   옵션 매핑 없음: 알수없는옵션
+2026-04-28 15:02:10,628 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:02:14,373 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 15:02:17,353 [INFO]   → 필드 3개 수집
+2026-04-28 15:02:17,353 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 15:02:19,979 [INFO]   → 필드 16개 수집
+2026-04-28 15:02:20,492 [INFO] ensuring close
+2026-04-28 15:02:47,529 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:02:51,181 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002007
+2026-04-28 15:02:54,464 [INFO]   → 필드 3개 수집
+2026-04-28 15:02:54,465 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 15:02:57,747 [INFO]   → 필드 16개 수집
+2026-04-28 15:03:00,457 [INFO] 비포워드 로그인...
+2026-04-28 15:03:08,310 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 15:03:08,310 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 15:04:08,469 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFF41CBCA190045, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 15:04:16,808 [INFO] ensuring close
+2026-04-28 15:22:53,547 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:22:57,214 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002006
+2026-04-28 15:23:02,426 [INFO]   → 필드 16개 수집
+2026-04-28 15:23:05,526 [INFO] 비포워드 로그인...
+2026-04-28 15:23:12,776 [INFO] [1/1] 업로드: MGC_260420_10002006
+2026-04-28 15:23:12,776 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 192580 | 가격: $2569 | VIN: KMHFF41CBCA190045
+2026-04-28 15:24:09,861 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFF41CBCA190045, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 15:24:18,136 [INFO] ensuring close
+2026-04-28 15:24:49,952 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:24:53,475 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 15:24:59,483 [INFO]   → 필드 17개 수집
+2026-04-28 15:24:59,490 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:24:59,491 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:24:59,491 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:25:01,621 [INFO] 비포워드 로그인...
+2026-04-28 15:25:09,713 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 15:25:09,713 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:25:09,713 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:25:09,713 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 15:25:55,299 [INFO]   [OK] 업로드 성공 | ID=13032743
+2026-04-28 15:26:03,602 [INFO] ensuring close
+2026-04-28 15:31:50,363 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:31:53,974 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002003
+2026-04-28 15:31:58,085 [INFO]   → 필드 17개 수집
+2026-04-28 15:31:58,097 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:31:58,097 [INFO]   옵션 매핑: 6/27 건 매핑됨
+2026-04-28 15:31:58,097 [INFO]   옵션 매핑 없음: 하이패스, 헤드업 디스플레이(HUD), USB 단자, 블루투스, 앞좌석 AV 모니터, 스마트 크루즈컨트롤, 레인센서, 오토 라이트, 에어백(사이드), 에어백(커튼)
+2026-04-28 15:31:59,640 [INFO] 비포워드 로그인...
+2026-04-28 15:32:06,627 [INFO] [1/1] 업로드: MGC_260420_10002003
+2026-04-28 15:32:06,628 [INFO]   옵션 매핑: 6/27 건 매핑됨
+2026-04-28 15:32:06,628 [INFO]   옵션 매핑 없음: 하이패스, 헤드업 디스플레이(HUD), USB 단자, 블루투스, 앞좌석 AV 모니터, 스마트 크루즈컨트롤, 레인센서, 오토 라이트, 에어백(사이드), 에어백(커튼)
+2026-04-28 15:32:06,628 [INFO]   차종: 2022 Hyundai The New Santa Fe 싼타페 | 연식: 2022 | 주행: 74415 | 가격: $22121 | VIN: KMHS5811BNU023453
+2026-04-28 15:33:42,656 [INFO]   [OK] 업로드 성공 | ID=13032809
+2026-04-28 15:33:50,935 [INFO] ensuring close
+2026-04-28 15:49:09,470 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:49:13,188 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002005
+2026-04-28 15:49:17,274 [INFO]   → 필드 18개 수집
+2026-04-28 15:49:17,281 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:49:17,281 [INFO]   옵션 매핑: 2/2 건 매핑됨
+2026-04-28 15:49:19,067 [INFO] 비포워드 로그인...
+2026-04-28 15:49:26,487 [INFO] [1/1] 업로드: MGC_260420_10002005
+2026-04-28 15:49:26,487 [INFO]   옵션 매핑: 2/2 건 매핑됨
+2026-04-28 15:49:26,487 [INFO]   차종: 2022 Hyundai Casper 캐스퍼 | 연식: 2022 | 주행: 29387 | 가격: $12356 | VIN: KMHB5516BPW044897
+2026-04-28 15:49:28,242 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2022 Hyundai Casper 캐스퍼' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-28 15:49:36,562 [INFO] ensuring close
+2026-04-28 15:50:16,791 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:50:20,589 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002004
+2026-04-28 15:50:24,478 [INFO]   → 필드 17개 수집
+2026-04-28 15:50:24,489 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:50:24,489 [INFO]   옵션 매핑: 6/25 건 매핑됨
+2026-04-28 15:50:24,489 [INFO]   옵션 매핑 없음: 헤드업 디스플레이(HUD), 전동 조절 스티어링 휠, USB 단자, 블루투스, 스마트 크루즈컨트롤, 레인센서, 오토 라이트, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:50:26,339 [INFO] 비포워드 로그인...
+2026-04-28 15:50:33,483 [INFO] [1/1] 업로드: MGC_260420_10002004
+2026-04-28 15:50:33,483 [INFO]   옵션 매핑: 6/25 건 매핑됨
+2026-04-28 15:50:33,483 [INFO]   옵션 매핑 없음: 헤드업 디스플레이(HUD), 전동 조절 스티어링 휠, USB 단자, 블루투스, 스마트 크루즈컨트롤, 레인센서, 오토 라이트, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:50:33,483 [INFO]   차종: 2020 Cadillac CT5 | 연식: 2020 | 주행: 90649 | 가격: $18611 | VIN: 1G6D85RK1L0151206
+2026-04-28 15:50:34,492 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2020 Cadillac CT5' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-28 15:50:42,756 [INFO] ensuring close
+2026-04-28 15:51:16,319 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:51:20,120 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 15:51:24,121 [INFO]   → 필드 17개 수집
+2026-04-28 15:51:24,129 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:51:24,129 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:51:24,129 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:51:26,077 [INFO] 비포워드 로그인...
+2026-04-28 15:51:32,143 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 15:51:32,143 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:51:32,143 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:51:32,144 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 15:53:02,532 [INFO]   [OK] 업로드 성공 | ID=13032973
+2026-04-28 15:53:10,837 [INFO] ensuring close
+2026-04-28 15:56:14,576 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:56:17,974 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 15:56:22,239 [INFO]   → 필드 17개 수집
+2026-04-28 15:56:22,243 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:56:22,243 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:56:22,243 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:56:24,530 [INFO] 비포워드 로그인...
+2026-04-28 15:56:32,493 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 15:56:32,493 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:56:32,493 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:56:32,493 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 15:57:30,755 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 15:57:39,107 [INFO] ensuring close
+2026-04-28 15:58:49,502 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 15:58:53,196 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 15:58:57,738 [INFO]   → 필드 17개 수집
+2026-04-28 15:58:57,749 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 15:58:57,749 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:58:57,749 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:58:59,929 [INFO] 비포워드 로그인...
+2026-04-28 15:59:05,932 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 15:59:05,933 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 15:59:05,933 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 15:59:05,933 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:00:01,941 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:00:10,251 [INFO] ensuring close
+2026-04-28 16:00:56,881 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:01:00,653 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:01:05,944 [INFO]   → 필드 17개 수집
+2026-04-28 16:01:05,950 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:01:05,950 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:01:05,950 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:01:07,750 [INFO] 비포워드 로그인...
+2026-04-28 16:01:15,468 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:01:15,468 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:01:15,468 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:01:15,468 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:02:20,126 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:02:28,543 [INFO] ensuring close
+2026-04-28 16:03:43,996 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:03:47,779 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:03:51,994 [INFO]   → 필드 17개 수집
+2026-04-28 16:03:52,002 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:03:52,003 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:03:52,003 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:03:54,002 [INFO] 비포워드 로그인...
+2026-04-28 16:04:01,466 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:04:01,466 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:04:01,466 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:04:01,467 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:05:15,670 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:05:23,947 [INFO] ensuring close
+2026-04-28 16:06:27,666 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:06:31,095 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:06:37,476 [INFO]   → 필드 17개 수집
+2026-04-28 16:06:37,486 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:06:37,486 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:06:37,486 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:06:39,722 [INFO] 비포워드 로그인...
+2026-04-28 16:06:45,997 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:06:45,997 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:06:45,997 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:06:45,997 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:07:41,954 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:07:51,228 [INFO] ensuring close
+2026-04-28 16:11:20,981 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:11:24,451 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:11:30,510 [INFO]   → 필드 17개 수집
+2026-04-28 16:11:30,521 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:11:30,521 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:11:30,521 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:11:32,723 [INFO] 비포워드 로그인...
+2026-04-28 16:11:40,778 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:11:40,778 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:11:40,779 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:11:40,779 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:12:42,729 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:12:51,028 [INFO] ensuring close
+2026-04-28 16:14:52,983 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:14:56,758 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:15:02,680 [INFO]   → 필드 17개 수집
+2026-04-28 16:15:02,688 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:15:02,689 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:15:02,689 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:15:04,674 [INFO] 비포워드 로그인...
+2026-04-28 16:15:12,066 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:15:12,066 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:15:12,066 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:15:12,066 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:16:14,621 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:16:22,904 [INFO] ensuring close
+2026-04-28 16:21:09,361 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:21:13,133 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:21:17,238 [INFO]   → 필드 17개 수집
+2026-04-28 16:21:17,248 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:21:17,249 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:21:17,249 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:21:18,729 [INFO] 비포워드 로그인...
+2026-04-28 16:21:25,307 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:21:25,307 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:21:25,308 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:21:25,308 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:22:56,065 [INFO]   [OK] 업로드 성공 | ID=13033239
+2026-04-28 16:23:04,348 [INFO] ensuring close
+2026-04-28 16:27:21,376 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:27:25,031 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:27:31,210 [INFO]   → 필드 17개 수집
+2026-04-28 16:27:31,218 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:27:31,218 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:27:31,218 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:27:33,301 [INFO] 비포워드 로그인...
+2026-04-28 16:27:39,475 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:27:39,475 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:27:39,475 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:27:39,475 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:29:07,289 [INFO]   [OK] 업로드 성공 | ID=13033346
+2026-04-28 16:29:15,546 [INFO] ensuring close
+2026-04-28 16:31:54,077 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:31:58,173 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:32:02,148 [INFO]   → 필드 17개 수집
+2026-04-28 16:32:02,158 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:32:02,158 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:32:02,159 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:32:03,733 [INFO] 비포워드 로그인...
+2026-04-28 16:32:10,370 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:32:10,370 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:32:10,370 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:32:10,370 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:33:06,863 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:33:15,162 [INFO] ensuring close
+2026-04-28 16:41:46,542 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:41:50,407 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:41:56,050 [INFO]   → 필드 17개 수집
+2026-04-28 16:41:56,061 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:41:56,062 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:41:56,063 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:41:57,651 [INFO] 비포워드 로그인...
+2026-04-28 16:42:04,098 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:42:04,099 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:42:04,099 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:42:04,099 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:43:30,869 [INFO]   [OK] 업로드 성공 | ID=13033491
+2026-04-28 16:43:39,179 [INFO] ensuring close
+2026-04-28 16:45:28,160 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:45:31,630 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:45:37,138 [INFO]   → 필드 17개 수집
+2026-04-28 16:45:37,148 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:45:37,149 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:45:37,149 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:45:39,750 [INFO] 비포워드 로그인...
+2026-04-28 16:45:46,472 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:45:46,472 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:45:46,473 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:45:46,473 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:47:17,681 [INFO]   [OK] 업로드 성공 | ID=13033517
+2026-04-28 16:47:26,047 [INFO] ensuring close
+2026-04-28 16:49:40,603 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:49:44,137 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:49:48,258 [INFO]   → 필드 17개 수집
+2026-04-28 16:49:48,268 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:49:48,268 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:49:48,268 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:49:50,601 [INFO] 비포워드 로그인...
+2026-04-28 16:49:57,496 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:49:57,496 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:49:57,496 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:49:57,496 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:51:25,988 [INFO]   [OK] 업로드 성공 | ID=13033556
+2026-04-28 16:51:28,687 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 16:51:32,193 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 16:51:34,328 [INFO] ensuring close
+2026-04-28 16:51:35,903 [INFO]   → 필드 17개 수집
+2026-04-28 16:51:35,911 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 16:51:35,911 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:51:35,911 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:51:37,456 [INFO] 비포워드 로그인...
+2026-04-28 16:51:43,759 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 16:51:43,759 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 16:51:43,760 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 16:51:43,760 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 16:52:40,149 [ERROR]   [FAIL] 단계: listing_ID_추출 | 원인: 저장 후 URL에서 ID 미발견 (chassis=KMHFH41NBCA151274, url=https://external-vendor.beforward.jp/?limit=50&tab=5)
+2026-04-28 16:52:48,446 [INFO] ensuring close
+2026-04-28 17:00:32,205 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-28 17:00:36,055 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260420_10002000
+2026-04-28 17:00:40,047 [INFO]   → 필드 17개 수집
+2026-04-28 17:00:40,056 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-28 17:00:40,056 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 17:00:40,057 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 17:00:41,443 [INFO] 비포워드 로그인...
+2026-04-28 17:00:48,693 [INFO] [1/1] 업로드: MGC_260420_10002000
+2026-04-28 17:00:48,694 [INFO]   옵션 매핑: 7/22 건 매핑됨
+2026-04-28 17:00:48,694 [INFO]   옵션 매핑 없음: 하이패스, USB 단자, 블루투스, 앞좌석 AV 모니터, AUX 단자, 오토 라이트, 크루즈컨트롤, 에어백(사이드), 에어백(커튼), 에어백(동승석)
+2026-04-28 17:00:48,694 [INFO]   차종: 2012 Hyundai Grandeur HG 그랜저 | 연식: 2012 | 주행: 176240 | 가격: $3258 | VIN: KMHFH41NBCA151274
+2026-04-28 17:02:15,948 [INFO]   [OK] 업로드 성공 | ID=13033688
+2026-04-28 17:02:24,251 [INFO] ensuring close
+2026-04-29 17:23:17,487 [INFO] ============================================================
+2026-04-29 17:23:17,489 [INFO] 망고월드카 → 비포워드 자동 업로드 시작
+2026-04-29 17:23:17,489 [INFO] ============================================================
+2026-04-29 17:23:17,489 [INFO] 망고월드카 크롤링 시작...
+2026-04-29 17:23:19,021 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-29 17:23:22,579 [INFO] 로그인: https://adminv2.mangoworldcar.com
+2026-04-29 17:23:28,347 [INFO] 로그인 후 URL: https://adminv2.mangoworldcar.com/
+2026-04-29 17:23:28,348 [INFO] 관리 페이지 이동: https://adminv2.mangoworldcar.com/cars/manage
+2026-04-29 17:23:31,719 [INFO] ① 판매중 체크박스
+2026-04-29 17:23:32,861 [INFO] ② 판매자 드롭다운
+2026-04-29 17:23:34,222 [INFO]   → 지지오토 선택
+2026-04-29 17:23:35,023 [INFO] ③ 검색 버튼
+2026-04-29 17:23:38,639 [INFO] 테이블 헤더: ['', 'NO', '차량이미지', '매물상태', '상품코드', '차대번호', '차량명', '연식', '최종 차량광고가\n(할인가)', '회원구분', '판매자명', '매물 등록일', '구매 요청일', '최종 수정일 (최신순)', '최종 수정자']
+2026-04-29 17:23:38,639 [INFO]   페이지 1 수집...
+2026-04-29 17:23:42,104 [INFO]   → 10건 (누계 10건)
+2026-04-29 17:23:42,117 [INFO]   마지막 페이지
+2026-04-29 17:23:42,117 [INFO] 목록 수집 완료: 10건
+2026-04-29 17:23:42,117 [INFO] 판매자 필터 후: 10/10건 (지지오토)
+2026-04-29 17:23:42,118 [INFO] 상세 크롤링 대상: 10건
+2026-04-29 17:23:42,118 [INFO] [1/10] MGC_260428_10002016
+2026-04-29 17:23:42,118 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002016
+2026-04-29 17:23:47,115 [INFO]   → 필드 18개 수집
+2026-04-29 17:23:48,616 [INFO] [2/10] MGC_260428_10002015
+2026-04-29 17:23:48,617 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002015
+2026-04-29 17:23:51,712 [INFO]   → 필드 18개 수집
+2026-04-29 17:23:53,213 [INFO] [3/10] MGC_260428_10002014
+2026-04-29 17:23:53,213 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002014
+2026-04-29 17:23:57,235 [INFO]   → 필드 19개 수집
+2026-04-29 17:23:58,737 [INFO] [4/10] MGC_260428_10002013
+2026-04-29 17:23:58,737 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002013
+2026-04-29 17:24:01,734 [INFO]   → 필드 19개 수집
+2026-04-29 17:24:03,235 [INFO] [5/10] MGC_260428_10002012
+2026-04-29 17:24:03,236 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002012
+2026-04-29 17:24:05,961 [INFO]   → 필드 16개 수집
+2026-04-29 17:24:07,463 [INFO] [6/10] MGC_260428_10002011
+2026-04-29 17:24:07,463 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002011
+2026-04-29 17:24:09,945 [INFO]   → 필드 16개 수집
+2026-04-29 17:24:11,446 [INFO] [7/10] MGC_260428_10002010
+2026-04-29 17:24:11,446 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002010
+2026-04-29 17:24:14,785 [INFO]   → 필드 18개 수집
+2026-04-29 17:24:16,287 [INFO] [8/10] MGC_260428_10002009
+2026-04-29 17:24:16,287 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002009
+2026-04-29 17:24:20,009 [INFO]   → 필드 18개 수집
+2026-04-29 17:24:21,511 [INFO] [9/10] MGC_260428_10002008
+2026-04-29 17:24:21,511 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002008
+2026-04-29 17:24:24,230 [INFO]   → 필드 16개 수집
+2026-04-29 17:24:25,732 [INFO] [10/10] MGC_260428_10002007
+2026-04-29 17:24:25,732 [INFO]   상세: https://mangoworldcar.com/ko/car-detail/MGC_260428_10002007
+2026-04-29 17:24:28,347 [INFO]   → 필드 16개 수집
+2026-04-29 17:24:30,188 [INFO] 크롤러 드라이버 종료
+2026-04-29 17:24:30,188 [INFO] 총 10건 수집 완료
+2026-04-29 17:24:31,753 [INFO] patching driver executable C:\Users\gglee\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-04-29 17:24:39,828 [INFO]   [ON SALE] MGC_260428_10002016
+2026-04-29 17:24:41,910 [INFO]   [ON SALE] MGC_260428_10002015
+2026-04-29 17:24:43,753 [INFO]   [ON SALE] MGC_260428_10002014
+2026-04-29 17:24:45,806 [INFO]   [ON SALE] MGC_260428_10002013
+2026-04-29 17:24:47,887 [INFO]   [ON SALE] MGC_260428_10002012
+2026-04-29 17:24:49,736 [INFO]   [ON SALE] MGC_260428_10002011
+2026-04-29 17:24:52,040 [INFO]   [ON SALE] MGC_260428_10002010
+2026-04-29 17:24:54,181 [INFO]   [ON SALE] MGC_260428_10002009
+2026-04-29 17:24:56,122 [INFO]   [ON SALE] MGC_260428_10002008
+2026-04-29 17:24:58,162 [INFO]   [ON SALE] MGC_260428_10002007
+2026-04-29 17:24:58,373 [INFO] 판매 완료 차량 없음 — 게시 정지 불필요
+2026-04-29 17:24:58,792 [INFO] 비포워드 로그인...
+2026-04-29 17:25:05,408 [INFO] [1/10] 업로드: MGC_260428_10002016
+2026-04-29 17:25:05,409 [INFO]   가격 변환: $51719 → $54305 (수수료 가산)
+2026-04-29 17:25:05,418 [INFO] 망고카 옵션 매핑 로드: 13개
+2026-04-29 17:25:05,418 [INFO]   옵션 매핑: 1/1 건 매핑됨
+2026-04-29 17:25:05,419 [INFO]   차종: 2022 BMW X6 (G06) | 연식: 2022 | 주행: 46342 | 가격: $54305 | VIN: WBACY6105N9K44931
+2026-04-29 17:25:40,842 [INFO]   [OK] 업로드 성공 | ID=
+2026-04-29 17:25:42,846 [INFO] [2/10] 업로드: MGC_260428_10002015
+2026-04-29 17:25:42,846 [INFO]   가격 변환: $18041 → $18780 (수수료 가산)
+2026-04-29 17:25:42,847 [INFO]   옵션 매핑: 1/1 건 매핑됨
+2026-04-29 17:25:42,847 [INFO]   차종: 2023 Kia Carnival 4Th Generation 카니발 | 연식: 2023 | 주행: 58530 | 가격: $18780 | VIN: KNANB81BBPS267137
+2026-04-29 17:26:18,957 [INFO]   [OK] 업로드 성공 | ID=
+2026-04-29 17:26:20,967 [INFO] [3/10] 업로드: MGC_260428_10002014
+2026-04-29 17:26:20,967 [INFO]   가격 변환: $1960 → $2243 (수수료 가산)
+2026-04-29 17:26:20,967 [INFO]   옵션 매핑: 2/2 건 매핑됨
+2026-04-29 17:26:20,968 [INFO]   차종: 2015 Chevrolet Malibu 말리부 | 연식: 2015 | 주행: 286889 | 가격: $2243 | VIN: KLAGA691DFB034313
+2026-04-29 17:26:56,771 [INFO]   [OK] 업로드 성공 | ID=
+2026-04-29 17:26:58,775 [INFO] [4/10] 업로드: MGC_260428_10002013
+2026-04-29 17:26:58,775 [INFO]   가격 변환: $10380 → $11010 (수수료 가산)
+2026-04-29 17:26:58,776 [INFO]   옵션 매핑: 4/8 건 매핑됨
+2026-04-29 17:26:58,776 [INFO]   옵션 매핑 없음: 에어백(동승석), 블랙박스, 주차센서(후방), 미끄럼 방지(TCS)
+2026-04-29 17:26:58,776 [INFO]   차종: 2022 Hyundai Porter 2 포터 | 연식: 2022 | 주행: 117763 | 가격: $11010 | VIN: KMFZCZ7KBNU936170
+2026-04-29 17:27:00,584 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2022 Hyundai Porter 2 포터' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-29 17:27:02,585 [INFO] [5/10] 업로드: MGC_260428_10002012
+2026-04-29 17:27:02,585 [INFO]   가격 변환: $2029 → $2332 (수수료 가산)
+2026-04-29 17:27:02,585 [INFO]   차종: 2013 Chevrolet Spark | 연식: 2013 | 주행: 64618 | 가격: $2332 | VIN: KLYMC48VDEC444447
+2026-04-29 17:27:03,691 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2013 Chevrolet Spark' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-29 17:27:05,693 [INFO] [6/10] 업로드: MGC_260428_10002011
+2026-04-29 17:27:05,693 [INFO]   가격 변환: $2023 → $2326 (수수료 가산)
+2026-04-29 17:27:05,694 [INFO]   차종: 2011 Chevrolet Spark | 연식: 2011 | 주행: 123837 | 가격: $2326 | VIN: KLYMA48ZDCC549770
+2026-04-29 17:27:06,848 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2011 Chevrolet Spark' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-29 17:27:08,849 [INFO] [7/10] 업로드: MGC_260428_10002010
+2026-04-29 17:27:08,849 [INFO]   가격 변환: $19628 → $20367 (수수료 가산)
+2026-04-29 17:27:08,849 [INFO]   옵션 매핑: 1/1 건 매핑됨
+2026-04-29 17:27:08,849 [INFO]   차종: 2023 Kia The All Newsportage 스포티지 | 연식: 2023 | 주행: 27323 | 가격: $20367 | VIN: KNAPV81BGPK186862
+2026-04-29 17:27:44,242 [INFO]   [OK] 업로드 성공 | ID=
+2026-04-29 17:27:46,252 [INFO] [8/10] 업로드: MGC_260428_10002009
+2026-04-29 17:27:46,253 [INFO]   가격 변환: $3065 → $3423 (수수료 가산)
+2026-04-29 17:27:46,253 [INFO]   옵션 매핑: 1/1 건 매핑됨
+2026-04-29 17:27:46,253 [INFO]   차종: 2016 Renault Korea (Samsung) SM6 | 연식: 2016 | 주행: 258579 | 가격: $3423 | VIN: KNMA4C2BMGP011426
+2026-04-29 17:27:50,091 [ERROR]   [FAIL] 단계: 폼_입력_중_예외 | 원인: 모델 정확 매칭 없음: 'SM6' - 엑셀 재원표 확인 필요
+2026-04-29 17:27:52,091 [INFO] [9/10] 업로드: MGC_260428_10002008
+2026-04-29 17:27:52,091 [INFO]   가격 변환: $2782 → $3085 (수수료 가산)
+2026-04-29 17:27:52,091 [INFO]   차종: 2015 Kia The New Morning 모닝 | 연식: 2015 | 주행: 92625 | 가격: $3085 | VIN: KNABE911BGT170826
+2026-04-29 17:28:28,322 [INFO]   [OK] 업로드 성공 | ID=
+2026-04-29 17:28:30,330 [INFO] [10/10] 업로드: MGC_260428_10002007
+2026-04-29 17:28:30,330 [INFO]   가격 변환: $3403 → $3761 (수수료 가산)
+2026-04-29 17:28:30,330 [INFO]   차종: 2012 Kia Ray | 연식: 2012 | 주행: 162261 | 가격: $3761 | VIN: KNACK811BCT013674
+2026-04-29 17:28:32,496 [ERROR]   [FAIL] 단계: 재원표_조회 | 원인: 재원표에 모델 없음: '2012 Kia Ray' - 엑셀 재원표에 해당 차종을 추가하세요
+2026-04-29 17:28:36,677 [INFO] ============================================================
+2026-04-29 17:28:36,677 [INFO] 완료: 업로드 5/10 성공 | 게시정지 0/0 완료
+2026-04-29 17:28:36,677 [INFO] ============================================================
+2026-04-29 17:28:36,678 [INFO] ensuring close
+2026-04-29 17:28:36,678 [INFO] ensuring close

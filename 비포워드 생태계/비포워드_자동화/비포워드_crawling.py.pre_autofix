@@ -1,0 +1,2457 @@
+﻿"""
+ByForward 留ㅻЪ ?깅줉 ?щ·??
+李⑤웾 ?뺣낫瑜?鍮꾪룷?뚮뱶 ?몃? 踰ㅻ뜑 ?ы꽭???먮룞 ?낅줈??
+"""
+import time
+import re
+import os
+import sys
+import shutil
+import zipfile
+from difflib import SequenceMatcher
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.common.exceptions import (
+    TimeoutException, NoSuchElementException, UnexpectedTagNameException
+)
+
+try:
+    import chromedriver_autoinstaller
+    CHROMEDRIVER_AUTOINSTALLER_AVAILABLE = True
+except ImportError:
+    CHROMEDRIVER_AUTOINSTALLER_AVAILABLE = False
+
+from config import BEFORWARD_LOGIN_URL, BEFORWARD_USERNAME, BEFORWARD_PASSWORD
+
+# ?쒓뎅????鍮꾪룷?뚮뱶 ?곕즺 ???留ㅽ븨 (?쒕∼?ㅼ슫 ?쇰꺼 湲곗?)
+FUEL_MAP = {
+    '가솔린': '가솔린',
+    '휘발유': '가솔린',
+    'gasoline': '가솔린',
+    'petrol': '가솔린',
+    '경유': '경유',
+    '디젤': '경유',
+    'diesel': '경유',
+    'lpg': 'LPG',
+    'LPG': 'LPG',
+    '전기': '전기',
+    'electric': '전기',
+    'ev': '전기',
+    '하이브리드': '하이브리드/가솔린',
+    'hybrid': '하이브리드/가솔린',
+    '하이브리드/가솔린': '하이브리드/가솔린',
+    '하이브리드(경유)': '하이브리드(경유)',
+    'hybrid(lpg)': 'Hybrid(LPG)',
+    'Hybrid(LPG)': 'Hybrid(LPG)',
+    'cng': 'CNG',
+    'CNG': 'CNG',
+    'diesel+lpg': 'Diesel+LPG',
+    'Diesel+LPG': 'Diesel+LPG',
+    'petrol+lpg': 'Petrol+LPG',
+    'Petrol+LPG': 'Petrol+LPG',
+    'hydrogen': 'Hydrogen',
+    '수소': 'Hydrogen',
+}
+
+# ?쒓뎅????鍮꾪룷?뚮뱶 蹂?띻린 留ㅽ븨
+
+# ?쒓뎅????鍮꾪룷?뚮뱶 蹂?띻린 留ㅽ븨
+TRANSMISSION_MAP = {
+    '?먮룞': 'Automatic', '?ㅽ넗': 'Automatic',
+    '?섎룞': 'Manual', '留ㅻ돱??: 'Manual',
+    'cvt': 'CVT', 'CVT': 'CVT',
+    'dct': 'DCT', 'DCT': 'DCT',
+}
+
+# ?쒓뎅????鍮꾪룷?뚮뱶 ?쒖“??留ㅽ븨
+MAKE_MAP = {
+    '?꾨?': 'HYUNDAI', '湲곗븘': 'KIA',
+    '?띿슜': 'SSANGYONG', '瑜대끂?쇱꽦': 'RENAULT SAMSUNG',
+    '瑜대끂': 'RENAULT SAMSUNG', '?쒕낫??: 'CHEVROLET',
+    'GM???: 'CHEVROLET', '???: 'DAEWOO',
+    '?쒕꽕?쒖뒪': 'GENESIS', '?쇱꽦': 'SAMSUNG',
+    '蹂쇰낫': 'VOLVO', '踰ㅼ툩': 'MERCEDES BENZ',
+    'BMW': 'BMW', '?꾩슦??: 'AUDI',
+    '??뒪諛붽쾺': 'VOLKSWAGEN', '?꾩슂?': 'TOYOTA',
+    '?쇰떎': 'HONDA', '?쏆궛': 'NISSAN',
+    '?몄“': 'PEUGEOT', '?쒗듃濡쒖뿥': 'CITROEN',
+    '?쒕뱶濡쒕쾭': 'LAND ROVER', '?ш퇋??: 'JAGUAR',
+    '?щⅤ??: 'PORSCHE', '留덉꽭?쇳떚': 'MASERATI',
+    '?섎씪由?: 'FERRARI', '?쇱븘??: 'FIAT',
+    '?뚰뙆濡쒕찓??: 'ALFA ROMEO', '?щ뱶': 'FORD',
+    '留곸빻': 'LINCOLN', '?뚯뒳??: 'TESLA',
+    '?됱꽌??: 'LEXUS', '?명뵾?덊떚': 'INFINITI',
+    '?ㅻ컮猷?: 'SUBARU', '留덉벐??: 'MAZDA',
+    '誘몄벐鍮꾩떆': 'MITSUBISHI', '?ㅼ쫰??: 'SUZUKI',
+    '?щ씪?댁뒳??: 'CHRYSLER', '吏??: 'JEEP',
+    '罹먮뵜??: 'CADILLAC', '誘몃땲': 'MINI',
+    '踰ㅽ?由?: 'BENTLEY', '濡ㅼ뒪濡쒖씠??: 'ROLLS ROYCE',
+}
+
+# 李⑥쥌紐???紐⑤뜽 ?ㅼ썙?????쒖“??(MAKE_MAP?쇰줈 留ㅽ븨 ?ㅽ뙣 ???대갚)
+MODEL_KEYWORD_TO_MAKE = {
+    # HYUNDAI
+    '?꾨컲??: 'HYUNDAI', '?뚮굹?': 'HYUNDAI', '洹몃옖?': 'HYUNDAI',
+    '?ъ떬': 'HYUNDAI', '?쇳???: 'HYUNDAI', '?곕━?몄씠??: 'HYUNDAI',
+    '肄붾굹': 'HYUNDAI', '踰좊씪?щ（利?: 'HYUNDAI', '?꾩씠?ㅻ땳': 'HYUNDAI',
+    '?ㅽ??됱뒪': 'HYUNDAI', '?ㅽ?由ъ븘': 'HYUNDAI', '?ы꽣': 'HYUNDAI',
+    '?μ룜': 'HYUNDAI', '罹먯뒪??: 'HYUNDAI', '?꾩씠30': 'HYUNDAI',
+    # KIA
+    '?ㅽ룷?곗?': 'KIA', '?뚮젋??: 'KIA', '移대땲諛?: 'KIA',
+    '??좎뒪': 'KIA', '?ㅽ넗??: 'KIA', '紐⑤떇': 'KIA', '?덉씠': 'KIA',
+    'K3': 'KIA', 'K5': 'KIA', 'K7': 'KIA', 'K8': 'KIA', 'K9': 'KIA',
+    '遊됯퀬': 'KIA', '?덈줈': 'KIA', 'EV6': 'KIA', '移대젋??: 'KIA',
+    # SSANGYONG
+    '?곕낵由?: 'SSANGYONG', '?됱뒪??: 'SSANGYONG', '肄붾???: 'SSANGYONG',
+    '臾댁룜': 'SSANGYONG', '?≫떚??: 'SSANGYONG',
+    # RENAULT SAMSUNG
+    'SM3': 'RENAULT SAMSUNG', 'SM5': 'RENAULT SAMSUNG',
+    'SM6': 'RENAULT SAMSUNG', 'SM7': 'RENAULT SAMSUNG',
+    'QM3': 'RENAULT SAMSUNG', 'QM5': 'RENAULT SAMSUNG', 'QM6': 'RENAULT SAMSUNG',
+    # CHEVROLET
+    '留먮━遺': 'CHEVROLET', '?ㅽ뙆??: 'CHEVROLET', '?댁옘?뱀뒪': 'CHEVROLET',
+    '?몃젅?쇰툝?덉씠?': 'CHEVROLET', '罹≫떚諛?: 'CHEVROLET', '?щ（利?: 'CHEVROLET',
+    # GENESIS
+    'G70': 'GENESIS', 'G80': 'GENESIS', 'G90': 'GENESIS',
+    'GV70': 'GENESIS', 'GV80': 'GENESIS',
+    # MERCEDES BENZ
+    'E-?대옒??: 'MERCEDES BENZ', 'E?대옒??: 'MERCEDES BENZ',
+    'C-?대옒??: 'MERCEDES BENZ', 'C?대옒??: 'MERCEDES BENZ',
+    'S-?대옒??: 'MERCEDES BENZ', 'S?대옒??: 'MERCEDES BENZ',
+    'GLC': 'MERCEDES BENZ', 'GLE': 'MERCEDES BENZ', 'GLA': 'MERCEDES BENZ',
+    # BMW / AUDI
+    '3?쒕━利?: 'BMW', '5?쒕━利?: 'BMW', '7?쒕━利?: 'BMW',
+    'X3': 'BMW', 'X5': 'BMW', 'X1': 'BMW', 'X6': 'BMW', 'X7': 'BMW',
+    'A3': 'AUDI', 'A4': 'AUDI', 'A5': 'AUDI', 'A6': 'AUDI', 'A7': 'AUDI', 'A8': 'AUDI',
+    'Q3': 'AUDI', 'Q5': 'AUDI', 'Q7': 'AUDI', 'Q8': 'AUDI',
+    # VOLKSWAGEN
+    '?곌뎄??: 'VOLKSWAGEN', '怨⑦봽': 'VOLKSWAGEN', '?뚯궗??: 'VOLKSWAGEN',
+    '?대줈': 'VOLKSWAGEN', '?ъ븘??: 'VOLKSWAGEN', '?꾪뀒??: 'VOLKSWAGEN',
+    # PEUGEOT / CITROEN
+    '508': 'PEUGEOT', '308': 'PEUGEOT', '3008': 'PEUGEOT', '5008': 'PEUGEOT',
+    # LAND ROVER / JAGUAR
+    '?붿뒪而ㅻ쾭由?: 'LAND ROVER', '?덉씤吏濡쒕쾭': 'LAND ROVER', '?대낫??: 'LAND ROVER',
+    '?뷀렂??: 'LAND ROVER', 'XE': 'JAGUAR', 'XF': 'JAGUAR',
+    # VOLVO
+    'XC40': 'VOLVO', 'XC60': 'VOLVO', 'XC90': 'VOLVO', 'S60': 'VOLVO', 'S90': 'VOLVO',
+    # PORSCHE
+    '移댁씠??: 'PORSCHE', '留덉뭏': 'PORSCHE', '?뚮굹硫붾씪': 'PORSCHE',
+    # TESLA
+    '紐⑤뜽3': 'TESLA', '紐⑤뜽Y': 'TESLA', '紐⑤뜽S': 'TESLA', '紐⑤뜽X': 'TESLA',
+    # LEXUS
+    'ES': 'LEXUS', 'RX': 'LEXUS', 'NX': 'LEXUS', 'IS': 'LEXUS',
+}
+
+# VIN WMI(3?먮━) ???쒖“??(MAKE_MAP??value? ?숈씪 ?뺤떇)
+WMI_TO_MAKE = {
+    # Korean
+    'KMH': 'HYUNDAI', 'KMF': 'HYUNDAI', 'KME': 'HYUNDAI',
+    'KNA': 'KIA', 'KNB': 'KIA', 'KNC': 'KIA', 'KND': 'KIA', 'KNM': 'KIA',
+    'KPT': 'SSANGYONG', 'KPB': 'SSANGYONG',
+    'KL1': 'CHEVROLET', 'KL8': 'CHEVROLET',
+    'KLA': 'RENAULT SAMSUNG', 'KLY': 'RENAULT SAMSUNG',
+    'KMT': 'GENESIS', 'KMX': 'GENESIS',
+    'VF1': 'RENAULT SAMSUNG',
+    # European
+    'WBA': 'BMW', 'WBS': 'BMW', 'WBY': 'BMW', 'WBW': 'BMW',
+    'WDD': 'MERCEDES BENZ', 'WDC': 'MERCEDES BENZ', 'W1N': 'MERCEDES BENZ',
+    'W1K': 'MERCEDES BENZ', 'W1V': 'MERCEDES BENZ',
+    'WAU': 'AUDI', 'WAP': 'PORSCHE', 'WP0': 'PORSCHE', 'WP1': 'PORSCHE',
+    'WVW': 'VOLKSWAGEN', 'WVG': 'VOLKSWAGEN', 'WV1': 'VOLKSWAGEN', 'WV2': 'VOLKSWAGEN',
+    'VF3': 'PEUGEOT', 'VF7': 'CITROEN', 'VF3': 'PEUGEOT',
+    'VF3': 'PEUGEOT', 'VR1': 'PEUGEOT', 'VR3': 'PEUGEOT',
+    'YV1': 'VOLVO', 'YV4': 'VOLVO',
+    'SAL': 'LAND ROVER', 'SAJ': 'JAGUAR',
+    'ZAR': 'ALFA ROMEO', 'ZFA': 'FIAT', 'ZFF': 'FERRARI', 'ZAM': 'MASERATI',
+    'WF0': 'FORD', 'WF1': 'FORD',
+    'WDB': 'MERCEDES BENZ',
+    # Japanese
+    'JTD': 'TOYOTA', 'JTE': 'TOYOTA', 'JTM': 'TOYOTA',
+    'JHM': 'HONDA', 'JN1': 'NISSAN', 'JN8': 'NISSAN',
+    'JF1': 'SUBARU', 'JF2': 'SUBARU',
+    'JMZ': 'MAZDA', 'JM1': 'MAZDA',
+    'JS1': 'SUZUKI', 'JS2': 'SUZUKI',
+    'MLH': 'HONDA',
+    # American
+    '1G1': 'CHEVROLET', '1GC': 'CHEVROLET', '2G1': 'CHEVROLET',
+    '1FA': 'FORD', '1FM': 'FORD', '3FA': 'FORD',
+    '1C4': 'CHRYSLER', '1C6': 'DODGE',
+    '5YJ': 'TESLA', '5YJ': 'TESLA',
+}
+
+# ?붿뭅 ?됱긽 ??鍮꾪룷?뚮뱶 ?됱긽 ?쇰꺼 留ㅽ븨
+COLOR_MAP_KO = {
+    '?곗깋': '?붿씠??, '諛깆깋': '?붿씠??, '吏꾩＜?곗깋': '?붿씠??, '?쒕갚??: '?붿씠??,
+    '?붿씠??: '?붿씠??, '?щ┝?붿씠??: '?붿씠??, '?щ━?ㅽ깉?붿씠??: '?붿씠??, '?꾩씠蹂대━': '?붿씠??,
+    '寃??: '釉붾옓', '寃???: '釉붾옓', '釉붾옓': '釉붾옓', '?쒗듃釉붾옓': '釉붾옓', '?ы?釉붾옓': '釉붾옓',
+    '???: '?ㅻ쾭', '??뚯깋': '?ㅻ쾭', '?ㅻ쾭': '?ㅻ쾭', '臾몃씪?댄듃?ㅻ쾭': '?ㅻ쾭', '洹몃씪?뚯씠?몄떎踰?: '?ㅻ쾭',
+    '?뚯깋': '洹몃젅??, '洹몃젅??: '洹몃젅??, '?ㅽ겕洹몃젅??: '洹몃젅??, '李⑥퐳洹몃젅??: '洹몃젅??, '?먮룄?곌렇?덉씠': '洹몃젅??,
+    '鍮④컙??: '?덈뱶', '?곸깋': '?덈뱶', '?덈뱶': '?덈뱶', '?ㅽ겕泥대━': '?덈뱶', '??몃젅??: '?덈뱶',
+    '?뚮???: '釉붾（', '泥?깋': '釉붾（', '釉붾（': '釉붾（', '?ㅼ씠鍮꾨툝猷?: '釉붾（', '?ㅽ겕釉붾（': '釉붾（',
+    '?몃???: '?먮줈??, '?⑹깋': '?먮줈??, '?먮줈??: '?먮줈??,
+    '二쇳솴??: '?ㅻ젋吏', '?ㅻ젋吏': '?ㅻ젋吏',
+    '?곕몢??: '洹몃┛', '?뱀깋': '洹몃┛', '洹몃┛': '洹몃┛',
+    '遺꾪솉??: '?묓겕', '?묓겕': '?묓겕',
+    '媛덉깋': '釉뚮씪??, '釉뚮씪??: '釉뚮씪??, '釉뚮줎利?: '釉뚮씪??,
+    '踰좎씠吏': '踰좎씠吏',
+    '湲덉깋': '怨⑤뱶', '怨⑤뱶': '怨⑤뱶', '?댄럹?멸낏??: '怨⑤뱶',
+    '蹂대씪??: '?쇳뵆', '?쇳뵆': '?쇳뵆',
+}
+
+# 李⑥쥌紐??ㅼ썙????鍮꾪룷?뚮뱶 李⑤웾 ???
+BODY_TYPE_MAP = {
+    'SUV': ['SUV', '?쇳???, '?ъ떬', '?ㅽ룷?곗?', '?뚮젋??, '肄붾굹', '??좎뒪',
+            '?곕낵由?, '?곕━?몄씠??, '紐⑦븯鍮?, '踰좊씪?щ（利?, 'QM', '?몃젅?쇰툝?덉씠?',
+            '?댁옘?뱀뒪', '罹먯뒪??, '?ㅽ넗??, '?덈줈', '?꾩씠?ㅻ땳5', 'EV6', '?μ룜',
+            '?됱뒪??, '肄붾???, '?≫떚??],
+    'Minivan': ['?ㅽ??됱뒪', '移대땲諛?, '洹몃옖?쒖뒪??됱뒪', '移대젋??, '?щ???, '?ㅽ?由ъ븘'],
+    'Truck': ['遊됯퀬', '?ы꽣', '留덉씠??, '?몃윮', '?붾Ъ'],
+    'Hatchback': ['i30', 'i20', 'i10', '?꾨씪?대뱶', '?댁튂', 'MINI', '?대줈'],
+    'Wagon': ['?ъ뼱留?, '?쒓굔', 'SW'],
+    'Coupe': ['荑좏럹', 'RC', 'GR荑좏럹'],
+    'Van': ['諛?],
+}
+BODY_TYPE_TEXT_CANDIDATES = {
+    'SUV': ['SUV'],
+    'Minivan': ['誘몃땲 諛?, '誘몃땲踰꾩뒪', '諛?],
+    'Truck': ['?몃윮', '?쎌뾽'],
+    'Hatchback': ['?댁튂諛?, '寃쎌감'],
+    'Wagon': ['?④굔'],
+    'Coupe': ['荑좏럹', '而⑤쾭?곕툝'],
+    'Van': ['諛?],
+    'Sedan': ['?몃떒'],
+    'Bus': ['踰꾩뒪', '踰꾩뒪 20醫뚯꽍', '誘몃땲踰꾩뒪'],
+    'Pickup': ['?쎌뾽', '?몃윮'],
+    'Convertible': ['而⑤쾭?곕툝', '荑좏럹'],
+    'Motorhome': ['Motorhome'],
+}
+
+# 鍮꾪룷?뚮뱶 ?쒖“??紐⑤뜽 ?덊띁?곗뒪 ?쒗듃
+BF_MAKE_MODEL_SHEET_ID = "1ZCI7DXHiIeRxYfQzVVJqauzgRS29xybAuAYLjbU19o4"
+BF_MAKE_MODEL_WORKSHEETS = ("?곗꽑 ???硫붿씠而?, "RAW")
+LOCAL_MODEL_MAPPING_FILES = ("援?궛李??ъ썝??xlsx", "?섏엯李??ъ썝??xlsx")
+
+# ?붿뭅 ?쒓? 紐⑤뜽 ?ㅼ썙????鍮꾪룷?뚮뱶 ?곷Ц 紐⑤뜽 ?ㅼ썙??
+KO_MODEL_ALIAS = {
+    '?ъ떬': 'tucson',
+    '?쇳???: 'santafe',
+    '?꾨컲??: 'avante',
+    '?뚮굹?': 'sonata',
+    '洹몃옖?': 'grandeur',
+    '肄붾굹': 'kona',
+    '?곕━?몄씠??: 'palisade',
+    '?μ룜': 'nexo',
+    '?꾩씠?ㅻ땳': 'ioniq',
+    '?ㅽ??됱뒪': 'starex',
+    '?ㅽ?由ъ븘': 'staria',
+    '?ㅽ룷?곗?': 'sportage',
+    '?섎젋??: 'sorento',
+    '?뚮젋??: 'sorento',
+    '移대땲諛?: 'carnival',
+    '??좎뒪': 'seltos',
+    '?ㅽ넗??: 'stonic',
+    '紐⑤떇': 'morning',
+    '?덉씠': 'ray',
+    '?덈줈': 'niro',
+    '?곕낵由?: 'tivoli',
+    '?됱뒪??: 'rexton',
+    '肄붾???: 'korando',
+    '留먮━遺': 'malibu',
+    '?ㅽ뙆??: 'spark',
+    '?щ（利?: 'cruze',
+    '罹≫떚諛?: 'captiva',
+    '?댁옘?뱀뒪': 'equinox',
+    'GV70': 'gv70',
+    'GV80': 'gv80',
+    'G70': 'g70',
+    'G80': 'g80',
+    'G90': 'g90',
+    '怨⑦봽': 'golf',
+    '?곌뎄??: 'tiguan',
+    '?뚯궗??: 'passat',
+    '?대줈': 'polo',
+    '?ъ븘??: 'touareg',
+    '?꾪뀒??: 'arteon',
+}
+
+MODEL_PREFIX_STOPWORDS = {'??, '?щ돱', '??, '?붾돱', '??, '?좏삎', 'all', 'new', 'the'}
+MODEL_SUFFIX_STOPWORDS = ('?붿젮', '媛?붾┛', '?섏씠釉뚮━??, '?꾧린', 'lpg')
+MODEL_SELECT_CANDIDATES = (
+    'TempVehDetails[model_id]',
+    'TempVehDetails[model_code]',
+)
+BODY_TYPE_ALIASES = {
+    'suv': 'SUV',
+    '?몃떒': 'Sedan',
+    'sedan': 'Sedan',
+    '誘몃땲諛?: 'Minivan',
+    '誘몃땲 諛?: 'Minivan',
+    'minivan': 'Minivan',
+    'van': 'Van',
+    '?몃윮': 'Truck',
+    'truck': 'Truck',
+    '?쎌뾽': 'Pickup',
+    'pickup': 'Pickup',
+    '?④굔': 'Wagon',
+    'wagon': 'Wagon',
+    '?댁튂諛?: 'Hatchback',
+    'hatchback': 'Hatchback',
+    '寃쎌감': 'Hatchback',
+}
+BODY_TYPE_SELECT_CANDIDATES = (
+    'TempVehDetails[type_id]',
+    'TempVehDetails[type_2_id]',
+)
+
+FINAL_CLICK_XPATHS = (
+    '//*[@id="chk-compensation-agree"]',
+)
+# ???submit) 踰꾪듉 XPath
+SUBMIT_BUTTON_XPATH = '/html/body/div[2]/div[1]/div/div/div/div/div/div/div/input'
+
+
+class BefowordCrawler:
+    """ByForward ?몃? 踰ㅻ뜑 ?ы꽭 - 留ㅻЪ ?깅줉"""
+
+    WAIT_TIMEOUT = 10
+    FORM_URL = "https://external-vendor.beforward.jp/tempVehDetails/edit"
+
+    def __init__(self, headless: bool = False):
+        self.headless = headless
+        self.driver = None
+        self._bf_make_models = {}
+        self._bf_model_ref_loaded = False
+        self._local_model_mappings = []
+        self._local_model_mapping_loaded = False
+
+    def _setup_driver(self):
+        """Chrome ?쒕씪?대쾭 珥덇린??""
+        options = Options()
+        chrome_binary = os.getenv('CHROME_BINARY')
+        if chrome_binary:
+            options.binary_location = chrome_binary
+        if self.headless:
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--window-size=1920,1080')
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        options.add_experimental_option('useAutomationExtension', False)
+
+        if CHROMEDRIVER_AUTOINSTALLER_AVAILABLE:
+            try:
+                chromedriver_autoinstaller.install()
+            except Exception:
+                pass
+
+        self.driver = webdriver.Chrome(options=options)
+        self.driver.set_page_load_timeout(30)
+        print("[INFO] BeForward ?낅줈???쒕씪?대쾭 珥덇린???꾨즺 (Chrome)")
+
+
+    def login(self) -> bool:
+        """ByForward ?몃? 踰ㅻ뜑 ?ы꽭 濡쒓렇??
+
+        Returns:
+            bool: 濡쒓렇???깃났 ?щ?
+        """
+        if not self.driver:
+            self._setup_driver()
+
+        try:
+            print(f"[INFO] BeForward 濡쒓렇?? {BEFORWARD_LOGIN_URL}")
+            self.driver.get(BEFORWARD_LOGIN_URL)
+            time.sleep(1)
+
+            wait = WebDriverWait(self.driver, self.WAIT_TIMEOUT)
+
+            # ?대? 濡쒓렇?몃맂 寃쎌슦 (???섏씠吏濡?由щ떎?대젆?몃맖)
+            if 'login' not in self.driver.current_url.lower():
+                print("[OK] ?대? 濡쒓렇???곹깭")
+                return True
+
+            # ?대찓???낅젰
+            email_field = wait.until(EC.presence_of_element_located(
+                (By.NAME, 'data[VendorUser][email]')
+            ))
+            email_field.clear()
+            email_field.send_keys(BEFORWARD_USERNAME)
+            time.sleep(0.1)
+
+            # ?⑥뒪?뚮뱶 ?낅젰
+            pw_field = self.driver.find_element(By.NAME, 'data[VendorUser][password]')
+            pw_field.clear()
+            pw_field.send_keys(BEFORWARD_PASSWORD)
+            time.sleep(0.1)
+
+            # 濡쒓렇??踰꾪듉 ?대┃ (type=submit)
+            self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
+            time.sleep(1.5)
+
+            if 'login' in self.driver.current_url.lower():
+                print("[?ㅻ쪟] 濡쒓렇???ㅽ뙣")
+                return False
+
+            print(f"[OK] 濡쒓렇???깃났: {self.driver.current_url}")
+            return True
+
+        except Exception as e:
+            print(f"[?ㅻ쪟] 濡쒓렇??以??ㅻ쪟: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def fill_vehicle_data(self, car_info, auto_submit: bool = False) -> bool:
+        """?붿뭅 李⑤웾 ?뺣낫瑜?鍮꾪룷?뚮뱶 ?깅줉 ?쇱뿉 ?낅젰
+
+        Args:
+            car_info: CarInfo 媛앹껜
+            auto_submit: True硫??낅젰 ?????踰꾪듉 ?먮룞 ?대┃
+
+        Returns:
+            bool: ?낅젰 ?깃났 ?щ?
+        """
+        try:
+            print(f"\n[INFO] 鍮꾪룷?뚮뱶 李⑤웾 ?뺣낫 ?낅젰 ?쒖옉")
+            print(f"  李⑤?踰덊샇: {car_info.inspection_chassis_no}")
+            print(f"  ?곗떇: {car_info.year_month}")
+            print(f"  二쇳뻾嫄곕━: {car_info.mileage}")
+            print(f"  媛寃? {car_info.price}")
+
+            # ?좉퇋 ???섏씠吏濡??대룞 (鍮???
+            self.driver.get(self.FORM_URL)
+            time.sleep(1)
+
+            wait = WebDriverWait(self.driver, self.WAIT_TIMEOUT)
+
+            # 1. ?쒖“???좏깮 (李⑤?踰덊샇??AJAX 由щ젋?????낅젰)
+            local_spec = self._find_local_model_mapping(car_info.car_type)
+            make_name = (local_spec.get('make')
+                         or self._get_make_from_vin(car_info.inspection_chassis_no)
+                         or self._get_make_name(car_info.car_type))
+            if make_name:
+                self._select_make(make_name, car_info.car_type)
+                time.sleep(1)  # 紐⑤뜽 ?쒕∼?ㅼ슫 AJAX 濡쒕뵫 ?湲?
+            # 3. 紐⑤뜽紐??좏깮
+            model_hint = self._get_model_name(car_info.car_type)
+            model_name = local_spec.get('model') or self._get_model_from_reference(make_name, car_info.car_type, model_hint)
+            if not model_name:
+                translated_candidates = self._get_model_candidates(car_info.car_type, model_hint)
+                model_name = translated_candidates[0] if translated_candidates else model_hint
+            model_selected = False
+            if model_name:
+                model_selected = self._select_model_fuzzy(model_name)
+
+            # 4. 紐⑤뜽?꾨룄 (registration_year)
+            year = car_info.year_month or ""
+            if year:
+                self._select_by_value(By.NAME, 'TempVehDetails[registration_year]',
+                                      year, "紐⑤뜽?꾨룄")
+
+            # 5. ?쒖“?꾩썡 (manufacture_year)
+            if year:
+                self._select_by_value(By.NAME, 'TempVehDetails[manufacture_year]',
+                                      year, "?쒖“?꾩썡")
+
+            # 6. ?ㅻⅨ ?꾨뱶 ?대┃ ??CBM ?먮룞 ?낅젰 ?몃━嫄?
+            try:
+                self.driver.find_element(By.NAME, 'TempVehDetails[mileage]').click()
+                time.sleep(2)  # CBM ?먮룞 怨꾩궛 ?湲?
+            except Exception:
+                time.sleep(2)
+
+            # 7. CBM ?먮룞 ?낅젰 ?뺤씤
+            cbm_ok = self.driver.execute_script("""
+                var l = document.querySelector('[name="TempVehDetails[length]"]');
+                var w = document.querySelector('[name="TempVehDetails[width]"]');
+                var h = document.querySelector('[name="TempVehDetails[height]"]');
+                if (!l || !w || !h) return false;
+                return (l.value && l.value.trim() !== '' &&
+                        w.value && w.value.trim() !== '' &&
+                        h.value && h.value.trim() !== '');
+            """)
+            if not cbm_ok:
+                print(f"  [寃쎄퀬] CBM ?먮룞 ?낅젰 ?덈맖 - 怨꾩냽 吏꾪뻾")
+            else:
+                print(f"  [OK] CBM ?먮룞 ?낅젰 ?뺤씤")
+
+            # 7-1. 李⑤?踰덊샇 (VIN) - ?쒖“??紐⑤뜽 AJAX ?댄썑???낅젰?댁빞 ??由щ젋?붾줈 吏?뚯?吏 ?딆쓬
+            self._fill_text(By.NAME, 'TempVehDetails[chassis_no]',
+                            car_info.inspection_chassis_no or "", "李⑤?踰덊샇")
+
+            # 8. 李⑤웾 ???(body type)
+            self._select_by_text_candidates(BODY_TYPE_SELECT_CANDIDATES,
+                                            self._get_body_type_candidates(local_spec, car_info.car_type), "李⑤웾???,
+                                            name_patterns=['body', 'type', 'vehicle'],
+                                            label_keywords=['李⑤웾???, '諛붾뵒???, 'body type', 'vehicle type'])
+
+            # 9. 二쇳뻾嫄곕━
+            self._fill_text(By.NAME, 'TempVehDetails[mileage]',
+                            car_info.mileage or "", "二쇳뻾嫄곕━")
+
+            # 10. 諛곌린??
+            self._fill_text(By.NAME, 'TempVehDetails[engine_capacity]',
+                            car_info.displacement or "", "諛곌린??)
+
+            # 11. ?곕즺 ???
+            fuel_bf = self._map_fuel(car_info.fuel_type)
+            if fuel_bf:
+                self._select_by_text_partial(By.NAME, 'TempVehDetails[fuel_id]',
+                                             fuel_bf, "?곕즺")
+
+            # 12. 蹂?띻린
+            trans_bf = self._map_transmission(car_info.transmission)
+            if trans_bf:
+                self._select_by_text_partial(By.NAME, 'TempVehDetails[transmission_id]',
+                                             trans_bf, "蹂?띻린")
+
+            # 13. ?몃뱾 諛⑺뼢 - 醫뚰빖??怨좎젙
+            self._select_left_hand_drive()
+
+            # 14. 臾?媛쒖닔
+            # doors ?꾨뱶媛 select ?몄? input ?몄? ?숈쟻?쇰줈 ?먮떒
+            doors_value = local_spec.get('doors') or '4'
+            try:
+                doors_el = self.driver.find_element(By.NAME, 'TempVehDetails[doors]')
+                if doors_el.tag_name.lower() == 'select':
+                    self._select_by_value(By.NAME, 'TempVehDetails[doors]', doors_value, "臾멸컻??)
+                else:
+                    self._fill_text(By.NAME, 'TempVehDetails[doors]', doors_value, "臾멸컻??)
+            except Exception:
+                self._fill_text(By.NAME, 'TempVehDetails[doors]', doors_value, "臾멸컻??)
+
+            # 15. 援щ룞 諛⑹떇 (2WD/4WD ?쇰뵒??
+            drive_val = self._get_drive_type(car_info.car_type)
+            if drive_val:
+                self._click_radio(By.NAME, 'TempVehDetails[drive_type]', drive_val, "援щ룞諛⑹떇")
+
+            # 16. ?됱긽 (?붿뭅 ??鍮꾪룷?뚮뱶 留ㅽ븨, ?ㅽ뙣 ??'湲고?')
+            if car_info.color:
+                mapped_color = self._map_color(car_info.color)
+                if not self._select_by_text_partial(By.NAME, 'TempVehDetails[ext_color_id]',
+                                                    mapped_color, "?됱긽", suppress_log=True):
+                    print(f"  [INFO] ?됱긽 '{car_info.color}'??{mapped_color}' 留ㅼ묶 ?ㅽ뙣 ??'湲고?' ?좏깮")
+                    self._select_by_text_partial(By.NAME, 'TempVehDetails[ext_color_id]',
+                                                 '湲고?', "?됱긽(湲고?)")
+
+            # 17. 醫뚯꽍??
+            seats = local_spec.get('seats')
+            if not seats and car_info.seating_capacity:
+                seats = ''.join(filter(str.isdigit, car_info.seating_capacity))
+            if seats:
+                self._fill_text(By.NAME, 'TempVehDetails[seats]', seats, "醫뚯꽍??)
+
+            # 18. 媛寃?
+            self._fill_text(By.ID, 'trade-price-input',
+                            car_info.price or "", "媛寃?)
+
+            # 19. ?ш퀬 ?꾩튂 = KOREA
+            self._select_by_text_partial(By.NAME, 'TempVehDetails[stock_place_id]',
+                                         'KOREA', "?ш퀬?꾩튂")
+
+            # 20. ?듭뀡 泥댄겕諛뺤뒪 (?붿뭅 ?듭뀡 + ??긽 ?좏깮 ?꾩닔 ?듭뀡 蹂묓빀)
+            MANDATORY_OPTIONS = ['?먯뼱而?, '?뚯썙?몃뱾', '?뚯썙 ?덈룄??, '?먯뼱諛?, 'ABS']
+            options = list(car_info.options) if hasattr(car_info, 'options') and car_info.options else []
+            existing_mapped = {o.mapped_name for o in options}
+            from ?붿뭅_crawling import OptionItem
+            for opt_name in MANDATORY_OPTIONS:
+                if opt_name not in existing_mapped:
+                    options.append(OptionItem(name=opt_name, mapped_name=opt_name))
+                    existing_mapped.add(opt_name)
+            if options:
+                self._fill_options(options)
+            # AM/FM ?쇰뵒?? ??긽 ?좏깮 (XPath 吏곸젒 ?대┃)
+            self._click_option_label_by_xpath(
+                '//*[@id="bulk_confirm_form"]/div/div/div[2]/table[5]/tbody/tr[2]/td[3]/label',
+                'AM/FM ?쇰뵒??
+            )
+            # 4瑜? 4WD 李⑤웾??寃쎌슦 ?좏깮 (XPath 吏곸젒 ?대┃)
+            if drive_val == '3':
+                self._click_option_label_by_xpath(
+                    '//*[@id="bulk_confirm_form"]/div/div/div[2]/table[5]/tbody/tr[8]/td[3]/label',
+                    '4瑜?
+                )
+
+            # 21. ?대?吏 ?ㅼ슫濡쒕뱶 (????꾩뿉 誘몃━ ?ㅼ슫濡쒕뱶 - ?낅줈?쒕뒗 ?????
+            drive_link = getattr(car_info, 'drive_link', '') or ''
+            sheet_row = getattr(car_info, 'sheet_row', 0) or 0
+            image_files = []
+            self._last_downloaded_image_files = []
+            has_drive_link = bool(drive_link and drive_link.startswith('http'))
+            if has_drive_link:
+                print(f"  [INFO] ?대?吏 ?ㅼ슫濡쒕뱶 ?쒖옉...")
+                if 'mangoworldcar.com' in drive_link:
+                    image_files = self._download_images_from_mangoworldcar(drive_link, sheet_row)
+                else:
+                    image_files = self._download_images_from_drive_link(drive_link, sheet_row)
+                print(f"  [INFO] ?ㅼ슫濡쒕뱶 寃곌낵: {len(image_files)}媛??뚯씪")
+                if not image_files:
+                    print(f"  [寃쎄퀬] ?쒕씪?대툕 留곹겕 ?덉쑝???대?吏 ?ㅼ슫濡쒕뱶 ?ㅽ뙣 - ?낅줈??以묐떒")
+                    return False
+                self._last_downloaded_image_files = list(image_files)
+            else:
+                print("  [INFO] ?쒕씪?대툕 留곹겕 ?놁쓬 - ?대?吏 ?낅줈??嫄대꼫?")
+
+            # 22. ?꾩닔 ?대┃ (泥댄겕諛뺤뒪 ??
+            self._click_required_xpaths()
+
+            # 23. ???踰꾪듉 ?대┃
+            if auto_submit:
+                try:
+                    submit_btn = self.driver.find_element(By.XPATH, SUBMIT_BUTTON_XPATH)
+                    self.driver.execute_script("""
+                        arguments[0].removeAttribute('disabled');
+                        arguments[0].scrollIntoView({block:'center'});
+                    """, submit_btn)
+                    time.sleep(0.5)
+                    try:
+                        submit_btn.click()
+                    except Exception:
+                        self.driver.execute_script("arguments[0].click();", submit_btn)
+                    time.sleep(1.5)
+                    print(f"[OK] ???踰꾪듉 ?대┃ ?꾨즺")
+
+                    # 21. ?앹뾽/alert ?リ린
+                    alert_text = self._dismiss_popup()
+
+                    # 22. ?대?吏 ?낅줈??(???吏곹썑 ?꾩옱 ?④퀎?먯꽌 癒쇱? ?꾨즺)
+                    images_uploaded = False
+                    if image_files:
+                        if alert_text and 'duplicate' in alert_text.lower():
+                            print(f"  [INFO] 以묐났 ?대?吏 寃쎄퀬 - ?낅줈??嫄대꼫?")
+                        else:
+                            if self._enter_image_upload_stage():
+                                images_uploaded = self._upload_images_to_form(image_files)
+                            else:
+                                chassis_no = car_info.inspection_chassis_no or ""
+                                edit_url = self._find_listing_edit_url(chassis_no)
+                                if edit_url:
+                                    print(f"  [INFO] ?꾩옱 ?④퀎 吏꾩엯 ?ㅽ뙣 - ?섏젙 ?섏씠吏濡??ъ떆?? {edit_url[:80]}")
+                                    self.driver.get(edit_url)
+                                    time.sleep(2)
+                                    if self._enter_image_upload_stage():
+                                        images_uploaded = self._upload_images_to_form(image_files)
+                                else:
+                                    print(f"  [寃쎄퀬] ?대?吏 ?낅줈???④퀎瑜?李얠? 紐삵븿 - ?낅줈??嫄대꼫?")
+
+                    # 23. ?대?吏 ?낅줈???깃났 ???깅뒫 ?섏씠吏 ?대룞 ??condition-form ?낅젰
+                    if images_uploaded:
+                        # ?대?吏 ???踰꾪듉 ?대┃ (?ㅼ쓬 ?④퀎 ?대룞 ??諛섎뱶?????
+                        time.sleep(1)
+                        self._save_image_upload_page()
+                        print("  [INFO] ?대?吏 ??????쒕쾭 諛섏쁺 ?湲?120珥?)
+                        time.sleep(120)
+                        time.sleep(2)
+                        moved = self._go_to_condition_page_after_image_upload()
+                        if not moved:
+                            print("  [寃쎄퀬] ?깅뒫 ?섏씠吏 ?대룞 ?ㅽ뙣 - ?낅줈???ㅽ뙣 泥섎━")
+                            return False
+
+                        time.sleep(2)
+                        corrosion_clicked = self._set_corrosion_no()
+                        if not corrosion_clicked:
+                            print("  [寃쎄퀬] 遺??NO ?대┃ ?ㅽ뙣 - ??μ? 吏꾪뻾?섏?留?媛믪씠 鍮꾩뼱 ?덉쓣 ???덉쓬")
+
+                        drivetrain_clicked = self._set_condition_div11_button(drive_val == '3')
+                        if not drivetrain_clicked:
+                            print("  [寃쎄퀬] 援щ룞議곌굔 踰꾪듉 ?대┃ ?ㅽ뙣 - ??μ? 吏꾪뻾?섏?留?媛믪씠 鍮꾩뼱 ?덉쓣 ???덉쓬")
+
+                        saved = self._save_after_condition_page()
+                        if not saved:
+                            print("  [寃쎄퀬] ?깅뒫 ?섏씠吏 ???踰꾪듉??李얠? 紐삵븿 - ?낅줈???ㅽ뙣 泥섎━")
+                            return False
+                    else:
+                        if image_files:
+                            print(f"  [INFO] ?대?吏 ?낅줈???ㅽ뙣 - 理쒖쥌 ???嫄대꼫?")
+                            return False
+                        self._dismiss_popup()
+
+                except NoSuchElementException:
+                    print(f"[寃쎄퀬] ???踰꾪듉??李얠? 紐삵뻽?듬땲??)
+                    return False
+            else:
+                print(f"\n[OK] 李⑤웾 ?뺣낫 ?낅젰 ?꾨즺 - ???踰꾪듉???뺤씤?섏꽭??)
+
+            return True
+
+        except Exception as e:
+            print(f"[?ㅻ쪟] 李⑤웾 ?뺣낫 ?낅젰 以??ㅻ쪟: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    # ?? ?ы띁: ?띿뒪???낅젰 ??????????????????????????????????????????????
+    def _fill_text(self, by, selector, value: str, label: str = "") -> bool:
+        if not value:
+            return True
+        try:
+            field = self.driver.find_element(by, selector)
+            self.driver.execute_script("arguments[0].value = '';", field)
+            field.send_keys(value)
+            print(f"  {label}: '{value}'")
+            return True
+        except NoSuchElementException:
+            print(f"  [寃쎄퀬] {label} ?꾨뱶 ?놁쓬 ({selector})")
+            return False
+
+    # ?? ?ы띁: select value ?좏깮 ????????????????????????????????????????
+    def _select_by_value(self, by, selector, value: str, label: str = "") -> bool:
+        if not value:
+            return True
+        try:
+            sel = Select(self.driver.find_element(by, selector))
+            sel.select_by_value(value)
+            print(f"  {label}: '{value}'")
+            return True
+        except (NoSuchElementException, Exception) as e:
+            print(f"  [寃쎄퀬] {label} ?좏깮 ?ㅽ뙣: {e}")
+            return False
+
+    # ?? ?ы띁: select ?띿뒪??遺遺??쇱튂 ?좏깮 ???????????????????????????
+    def _select_by_text_partial(self, by, selector, text: str, label: str = "", suppress_log: bool = False) -> bool:
+        if not text:
+            return True
+        try:
+            sel = Select(self.driver.find_element(by, selector))
+            options = sel.options
+            text_lower = text.lower()
+            for opt in options:
+                if text_lower in opt.text.lower():
+                    sel.select_by_visible_text(opt.text)
+                    print(f"  {label}: '{opt.text}'")
+                    return True
+            if not suppress_log:
+                print(f"  [寃쎄퀬] {label} ?듭뀡 ?놁쓬 (寃?? '{text}')")
+            return False
+        except NoSuchElementException:
+            if not suppress_log:
+                print(f"  [寃쎄퀬] {label} select ?놁쓬 ({selector})")
+            return False
+
+    def _select_by_text_candidates(
+        self, selectors, texts, label: str = "",
+        name_patterns=None, label_keywords=None
+    ) -> bool:
+        for selector in selectors:
+            for text in texts:
+                if self._select_by_text_partial(By.NAME, selector, text, label, suppress_log=True):
+                    return True
+
+        extra_selectors = []
+        extra_selectors.extend(self._find_select_names_by_patterns(name_patterns or []))
+        extra_selectors.extend(self._find_select_names_near_labels(label_keywords or []))
+        for selector in extra_selectors:
+            for text in texts:
+                if self._select_by_text_partial(By.NAME, selector, text, label, suppress_log=True):
+                    return True
+
+        print(f"  [寃쎄퀬] {label} ?좏깮 ?ㅽ뙣 (?꾨낫: {', '.join(selectors)})")
+        return False
+
+    def _fill_text_candidates(
+        self, selectors, value: str, label: str = "",
+        name_patterns=None, label_keywords=None
+    ) -> bool:
+        for selector in selectors:
+            if self._fill_text(By.NAME, selector, value, label):
+                return True
+
+        extra_inputs = []
+        extra_inputs.extend(self._find_input_names_by_patterns(name_patterns or []))
+        extra_inputs.extend(self._find_input_names_near_labels(label_keywords or []))
+        for selector in extra_inputs:
+            if self._fill_text(By.NAME, selector, value, label):
+                return True
+
+        print(f"  [寃쎄퀬] {label} ?낅젰 ?ㅽ뙣 (?꾨낫: {', '.join(selectors)})")
+        return False
+
+    def _dedupe(self, items):
+        return list(dict.fromkeys([x for x in items if x]))
+
+    def _find_select_names_by_patterns(self, patterns):
+        found = []
+        try:
+            selects = self.driver.find_elements(By.CSS_SELECTOR, "select[name]")
+            for sel in selects:
+                name = (sel.get_attribute('name') or '').strip()
+                low = name.lower()
+                if any(p.lower() in low for p in patterns):
+                    found.append(name)
+        except Exception:
+            pass
+        return self._dedupe(found)
+
+    def _find_input_names_by_patterns(self, patterns):
+        found = []
+        try:
+            elems = self.driver.find_elements(By.CSS_SELECTOR, "input[name], textarea[name]")
+            for el in elems:
+                name = (el.get_attribute('name') or '').strip()
+                low = name.lower()
+                if any(p.lower() in low for p in patterns):
+                    found.append(name)
+        except Exception:
+            pass
+        return self._dedupe(found)
+
+    def _find_select_names_near_labels(self, keywords):
+        found = []
+        for kw in keywords:
+            try:
+                elems = self.driver.find_elements(
+                    By.XPATH,
+                    f"//*[contains(translate(normalize-space(.), "
+                    f"'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{kw.lower()}')]"
+                    f"/following::select[1]"
+                )
+                for el in elems:
+                    name = (el.get_attribute('name') or '').strip()
+                    if name:
+                        found.append(name)
+            except Exception:
+                continue
+        return self._dedupe(found)
+
+    def _find_input_names_near_labels(self, keywords):
+        found = []
+        for kw in keywords:
+            try:
+                elems = self.driver.find_elements(
+                    By.XPATH,
+                    f"//*[contains(translate(normalize-space(.), "
+                    f"'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{kw.lower()}')]"
+                    f"/following::input[1] | "
+                    f"//*[contains(translate(normalize-space(.), "
+                    f"'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{kw.lower()}')]"
+                    f"/following::textarea[1]"
+                )
+                for el in elems:
+                    name = (el.get_attribute('name') or '').strip()
+                    if name:
+                        found.append(name)
+            except Exception:
+                continue
+        return self._dedupe(found)
+
+    # ?? ?ы띁: ?쇰뵒??踰꾪듉 ?대┃ ???????????????????????????????????????
+    def _click_radio(self, by, selector, value: str, label: str = "") -> bool:
+        try:
+            radio = self.driver.find_element(
+                By.CSS_SELECTOR,
+                f"input[type='radio'][name='{selector}'][value='{value}']"
+            ) if by == By.NAME else self.driver.find_element(by, selector)
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView({block:'center'});", radio
+            )
+            time.sleep(0.1)
+            try:
+                radio.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", radio)
+            print(f"  {label}: value='{value}'")
+            return True
+        except NoSuchElementException:
+            print(f"  [寃쎄퀬] {label} ?쇰뵒???놁쓬 (name='{selector}', value='{value}')")
+            return False
+        except Exception as e:
+            print(f"  [寃쎄퀬] {label} ?쇰뵒???대┃ ?ㅽ뙣: {e}")
+            return False
+
+    def _click_radio_by_label_keywords(self, selector: str, keywords, label: str = "") -> bool:
+        lowered = [kw.lower() for kw in keywords]
+        try:
+            radios = self.driver.find_elements(By.CSS_SELECTOR, f"input[type='radio'][name='{selector}']")
+            for radio in radios:
+                radio_id = (radio.get_attribute('id') or '').strip()
+                label_text = ""
+                if radio_id:
+                    try:
+                        label_el = self.driver.find_element(By.CSS_SELECTOR, f"label[for='{radio_id}']")
+                        label_text = (label_el.text or '').strip()
+                    except Exception:
+                        pass
+                if not label_text:
+                    try:
+                        label_el = radio.find_element(By.XPATH, "./ancestor::label[1]")
+                        label_text = (label_el.text or '').strip()
+                    except Exception:
+                        pass
+                if not label_text:
+                    try:
+                        container_text = self.driver.execute_script(
+                            "return (arguments[0].closest('label, div, td, li') || arguments[0].parentElement || arguments[0]).textContent || '';",
+                            radio,
+                        )
+                        label_text = str(container_text).strip()
+                    except Exception:
+                        pass
+
+                if not label_text:
+                    continue
+
+                if any(kw in label_text.lower() for kw in lowered):
+                    self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", radio)
+                    time.sleep(0.1)
+                    try:
+                        radio.click()
+                    except Exception:
+                        self.driver.execute_script("arguments[0].click();", radio)
+                    print(f"  {label}: '{label_text}'")
+                    return True
+        except Exception as e:
+            print(f"  [寃쎄퀬] {label} ?쇰뵒???쇰꺼 ?먯깋 ?ㅽ뙣: {e}")
+        return False
+
+    def _select_left_hand_drive(self) -> bool:
+        if self._click_radio_by_label_keywords(
+            'TempVehDetails[steering]',
+            ['left', 'left hand', 'left handle', '醫뚰빖??, '醫뚯륫'],
+            "?몃뱾(醫뚰빖??"
+        ):
+            return True
+
+        for value in ('2', '0', 'left'):
+            if self._click_radio(By.NAME, 'TempVehDetails[steering]', value, f"?몃뱾(醫뚰빖??{value})"):
+                return True
+
+        print("  [寃쎄퀬] 醫뚰빖???좏깮 ?ㅽ뙣")
+        return False
+
+    # ?? 4WD瑜??섑??대뒗 ?ㅼ썙??紐⑸줉 ????????????????????????????????????
+    _4WD_KEYWORDS_EN = ['AWD', '4WD', 'XDRIVE', '4MATIC', '4MOTION']
+    _4WD_KEYWORDS_KO = ['肄고듃濡?, '4留ㅽ떛', '4紐⑥뀡', '4瑜?, 'x?쒕씪?대툕']
+
+    # ?? ?ы띁: 援щ룞 諛⑹떇 異붿텧 (2WD=2, 4WD=3) ?????????????????????????
+    def _get_drive_type(self, car_type: str) -> str:
+        if not car_type:
+            return '2'
+        upper = car_type.upper()
+        for kw in self._4WD_KEYWORDS_EN:
+            if kw in upper:
+                return '3'
+        for kw in self._4WD_KEYWORDS_KO:
+            if kw in car_type:
+                return '3'
+        return '2'
+
+    # ?? ?ы띁: VIN WMI ???쒖“?????????????????????????????????????????
+    def _get_make_from_vin(self, vin: str) -> str:
+        if not vin or len(vin) < 3:
+            return ""
+        wmi = vin[:3].upper()
+        return WMI_TO_MAKE.get(wmi, "")
+
+    # ?? ?ы띁: car_type?먯꽌 ?쒖“??異붿텧 ???????????????????????????????
+    def _get_make_name(self, car_type: str) -> str:
+        if not car_type:
+            return ""
+        text = car_type.strip()
+        if not text:
+            return ""
+        first_word = text.split()[0]
+        if first_word in MAKE_MAP:
+            return MAKE_MAP[first_word]
+        for kw, make in MODEL_KEYWORD_TO_MAKE.items():
+            if kw in text:
+                return make
+        return MAKE_MAP.get(first_word, first_word)
+
+    # ?? ?ы띁: car_type?먯꽌 紐⑤뜽紐??꾨낫 異붿텧 ??????????????????????????
+    def _get_model_name(self, car_type: str) -> str:
+        if not car_type:
+            return ""
+        parts = [p for p in car_type.strip().split() if p]
+        if not parts:
+            return ""
+
+        model_token = ""
+        for token in parts:
+            token_lower = token.lower()
+            if token_lower in MODEL_PREFIX_STOPWORDS:
+                continue
+            if re.fullmatch(r'[\d.]+', token):
+                continue
+            if re.search(r'[A-Za-z媛-??', token):
+                model_token = token
+                break
+
+        if not model_token:
+            return ""
+
+        for suffix in MODEL_SUFFIX_STOPWORDS:
+            if model_token.lower().endswith(suffix):
+                model_token = model_token[:-len(suffix)]
+                break
+
+        return model_token.strip()
+
+    # ?? ?ы띁: car_type?먯꽌 ?깃툒 異붿텧 ?????????????????????????????????
+    def _get_grade(self, car_type: str, model_hint: str = "") -> str:
+        if not car_type:
+            return ""
+        text = car_type.strip()
+        parts = text.split()
+        if not parts:
+            return ""
+
+        if parts[0] in MAKE_MAP:
+            parts = parts[1:]
+        while parts and parts[0].lower() in MODEL_PREFIX_STOPWORDS:
+            parts = parts[1:]
+        if parts:
+            parts = parts[1:]
+        grade = " ".join(parts).strip()
+        if model_hint:
+            grade = grade.replace(model_hint, "", 1).strip()
+        return grade
+
+    def _normalize_key(self, text: str) -> str:
+        return re.sub(r'[^a-z0-9]', '', (text or "").lower())
+
+    def _get_model_candidates(self, car_type: str, model_hint: str) -> list[str]:
+        candidates = []
+
+        def add_candidate(value: str):
+            value = (value or "").strip()
+            if value and value not in candidates:
+                candidates.append(value)
+
+        add_candidate(model_hint)
+        add_candidate((car_type or "").strip())
+
+        source_texts = [model_hint or "", car_type or ""]
+        for source in source_texts:
+            source_lower = source.lower()
+            for ko_kw, en_kw in KO_MODEL_ALIAS.items():
+                if ko_kw.lower() in source_lower:
+                    add_candidate(en_kw)
+
+        return candidates
+
+    def _select_by_text_fuzzy(self, by, selector, candidates, label: str = "") -> bool:
+        if not candidates:
+            return False
+        try:
+            sel = Select(self.driver.find_element(by, selector))
+            valid_opts = [o for o in sel.options if o.text.strip() and o.get_attribute('value')]
+            if not valid_opts:
+                return False
+
+            best_text = ""
+            best_score = 0.0
+            for cand in candidates:
+                c_norm = self._normalize_key(cand)
+                if not c_norm:
+                    continue
+                for opt in valid_opts:
+                    o_text = opt.text.strip()
+                    o_norm = self._normalize_key(o_text)
+                    if not o_norm:
+                        continue
+                    if c_norm in o_norm or o_norm in c_norm:
+                        score = 0.95
+                    else:
+                        score = SequenceMatcher(None, c_norm, o_norm).ratio()
+                    if score > best_score:
+                        best_score = score
+                        best_text = o_text
+
+            if best_text and best_score >= 0.55:
+                sel.select_by_visible_text(best_text)
+                print(f"  {label}: '{best_text}'")
+                return True
+            return False
+        except Exception:
+            return False
+
+    def _select_make(self, make_name: str, car_type: str = "") -> bool:
+        candidates = [make_name] if make_name else []
+        if car_type:
+            for kw, make in MODEL_KEYWORD_TO_MAKE.items():
+                if kw in car_type and make not in candidates:
+                    candidates.append(make)
+
+        alias_map = {
+            'MERCEDES BENZ': ['MERCEDES-BENZ', 'BENZ', 'MERCEDES'],
+            'RENAULT SAMSUNG': ['RENAULT-SAMSUNG', 'RENAULT', 'SAMSUNG'],
+            'CHEVROLET': ['CHEVROLET', 'GM'],
+            'LAND ROVER': ['LAND ROVER', 'LANDROVER', 'LAND-ROVER'],
+            'ALFA ROMEO': ['ALFA ROMEO', 'ALFA-ROMEO', 'ALFAROMEO'],
+            'ROLLS ROYCE': ['ROLLS ROYCE', 'ROLLS-ROYCE', 'ROLLSROYCE'],
+            'VOLKSWAGEN': ['VOLKSWAGEN', 'VW'],
+            'PEUGEOT': ['PEUGEOT'],
+            'PORSCHE': ['PORSCHE'],
+            'JAGUAR': ['JAGUAR'],
+            'HYUNDAI': ['HYUNDAI'],
+            'KIA': ['KIA'],
+            'BMW': ['BMW'],
+            'AUDI': ['AUDI'],
+            'TOYOTA': ['TOYOTA'],
+            'HONDA': ['HONDA'],
+            'NISSAN': ['NISSAN'],
+            'VOLVO': ['VOLVO'],
+            'GENESIS': ['GENESIS'],
+            'SSANGYONG': ['SSANGYONG'],
+            'TESLA': ['TESLA'],
+            'LEXUS': ['LEXUS'],
+            'MINI': ['MINI'],
+        }
+        expanded = []
+        for c in candidates:
+            expanded.append(c)
+            for alias in alias_map.get(c, []):
+                if alias not in expanded:
+                    expanded.append(alias)
+        expanded = self._dedupe(expanded)
+
+        if self._select_by_text_fuzzy(By.NAME, 'TempVehDetails[make_id]', expanded, "?쒖“??):
+            return True
+
+        if self._select_by_text_candidates(
+            ['TempVehDetails[make_id]'],
+            expanded,
+            "?쒖“??,
+            name_patterns=['make', 'maker', 'manufacturer'],
+            label_keywords=['?쒖“??, '硫붿씠而?, 'maker', 'manufacturer']
+        ):
+            return True
+        return False
+
+    def _load_make_model_reference(self) -> None:
+        if self._bf_model_ref_loaded:
+            return
+        self._bf_model_ref_loaded = True
+        try:
+            import gspread
+            from google.oauth2.service_account import Credentials
+            from config import SERVICE_ACCOUNT_FILE
+
+            scopes = [
+                'https://www.googleapis.com/auth/spreadsheets.readonly',
+                'https://www.googleapis.com/auth/drive.readonly',
+            ]
+            creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=scopes)
+            gc = gspread.authorize(creds)
+            ss = gc.open_by_key(BF_MAKE_MODEL_SHEET_ID)
+
+            ws = None
+            for title in BF_MAKE_MODEL_WORKSHEETS:
+                try:
+                    ws = ss.worksheet(title)
+                    break
+                except Exception:
+                    continue
+            if ws is None:
+                ws = ss.get_worksheet(0)
+            if ws is None:
+                return
+
+            rows = ws.get_all_values()
+            if len(rows) < 2:
+                return
+
+            headers = [h.strip().lower() for h in rows[0]]
+            make_idx = 0
+            model_idx = 1
+            for i, h in enumerate(headers):
+                if h in ('硫붿씠而?, 'maker', 'manufacturer'):
+                    make_idx = i
+                if h in ('紐⑤뜽', 'model'):
+                    model_idx = i
+
+            make_models = {}
+            for row in rows[1:]:
+                if len(row) <= max(make_idx, model_idx):
+                    continue
+                make = row[make_idx].strip().upper()
+                model = row[model_idx].strip()
+                if not make or not model:
+                    continue
+                make_models.setdefault(make, set()).add(model)
+
+            self._bf_make_models = {k: sorted(v) for k, v in make_models.items()}
+            print(f"[INFO] 鍮꾪룷?뚮뱶 紐⑤뜽 ?덊띁?곗뒪 濡쒕뵫 ?꾨즺: ?쒖“??{len(self._bf_make_models)}媛?)
+        except Exception as e:
+            print(f"[寃쎄퀬] 鍮꾪룷?뚮뱶 紐⑤뜽 ?덊띁?곗뒪 濡쒕뵫 ?ㅽ뙣: {e}")
+
+    def _load_local_model_mappings(self) -> None:
+        if self._local_model_mapping_loaded:
+            return
+
+        self._local_model_mapping_loaded = True
+        self._local_model_mappings = []
+
+        try:
+            import openpyxl
+        except ImportError as e:
+            print(f"[寃쎄퀬] 濡쒖뺄 紐⑤뜽 留ㅽ븨 濡쒕뵫 ?ㅽ뙣(openpyxl ?놁쓬): {e}")
+            return
+
+        loaded_count = 0
+        for file_name in LOCAL_MODEL_MAPPING_FILES:
+            file_path = os.path.join(os.getcwd(), file_name)
+            if not os.path.exists(file_path):
+                continue
+
+            try:
+                wb = openpyxl.load_workbook(file_path, data_only=True)
+            except Exception as e:
+                print(f"[寃쎄퀬] 濡쒖뺄 紐⑤뜽 留ㅽ븨 ?뚯씪 ?닿린 ?ㅽ뙣: {file_name} ({e})")
+                continue
+
+            for ws in wb.worksheets:
+                for row in ws.iter_rows(min_row=2, values_only=True):
+                    if not row or len(row) < 8:
+                        continue
+                    encar_model = str(row[1] or "").strip()
+                    bf_model = str(row[3] or "").strip()
+                    if not encar_model or not bf_model:
+                        continue
+
+                    mapping = {
+                        'keyword': encar_model,
+                        'keyword_norm': self._normalize_match_text(encar_model),
+                        'model': bf_model,
+                        'make': str(row[4] or "").strip(),
+                        'body_type': str(row[5] or "").strip(),
+                        'doors': self._extract_numeric_text(row[6]),
+                        'seats': self._extract_numeric_text(row[7]),
+                        'sheet': ws.title,
+                    }
+                    self._local_model_mappings.append(mapping)
+                    loaded_count += 1
+
+        if loaded_count:
+            self._local_model_mappings.sort(
+                key=lambda item: len(item.get('keyword_norm') or item.get('keyword') or ''),
+                reverse=True,
+            )
+            print(f"[INFO] 濡쒖뺄 紐⑤뜽 留ㅽ븨 濡쒕뵫 ?꾨즺: {loaded_count}嫄?)
+        else:
+            print("[寃쎄퀬] 濡쒖뺄 紐⑤뜽 留ㅽ븨 ?곗씠?곌? ?놁뒿?덈떎")
+
+    def _normalize_match_text(self, text: str) -> str:
+        return re.sub(r'[^0-9a-z媛-??+', '', (text or "").lower())
+
+    def _extract_numeric_text(self, value) -> str:
+        if value is None:
+            return ""
+        text = str(value).strip()
+        if not text:
+            return ""
+        match = re.search(r'\d+', text)
+        return match.group(0) if match else text
+
+    def _find_local_model_mapping(self, car_type: str) -> dict:
+        if not car_type:
+            return {}
+
+        self._load_local_model_mappings()
+        if not self._local_model_mappings:
+            return {}
+
+        car_type_text = car_type.strip()
+        car_type_norm = self._normalize_match_text(car_type_text)
+        for mapping in self._local_model_mappings:
+            keyword = mapping.get('keyword', '')
+            keyword_norm = mapping.get('keyword_norm', '')
+            if keyword and keyword in car_type_text:
+                print(f"  濡쒖뺄 紐⑤뜽 留ㅽ븨: '{car_type_text}' -> '{mapping['model']}' ({mapping['sheet']})")
+                return mapping
+            if keyword_norm and keyword_norm in car_type_norm:
+                print(f"  濡쒖뺄 紐⑤뜽 留ㅽ븨: '{car_type_text}' -> '{mapping['model']}' ({mapping['sheet']})")
+                return mapping
+
+        return {}
+
+    def _get_model_from_reference(self, make_name: str, car_type: str, model_hint: str) -> str:
+        if not make_name:
+            return ""
+        self._load_make_model_reference()
+        models = self._bf_make_models.get((make_name or "").upper(), [])
+        if not models:
+            return ""
+
+        candidates = self._get_model_candidates(car_type, model_hint)
+
+        best_model = ""
+        best_score = 0.0
+        for candidate in candidates:
+            c_norm = self._normalize_key(candidate)
+            if not c_norm:
+                continue
+            for model in models:
+                m_norm = self._normalize_key(model)
+                if not m_norm:
+                    continue
+                if c_norm in m_norm or m_norm in c_norm:
+                    score = 0.95
+                else:
+                    score = SequenceMatcher(None, c_norm, m_norm).ratio()
+                if score > best_score:
+                    best_score = score
+                    best_model = model
+
+        if best_model and best_score >= 0.55:
+            print(f"  紐⑤뜽 ?덊띁?곗뒪 留ㅼ묶: '{model_hint or car_type}' ??'{best_model}' ({best_score:.2f})")
+            return best_model
+        return ""
+
+    # ?? ?ы띁: 紐⑤뜽 ?쒕∼?ㅼ슫 ?쇱? 留ㅼ묶 ???ㅽ뙣 ???띿뒪??吏곸젒 ?낅젰 ???????
+    def _select_model_fuzzy(self, model_name: str) -> bool:
+        candidate_values = self._get_model_candidates(model_name, model_name)
+        if not candidate_values:
+            return False
+        try:
+            sel = self._get_model_select()
+            if sel is None:
+                print("  [寃쎄퀬] 紐⑤뜽 select瑜?李얠? 紐삵뻽?듬땲??)
+                return False
+            valid_opts = [o.text for o in sel.options
+                          if o.text.strip() and o.get_attribute('value')]
+            if not valid_opts:
+                raise NoSuchElementException("鍮?select")
+
+            best_text, best_score = "", 0.0
+            for candidate in candidate_values:
+                model_lower = candidate.lower()
+                for opt in valid_opts:
+                    opt_lower = opt.lower()
+                    # 吏곸젒 ?ы븿 愿怨??곗꽑
+                    if model_lower in opt_lower or opt_lower in model_lower:
+                        score = 0.95
+                    else:
+                        score = SequenceMatcher(None, model_lower, opt_lower).ratio()
+                    if score > best_score:
+                        best_score, best_text = score, opt
+
+            if best_text:
+                sel.select_by_visible_text(best_text)
+                print(f"  紐⑤뜽: '{candidate_values[0]}' ??'{best_text}' (?좎궗?? {best_score:.2f})")
+                return True
+
+            print(f"  [寃쎄퀬] 紐⑤뜽 留ㅼ묶 ?ㅽ뙣: '{candidate_values[0]}' (?좏깮 媛???듭뀡 ?놁쓬)")
+            return False
+
+        except (NoSuchElementException, UnexpectedTagNameException):
+            print("  [寃쎄퀬] 紐⑤뜽 select瑜?李얠? 紐삵뻽嫄곕굹 select媛 鍮꾩뼱 ?덉뒿?덈떎")
+            return False
+        except Exception as e:
+            print(f"  [寃쎄퀬] 紐⑤뜽 ?좏깮 ?ㅻ쪟: {e}")
+            return False
+
+    def _get_model_select(self):
+        for selector in MODEL_SELECT_CANDIDATES:
+            try:
+                elem = self.driver.find_element(By.NAME, selector)
+            except NoSuchElementException:
+                continue
+            if elem.tag_name.lower() != 'select':
+                continue
+            try:
+                return Select(elem)
+            except UnexpectedTagNameException:
+                continue
+        return None
+
+    # ?? ?ы띁: 李⑤웾 ???異붿텧 ?????????????????????????????????????????
+    def _get_body_type(self, car_type: str) -> str:
+        if not car_type:
+            return 'Sedan'
+        car_upper = car_type.upper()
+        for body, keywords in BODY_TYPE_MAP.items():
+            for kw in keywords:
+                if kw.upper() in car_upper:
+                    return body
+        return 'Sedan'
+
+    def _get_body_type_text_candidates(self, body_type: str) -> list[str]:
+        candidates = [body_type]
+        for t in BODY_TYPE_TEXT_CANDIDATES.get(body_type, []):
+            if t not in candidates:
+                candidates.append(t)
+        return candidates
+
+    def _normalize_body_type_alias(self, body_type: str) -> str:
+        body_type = (body_type or "").strip()
+        if not body_type:
+            return ""
+        return BODY_TYPE_ALIASES.get(body_type.lower(), body_type)
+
+    def _get_body_type_candidates(self, local_spec: dict, car_type: str) -> list[str]:
+        candidates = []
+
+        def add_candidate(value: str):
+            value = (value or "").strip()
+            if value and value not in candidates:
+                candidates.append(value)
+
+        local_body_type = (local_spec or {}).get('body_type', '')
+        add_candidate(local_body_type)
+
+        canonical_body_type = self._normalize_body_type_alias(local_body_type)
+        if canonical_body_type:
+            for value in self._get_body_type_text_candidates(canonical_body_type):
+                add_candidate(value)
+        else:
+            body_type = self._get_body_type(car_type)
+            for value in self._get_body_type_text_candidates(body_type):
+                add_candidate(value)
+
+        return candidates
+
+    # ?? ?ы띁: ?됱긽 留ㅽ븨 (?붿뭅 ??鍮꾪룷?뚮뱶) ???????????????????????????
+    def _map_color(self, color: str) -> str:
+        if not color:
+            return color
+        # ?뺥솗 留ㅼ묶
+        mapped = COLOR_MAP_KO.get(color.strip())
+        if mapped:
+            return mapped
+        # 遺遺?留ㅼ묶 (怨듬갚 ?쒓굅 ?뺢퇋??
+        color_ns = color.replace(' ', '')
+        for k, v in COLOR_MAP_KO.items():
+            if k.replace(' ', '') in color_ns or color_ns in k.replace(' ', ''):
+                return v
+        return color  # 留ㅽ븨 ?놁쑝硫??먮낯 洹몃?濡?
+
+    # ?? ?ы띁: ?곕즺 ???留ㅽ븨 ?????????????????????????????????????????
+    def _map_fuel(self, fuel_type: str) -> str:
+        if not fuel_type:
+            return ""
+        for k, v in FUEL_MAP.items():
+            if k.lower() in fuel_type.lower():
+                return v
+        return fuel_type
+
+    # ?? ?ы띁: ?듭뀡 泥댄겕諛뺤뒪 ?좏깮 ?????????????????????????????????????
+    def _fill_options(self, options) -> None:
+        """?듭뀡 泥댄겕諛뺤뒪 ?좏깮 (mapped_name?쇰줈 ?쇰꺼 留ㅼ묶)"""
+        checked_count = 0
+        for opt in options:
+            if not opt.mapped_name:
+                continue
+            try:
+                # ?쇰꺼 ?띿뒪?몃줈 泥댄겕諛뺤뒪 李얘린 (遺遺??쇱튂)
+                label = self.driver.find_element(
+                    By.XPATH,
+                    f"//label[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+                    f"'abcdefghijklmnopqrstuvwxyz'), '{opt.mapped_name.lower()}')]"
+                )
+                # label??for ?띿꽦?쇰줈 input 李얘린
+                for_id = label.get_attribute('for')
+                if for_id:
+                    checkbox = self.driver.find_element(By.ID, for_id)
+                else:
+                    checkbox = label.find_element(By.XPATH, ".//input[@type='checkbox']")
+
+                if not checkbox.is_selected():
+                    # 1李? ?ㅽ겕濡????쇰컲 ?대┃
+                    self.driver.execute_script(
+                        "arguments[0].scrollIntoView({block:'center'});", checkbox
+                    )
+                    time.sleep(0.1)
+                    try:
+                        checkbox.click()
+                    except Exception:
+                        # 2李? JS ?대┃ (而ㅼ뒪? ?ㅽ???泥댄겕諛뺤뒪 ???
+                        self.driver.execute_script("arguments[0].click();", checkbox)
+                    checked_count += 1
+                    print(f"  ?듭뀡: '{opt.name}' ??'{opt.mapped_name}'")
+
+            except NoSuchElementException:
+                # 鍮꾪룷?뚮뱶 ?쇱뿉 ?대떦 ?듭뀡 ?놁쓬 (?뺤긽)
+                pass
+            except Exception as e:
+                print(f"  [寃쎄퀬] ?듭뀡 泥섎━ ?ㅻ쪟 ({opt.mapped_name}): {e}")
+
+        if checked_count:
+            print(f"  [OK] {checked_count}媛??듭뀡 泥댄겕 ?꾨즺")
+        else:
+            print(f"  [INFO] 留ㅽ븨???듭뀡 ?놁쓬 (珥?{len(options)}媛?")
+
+    def _click_option_label_by_xpath(self, xpath: str, label: str = "") -> bool:
+        """XPath濡??듭뀡 ?쇰꺼??李얠븘 泥댄겕諛뺤뒪 ?좏깮 (?대? ?좏깮??寃쎌슦 ?ㅽ궢)"""
+        try:
+            label_el = self.driver.find_element(By.XPATH, xpath)
+            for_id = label_el.get_attribute('for')
+            if for_id:
+                try:
+                    checkbox = self.driver.find_element(By.ID, for_id)
+                    if checkbox.is_selected():
+                        return True
+                except Exception:
+                    pass
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", label_el)
+            time.sleep(0.1)
+            try:
+                label_el.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", label_el)
+            print(f"  ?듭뀡(XPath): '{label}'")
+            return True
+        except NoSuchElementException:
+            print(f"  [寃쎄퀬] ?듭뀡 ?쇰꺼 ?놁쓬 (XPath): {label}")
+            return False
+        except Exception as e:
+            print(f"  [寃쎄퀬] ?듭뀡 ?쇰꺼 ?대┃ ?ㅽ뙣 ({label}): {e}")
+            return False
+
+    # ?? ?ы띁: 蹂?띻린 留ㅽ븨 ????????????????????????????????????????????
+    def _map_transmission(self, transmission: str) -> str:
+        if not transmission:
+            return ""
+        for k, v in TRANSMISSION_MAP.items():
+            if k.lower() in transmission.lower():
+                return v
+        return transmission
+
+    def _download_images_from_drive_link(self, drive_link: str, row_num: int) -> list[str]:
+        """援ш? ?쒕씪?대툕?먯꽌 ?대?吏 ?ㅼ슫濡쒕뱶 (濡쒖뺄 drive_image_downloader ?ъ슜)"""
+        if not drive_link:
+            print("  [INFO] drive_link 鍮꾩뼱?덉쓬 - ?대?吏 ?ㅼ슫濡쒕뱶 嫄대꼫?")
+            return []
+        try:
+            from drive_image_downloader import DriveImageDownloader
+
+            downloader = DriveImageDownloader()
+            downloader.setup_driver()
+            try:
+                files = downloader.download_images(drive_link, row_num or 0)
+                print(f"  [INFO] ?쒕씪?대툕 ?대?吏 ?ㅼ슫濡쒕뱶 ?꾨즺: {len(files)}媛?)
+                for f in files[:5]:
+                    sz = os.path.getsize(f) if os.path.exists(f) else 'N/A'
+                    print(f"    - {os.path.basename(f)} ({sz} bytes)")
+                return files
+            finally:
+                downloader.close()
+        except Exception as e:
+            print(f"  [寃쎄퀬] ?쒕씪?대툕 ?대?吏 ?ㅼ슫濡쒕뱶 ?ㅽ뙣: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def _download_images_from_mangoworldcar(self, url: str, row_num: int) -> list[str]:
+        """留앷퀬?붾뱶移?寃???섏씠吏?먯꽌 ?대?吏 ?ㅼ슫濡쒕뱶
+        1) URL濡??대룞 (readonly=true ?쒓굅)
+        2) ?ㅼ슫濡쒕뱶 踰꾪듉 ?대┃ (article[4] ??div)
+        3) ?뺤씤 踰꾪듉 ?대┃
+        4) ?ㅼ슫濡쒕뱶 ?꾨즺 ?湲???downloaded_images/row_{row_num}/ 濡??대룞/?뺤텞?댁젣
+        """
+        DOWNLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloaded_images")
+        os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
+        # 留앷퀬?붾뱶移??ㅼ슫濡쒕뱶 ?꾩슜 ?쒕씪?대쾭 (?ㅼ슫濡쒕뱶 寃쎈줈 ?ㅼ젙 ?꾩슂)
+        from selenium.webdriver.chrome.options import Options as ChromeOptions
+        dl_options = ChromeOptions()
+        chrome_binary = os.getenv('CHROME_BINARY')
+        if chrome_binary:
+            dl_options.binary_location = chrome_binary
+        if self.headless:
+            dl_options.add_argument('--headless')
+            dl_options.add_argument('--no-sandbox')
+            dl_options.add_argument('--disable-dev-shm-usage')
+        dl_options.add_argument('--window-size=1920,1080')
+        dl_options.add_experimental_option('prefs', {
+            'download.default_directory': os.path.abspath(DOWNLOAD_FOLDER),
+            'download.prompt_for_download': False,
+            'download.directory_upgrade': True,
+            'safebrowsing.enabled': True,
+        })
+
+        dl_driver = webdriver.Chrome(options=dl_options)
+        try:
+            clean_url = url.replace('?readonly=true', '').replace('&readonly=true', '')
+            print(f"  [INFO] 留앷퀬?붾뱶移?寃???섏씠吏 ?대룞: {clean_url}")
+            dl_driver.get(clean_url)
+            time.sleep(3)
+
+            # ?ㅼ슫濡쒕뱶 踰꾪듉 ?먯깋 (radix ID???숈쟻?쇰줈 蹂??
+            download_btn = None
+            download_xpaths = [
+                '//*[@id="radix-:r1:"]/div[2]/div/div/div/article[4]/section/div/div/div',
+                '//*[@id="radix-:r0:"]/div[2]/div/div/div/article[4]/section/div/div/div',
+                '//*[@id="radix-:r2:"]/div[2]/div/div/div/article[4]/section/div/div/div',
+                '//*[contains(@id,"radix-")]/div[2]/div/div/div/article[4]/section/div/div/div',
+                '//article[4]/section/div/div/div',
+            ]
+            for xpath in download_xpaths:
+                try:
+                    download_btn = WebDriverWait(dl_driver, 5).until(
+                        EC.element_to_be_clickable((By.XPATH, xpath))
+                    )
+                    print(f"  [INFO] ?ㅼ슫濡쒕뱶 踰꾪듉 諛쒓껄")
+                    break
+                except Exception:
+                    continue
+            if download_btn is None:
+                print("  [寃쎄퀬] 留앷퀬?붾뱶移??ㅼ슫濡쒕뱶 踰꾪듉??李얠쓣 ???놁쓬")
+                return []
+            dl_driver.execute_script("arguments[0].click();", download_btn)
+            time.sleep(2)
+
+            # ?뺤씤 踰꾪듉 ?먯깋
+            confirm_btn = None
+            confirm_xpaths = [
+                '//*[@id="radix-:r6:"]/div[2]/button[1]',
+                '//*[@id="radix-:r5:"]/div[2]/button[1]',
+                '//*[@id="radix-:r4:"]/div[2]/button[1]',
+                '//*[@id="radix-:r7:"]/div[2]/button[1]',
+                '//*[contains(@id,"radix-")]/div[2]/button[1]',
+                '//*[@role="dialog"]//button[1]',
+            ]
+            for xpath in confirm_xpaths:
+                try:
+                    confirm_btn = WebDriverWait(dl_driver, 5).until(
+                        EC.element_to_be_clickable((By.XPATH, xpath))
+                    )
+                    print(f"  [INFO] ?뺤씤 踰꾪듉 諛쒓껄")
+                    break
+                except Exception:
+                    continue
+            if confirm_btn is None:
+                print("  [寃쎄퀬] 留앷퀬?붾뱶移??뺤씤 踰꾪듉??李얠쓣 ???놁쓬")
+                return []
+            confirm_btn.click()
+            print("  [INFO] ?뺤씤 踰꾪듉 ?대┃, ?ㅼ슫濡쒕뱶 ?쒖옉")
+
+            # ?ㅼ슫濡쒕뱶 ?꾨즺 ?湲?(理쒕? 60珥?
+            row_dir = os.path.join(DOWNLOAD_FOLDER, f"row_{row_num}")
+            if os.path.exists(row_dir):
+                shutil.rmtree(row_dir, ignore_errors=True)
+                print(f"  [INFO] 湲곗〈 row_{row_num} ?대뜑 ?뺣━ ?꾨즺")
+            os.makedirs(row_dir, exist_ok=True)
+
+            pre_files = set()
+            for fname in os.listdir(DOWNLOAD_FOLDER):
+                fpath = os.path.join(DOWNLOAD_FOLDER, fname)
+                if fname.startswith('row_'):
+                    continue
+                if os.path.isfile(fpath):
+                    pre_files.add(fname)
+
+            print("  [INFO] ?ㅼ슫濡쒕뱶 ?꾨즺 ?湲?以?..")
+            time.sleep(5)
+            deadline = time.time() + 60
+            while time.time() < deadline:
+                files = [f for f in os.listdir(DOWNLOAD_FOLDER)
+                         if f not in pre_files
+                         if not f.endswith('.crdownload') and not f.endswith('.tmp')
+                         and os.path.isfile(os.path.join(DOWNLOAD_FOLDER, f))]
+                if files:
+                    break
+                time.sleep(2)
+
+            # ZIP ?먮뒗 ?대?吏 ?뚯씪 泥섎━
+            image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+            for fname in os.listdir(DOWNLOAD_FOLDER):
+                if fname in pre_files:
+                    continue
+                fpath = os.path.join(DOWNLOAD_FOLDER, fname)
+                if not os.path.isfile(fpath):
+                    continue
+                if fname.endswith('.zip'):
+                    with zipfile.ZipFile(fpath, 'r') as z:
+                        z.extractall(row_dir)
+                    os.remove(fpath)
+                    print(f"  [INFO] ZIP ?뺤텞 ?댁젣 ?꾨즺: {fname}")
+                elif any(fname.lower().endswith(ext) for ext in image_extensions):
+                    shutil.move(fpath, os.path.join(row_dir, fname))
+
+            # row_dir ???대?吏 ?섏쭛 (?먯뿰 ?뺣젹)
+            image_files = []
+            for root, _, files in os.walk(row_dir):
+                for fname in files:
+                    if any(fname.lower().endswith(ext) for ext in image_extensions):
+                        image_files.append(os.path.join(root, fname))
+
+            def natural_key(path):
+                parts = re.split(r'(\d+)', os.path.basename(path))
+                return [int(p) if p.isdigit() else p.lower() for p in parts]
+            image_files.sort(key=natural_key)
+
+            print(f"  [INFO] 留앷퀬?붾뱶移??대?吏 {len(image_files)}媛??ㅼ슫濡쒕뱶 ?꾨즺")
+            return image_files
+
+        except Exception as e:
+            print(f"  [寃쎄퀬] 留앷퀬?붾뱶移??대?吏 ?ㅼ슫濡쒕뱶 ?ㅽ뙣: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+        finally:
+            dl_driver.quit()
+
+    def _find_listing_edit_url(self, chassis_no: str) -> str | None:
+        """留ㅻЪ 紐⑸줉?먯꽌 李⑤?踰덊샇濡??섏젙 ?섏씠吏 URL 李얘린 (?щ윭 ???쒗쉶)"""
+        if not chassis_no:
+            return None
+
+        BASE_URL = (
+            "https://external-vendor.beforward.jp/"
+            "?limit=50"
+            "&vendor_group_id%5B0%5D=1284"
+            "&registration_date_from=2025-03-10"
+            "&price_type=1"
+            "&current_tab_counter_flg=1"
+        )
+
+        # ?湲????곗꽑, ?댄썑 ?뺣낫?섏젙, ?깅줉?꾨즺 ?쒖꽌濡?寃??
+        TABS_TO_SEARCH = [1, 2, 3, 4, 5, 6]
+
+        JS_FIND_EDIT = """
+            var chassis = arguments[0];
+            var rows = document.querySelectorAll('tr');
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].textContent.indexOf(chassis) !== -1) {
+                    var links = rows[i].querySelectorAll('a');
+                    for (var j = 0; j < links.length; j++) {
+                        var href = links[j].getAttribute('href') || '';
+                        if (href.indexOf('/edit/') !== -1 || href.indexOf('tempVehDetails/edit') !== -1) {
+                            return links[j].href || href;
+                        }
+                    }
+                    var editLink = rows[i].querySelector('a[href*="edit"]');
+                    if (editLink) return editLink.href;
+                }
+            }
+            return null;
+        """
+
+        try:
+            print(f"  [INFO] 留ㅻЪ 寃?? {chassis_no}")
+
+            for tab in TABS_TO_SEARCH:
+                url = f"{BASE_URL}&tab={tab}#search-result-title"
+                self.driver.get(url)
+                time.sleep(1.5)
+
+                result = self.driver.execute_script(JS_FIND_EDIT, chassis_no)
+                if result:
+                    print(f"  [OK] 留ㅻЪ ?섏젙 URL 諛쒓껄 (tab={tab}): {result[:80]}")
+                    return result
+
+            print(f"  [寃쎄퀬] 留ㅻЪ '{chassis_no}' ?섏젙 ?섏씠吏瑜?李얠? 紐삵븿 (?꾩껜 ??寃??")
+            return None
+        except Exception as e:
+            print(f"  [寃쎄퀬] 留ㅻЪ 寃???ㅻ쪟: {e}")
+            return None
+
+    def _upload_images_to_form(self, image_files: list[str]) -> bool:
+        """鍮꾪룷?뚮뱶 ?쇱쓽 ?뚯씪 ?낅젰???대?吏 ?뚯씪 ?낅줈??""
+        import uuid
+        import shutil as _shutil
+
+        temp_copy_paths = []
+        try:
+            if not image_files:
+                return False
+
+            abs_paths = [os.path.abspath(p) for p in image_files if os.path.exists(p)]
+            if not abs_paths:
+                print("  [寃쎄퀬] ?낅줈??媛?ν븳 ?대?吏 ?뚯씪???놁뒿?덈떎")
+                return False
+
+            # ?? ?꾩옱 ?섏씠吏 ?곹깭 吏꾨떒 ??
+            cur_url = self.driver.current_url
+            print(f"  [DEBUG] ?낅줈???섏씠吏 URL: {cur_url}")
+
+            # ?? 湲곗〈 ?낅줈???대?吏 ?뺤씤 & ??젣 ??
+            existing_count = self._delete_existing_images()
+            if existing_count > 0:
+                print(f"  [INFO] 湲곗〈 ?대?吏 {existing_count}媛???젣 ?꾨즺")
+                time.sleep(0.5)
+            visible_before = self._get_uploaded_image_count()
+            print(f"  [DEBUG] ?낅줈?????대?吏 ?쒖떆 媛쒖닔: {visible_before}")
+
+            # ?? ?뚯씪紐??좊땲?ы솕 (duplicate file name 諛⑹?) ??
+            # ??꾩뒪?ы봽_UUID_?몃뜳???뺤떇?쇰줈 ?쒕쾭???덈? 議댁옱?????녿뒗 ?대쫫 ?앹꽦
+            ts = int(time.time())
+            renamed_paths = []
+            for idx, p in enumerate(abs_paths):
+                dirname = os.path.dirname(p)
+                ext = os.path.splitext(p)[1].lower()
+                unique_name = f"bf{ts}_{uuid.uuid4().hex[:8]}_{idx}{ext}"
+                new_path = os.path.join(dirname, unique_name)
+                try:
+                    _shutil.copy2(p, new_path)
+                    renamed_paths.append(new_path)
+                    temp_copy_paths.append(new_path)
+                    print(f"  [INFO] ?뚯씪紐?蹂?? {os.path.basename(p)} ??{unique_name}")
+                except Exception as e:
+                    print(f"  [寃쎄퀬] ?뚯씪紐?蹂???ㅽ뙣({e}), ?먮낯 ?ъ슜: {os.path.basename(p)}")
+                    renamed_paths.append(p)
+            abs_paths = renamed_paths
+
+            # ?? ?뚯씪 ?꾩넚 (???뚯씪?? 留ㅻ쾲 file input ?ы깘?? ??
+            uploaded = 0
+            for i, fp in enumerate(abs_paths):
+                try:
+                    before_count = self._get_uploaded_image_count()
+                    # ??留??낅줈?쒕쭏??file input???덈줈 李얘린 (JS媛 援먯껜?????덉쓬)
+                    file_input = self._find_file_input()
+                    if not file_input:
+                        print(f"  [寃쎄퀬] file input 李얘린 ?ㅽ뙣 - ?대?吏 {i+1} 嫄대꼫?")
+                        continue
+
+                    # file input 媛?珥덇린??
+                    self.driver.execute_script("arguments[0].value = '';", file_input)
+                    time.sleep(0.1)
+
+                    file_input.send_keys(fp)
+                    print(f"  [OK] ?대?吏 {i+1}/{len(abs_paths)}: {os.path.basename(fp)}")
+
+                    # ?낅줈???꾨즺 ?湲?(?꾨줈洹몃젅??諛???
+                    self._wait_upload_complete()
+
+                    # duplicate 紐⑤떖 泥댄겕 & ?リ린 (以묐났?댁뼱???낅줈???깃났?쇰줈 移댁슫??
+                    if self._close_duplicate_modal():
+                        print(f"  [INFO] 以묐났 媛먯? - 紐⑤떖 ?リ린 ({os.path.basename(fp)})")
+                        uploaded += 1
+                        continue
+
+                    after_count = self._wait_for_uploaded_image_count(before_count, timeout=12)
+                    if after_count > before_count:
+                        uploaded += 1
+                        print(f"  [DEBUG] ?낅줈?????대?吏 ?쒖떆 媛쒖닔: {after_count}")
+                    else:
+                        print(f"  [寃쎄퀬] ?대?吏 {i+1} ?낅줈???뺤씤 ?ㅽ뙣 - ?몃꽕??利앷? ?놁쓬")
+                except Exception as e:
+                    print(f"  [寃쎄퀬] ?대?吏 {i+1} ?꾩넚 ?ㅽ뙣: {e}")
+                    self._close_duplicate_modal()
+
+            target_count = max(1, uploaded)
+            final_count = self._wait_for_final_uploaded_images(target_count, timeout=45, stable_seconds=4)
+            print(f"  [OK] ?대?吏 ?낅줈???꾨즺: {uploaded}/{len(abs_paths)}媛?)
+            print(f"  [DEBUG] 理쒖쥌 ?대?吏 ?쒖떆 媛쒖닔: {final_count}")
+            time.sleep(1)
+            return uploaded > 0 and final_count > 0
+        except Exception as e:
+            print(f"  [寃쎄퀬] ?대?吏 ?낅줈???ㅽ뙣: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+        finally:
+            for temp_path in temp_copy_paths:
+                try:
+                    if os.path.exists(temp_path):
+                        os.remove(temp_path)
+                except Exception:
+                    pass
+
+    def _cleanup_downloaded_images(self, image_files: list[str]) -> None:
+        """?낅줈???꾨즺 ??濡쒖뺄 ?ㅼ슫濡쒕뱶 ?대?吏瑜??뺣━?쒕떎."""
+        if not image_files:
+            return
+
+        row_dirs = set()
+        for image_path in image_files:
+            try:
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                row_dirs.add(os.path.dirname(image_path))
+            except Exception as e:
+                print(f"  [寃쎄퀬] ?대?吏 ??젣 ?ㅽ뙣: {image_path} | {e}")
+
+        for row_dir in sorted(row_dirs, key=len, reverse=True):
+            try:
+                if os.path.isdir(row_dir) and not os.listdir(row_dir):
+                    os.rmdir(row_dir)
+            except Exception:
+                pass
+
+    def _find_file_input(self):
+        """?낅줈?쒖슜 file input ?붿냼瑜?李얠븘 諛섑솚 (留ㅻ쾲 ?덈줈 ?먯깋)"""
+        # ?섏젙 ?섏씠吏 ?낅줈??踰꾪듉 XPath
+        EDIT_PAGE_UPLOAD_BTN = '/html/body/div[2]/div[1]/div[1]/div/div/div[1]/div[1]/div[2]/button'
+        UPLOAD_LABEL_XPATH = '//*[@id="public_pane"]/ul/li/label'
+        file_input = None
+
+        # 諛⑸쾿 1: ?섏젙 ?섏씠吏 ?낅줈??踰꾪듉 洹쇱쿂 file input
+        try:
+            upload_btn = self.driver.find_element(By.XPATH, EDIT_PAGE_UPLOAD_BTN)
+            # 踰꾪듉??遺紐??붿냼?먯꽌 file input ?먯깋
+            parent = upload_btn.find_element(By.XPATH, "./..")
+            file_input = parent.find_element(By.CSS_SELECTOR, "input[type='file']")
+        except Exception:
+            pass
+
+        # 諛⑸쾿 2: 踰꾪듉 ?대┃?쇰줈 file input ?앹꽦 ?쒕룄
+        if not file_input:
+            try:
+                upload_btn = self.driver.find_element(By.XPATH, EDIT_PAGE_UPLOAD_BTN)
+                # ?대┃ ??file input 媛쒖닔 ?뺤씤
+                before = self.driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
+                # JS濡?file input 吏곸젒 ?앹꽦?섏뿬 踰꾪듉???곌껐
+                file_input = self.driver.execute_script("""
+                    var btn = arguments[0];
+                    // 湲곗〈 file input 李얘린 (?④꺼吏?寃??ы븿)
+                    var container = btn.closest('div');
+                    var input = container ? container.querySelector('input[type="file"]') : null;
+                    if (!input) {
+                        // ?곸쐞 3?④퀎源뚯? ?먯깋
+                        var parent = btn.parentElement;
+                        for (var i = 0; i < 3 && parent && !input; i++) {
+                            input = parent.querySelector('input[type="file"]');
+                            parent = parent.parentElement;
+                        }
+                    }
+                    return input;
+                """, upload_btn)
+            except Exception:
+                pass
+
+        # 諛⑸쾿 3: public_pane label ?대?
+        if not file_input:
+            try:
+                label_el = self.driver.find_element(By.XPATH, UPLOAD_LABEL_XPATH)
+                file_input = label_el.find_element(By.CSS_SELECTOR, "input[type='file']")
+            except Exception:
+                pass
+
+        # 諛⑸쾿 4: ?섏씠吏 ?꾩껜 file input
+        if not file_input:
+            file_inputs = self.driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
+            if file_inputs:
+                file_input = file_inputs[0]
+
+        if not file_input:
+            return None
+
+        # hidden file input??send_keys 媛?ν븯?꾨줉 display 蹂댁옣
+        self.driver.execute_script("""
+            arguments[0].style.display = 'block';
+            arguments[0].style.visibility = 'visible';
+            arguments[0].style.height = '1px';
+            arguments[0].style.width = '1px';
+            arguments[0].style.opacity = '0.01';
+            arguments[0].style.position = 'absolute';
+        """, file_input)
+        return file_input
+
+    def _enter_image_upload_stage(self) -> bool:
+        """?꾩옱 ?뚮줈?곗뿉???대?吏 ?낅줈??媛?ν븳 ?곹깭濡?吏꾩엯?쒕떎."""
+        IMG_TAB_BTN_XPATHS = [
+            '/html/body/div[2]/div[1]/div[1]/div/div/div[1]/div[1]/div[2]/button',
+            "//*[@id='bulk_confirm_form']//button[contains(., 'Image') or contains(., 'PHOTO') or contains(., 'Photo')]",
+            "//*[@id='bulk_confirm_form']//a[contains(., 'Image') or contains(., 'PHOTO') or contains(., 'Photo')]",
+        ]
+
+        try:
+            if self._find_file_input():
+                print("  [OK] ?꾩옱 ?④퀎?먯꽌 ?대?吏 ?낅줈???붾㈃ ?뺤씤")
+                return True
+        except Exception:
+            pass
+
+        for xpath in IMG_TAB_BTN_XPATHS:
+            try:
+                tab_btn = WebDriverWait(self.driver, 5).until(
+                    EC.element_to_be_clickable((By.XPATH, xpath))
+                )
+                self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", tab_btn)
+                time.sleep(0.2)
+                try:
+                    tab_btn.click()
+                except Exception:
+                    self.driver.execute_script("arguments[0].click();", tab_btn)
+                time.sleep(2)
+
+                if self._find_file_input():
+                    print("  [OK] ?대?吏 ?낅줈???④퀎 吏꾩엯")
+                    return True
+            except Exception:
+                continue
+
+        print("  [寃쎄퀬] ?꾩옱 ?붾㈃?먯꽌 ?대?吏 ?낅줈???④퀎 吏꾩엯 ?ㅽ뙣")
+        return False
+
+    def _delete_existing_images(self) -> int:
+        """?낅줈???섏씠吏???대? 議댁옱?섎뒗 ?대?吏媛 ?덉쑝硫???젣 踰꾪듉 ?대┃"""
+        deleted = 0
+        try:
+            # 湲곗〈 ?대?吏????젣 踰꾪듉 ?먯깋 (?ㅼ뼇???⑦꽩)
+            delete_xpaths = [
+                "//*[@id='public_pane']//a[contains(@class,'delete')]",
+                "//*[@id='public_pane']//button[contains(@class,'delete')]",
+                "//*[@id='public_pane']//a[contains(@class,'remove')]",
+                "//*[@id='public_pane']//span[contains(@class,'delete')]",
+                "//a[contains(@onclick,'deleteImage') or contains(@onclick,'removeImage')]",
+                "//a[contains(@href,'deletePhoto') or contains(@href,'removePhoto')]",
+                "//*[contains(@class,'uploaded')]//a[contains(@class,'close') or contains(@class,'del')]",
+            ]
+            for xpath in delete_xpaths:
+                btns = self.driver.find_elements(By.XPATH, xpath)
+                for btn in btns:
+                    try:
+                        if btn.is_displayed():
+                            btn.click()
+                            time.sleep(0.2)
+                            # ?뺤씤 alert 泥섎━
+                            try:
+                                self.driver.switch_to.alert.accept()
+                                time.sleep(0.2)
+                            except Exception:
+                                pass
+                            deleted += 1
+                    except Exception:
+                        continue
+
+            # 湲곗〈 ?대?吏 媛쒖닔 ?뺤씤 (??젣 踰꾪듉???놁뼱???대?吏媛 ?덉쓣 ???덉쓬)
+            existing_imgs = self.driver.execute_script("""
+                var imgs = [];
+                var pane = document.getElementById('public_pane');
+                if (pane) {
+                    pane.querySelectorAll('img').forEach(function(img) {
+                        var src = img.getAttribute('src') || '';
+                        if (src && !src.includes('icon') && !src.includes('logo')) {
+                            imgs.push(src.substring(src.lastIndexOf('/') + 1));
+                        }
+                    });
+                }
+                return imgs;
+            """)
+            if existing_imgs:
+                print(f"  [DEBUG] ?섏씠吏 湲곗〈 ?대?吏 {len(existing_imgs)}媛? {existing_imgs[:5]}")
+        except Exception:
+            pass
+        return deleted
+
+    def _wait_upload_complete(self, timeout: int = 10) -> None:
+        """?낅줈???꾨즺 ?湲?(?꾨줈洹몃젅??諛?濡쒕뵫 ?щ씪吏??뚭퉴吏)"""
+        end = time.time() + timeout
+        # 理쒖냼 1珥??湲?        time.sleep(1)
+        while time.time() < end:
+            try:
+                # ?낅줈???꾨줈洹몃젅??諛붽? ?덉쑝硫??щ씪吏??뚭퉴吏 ?湲?
+                progress = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    ".progress:not([style*='display: none']), "
+                    ".uploading, .loading, "
+                    "[class*='progress']:not([style*='none'])"
+                )
+                visible = [p for p in progress if p.is_displayed()]
+                if not visible:
+                    return
+                time.sleep(0.5)
+            except Exception:
+                return
+
+    def _get_uploaded_image_count(self) -> int:
+        """?꾩옱 ?붾㈃???쒖떆???낅줈???대?吏 ?섎? ????쇰떎."""
+        try:
+            return int(self.driver.execute_script("""
+                var selectors = [
+                    '#public_pane img',
+                    '#public_pane li img',
+                    '#public_pane .uploaded img',
+                    '.uploaded img',
+                    'img[src*="upload"]',
+                    'img[src*="photo"]'
+                ];
+                var nodes = [];
+                selectors.forEach(function(sel) {
+                    document.querySelectorAll(sel).forEach(function(node) {
+                        if (!nodes.includes(node)) nodes.push(node);
+                    });
+                });
+                var count = 0;
+                nodes.forEach(function(node) {
+                    var src = (node.getAttribute('src') || '').toLowerCase();
+                    if (!src) return;
+                    if (src.includes('icon') || src.includes('logo') || src.includes('blank')) return;
+                    count += 1;
+                });
+                return count;
+            """) or 0)
+        except Exception:
+            return 0
+
+    def _wait_for_uploaded_image_count(self, before_count: int, timeout: int = 12) -> int:
+        """?낅줈????蹂댁씠???대?吏 ?섍? 利앷????뚭퉴吏 ?좎떆 ?湲고븳??"""
+        end = time.time() + timeout
+        last_count = before_count
+        while time.time() < end:
+            last_count = self._get_uploaded_image_count()
+            if last_count > before_count:
+                return last_count
+            time.sleep(0.5)
+        return last_count
+
+    def _wait_for_final_uploaded_images(
+        self,
+        expected_min_count: int,
+        timeout: int = 45,
+        stable_seconds: int = 4,
+    ) -> int:
+        """?깅뒫?섏씠吏濡??섏뼱媛湲??꾩뿉 ?대?吏 媛쒖닔媛 ?덉젙?붾맆 ?뚭퉴吏 湲곕떎由곕떎."""
+        end = time.time() + timeout
+        stable_start = None
+        last_count = self._get_uploaded_image_count()
+
+        while time.time() < end:
+            current_count = self._get_uploaded_image_count()
+
+            if current_count != last_count:
+                print(f"  [DEBUG] ?대?吏 媛쒖닔 蹂寃?媛먯?: {last_count} -> {current_count}")
+                last_count = current_count
+                stable_start = None
+            elif current_count >= expected_min_count:
+                if stable_start is None:
+                    stable_start = time.time()
+                elif time.time() - stable_start >= stable_seconds:
+                    return current_count
+
+            time.sleep(0.5)
+
+        return last_count
+
+    def _close_duplicate_modal(self) -> bool:
+        """'Can not upload duplicate file name' 寃쎄퀬 紐⑤떖 ?リ린
+        Returns: True if duplicate modal was found and closed, False otherwise
+        """
+        # 1. JS alert 泥댄겕
+        try:
+            alert = self.driver.switch_to.alert
+            alert_text = alert.text or ""
+            if 'duplicate' in alert_text.lower() or 'file name' in alert_text.lower():
+                alert.accept()
+                print(f"  [INFO] duplicate alert ?リ린: {alert_text[:60]}")
+                time.sleep(0.2)
+                return True
+        except Exception:
+            pass
+
+        # 2. lightbox 紐⑤떖 泥댄겕
+        try:
+            ok_btn = self.driver.find_element(
+                By.XPATH,
+                "//*[@id='lightbox']//input[@value='OK'] | "
+                "//*[@id='lightbox']//button[contains(text(),'OK')] | "
+                "//*[@id='lightbox']//a[contains(@class,'close')]"
+            )
+            if ok_btn.is_displayed():
+                ok_btn.click()
+                print("  [INFO] duplicate 寃쎄퀬 紐⑤떖 ?リ린 (lightbox)")
+                time.sleep(0.2)
+                return True
+        except Exception:
+            pass
+
+        # 3. ?쇰컲 紐⑤떖/?ㅼ씠?쇰줈洹?泥댄겕 (duplicate ?띿뒪???ы븿 ?щ? ?뺤씤)
+        try:
+            modals = self.driver.find_elements(
+                By.XPATH,
+                "//div[contains(@class,'modal') or contains(@class,'dialog') or contains(@class,'alert')]"
+            )
+            for modal in modals:
+                if modal.is_displayed():
+                    modal_text = modal.text.lower()
+                    is_duplicate = 'duplicate' in modal_text or 'file name' in modal_text
+                    # OK 踰꾪듉 ?대┃?섏뿬 紐⑤떖 ?リ린
+                    try:
+                        ok_btn = modal.find_element(
+                            By.XPATH,
+                            ".//input[@value='OK'] | .//button[contains(text(),'OK')]"
+                        )
+                        ok_btn.click()
+                        time.sleep(0.2)
+                    except Exception:
+                        pass
+                    if is_duplicate:
+                        print(f"  [INFO] duplicate 寃쎄퀬 紐⑤떖 ?リ린 (general)")
+                        return True
+                    else:
+                        print(f"  [INFO] 紐⑤떖 ?リ린 (duplicate ?꾨떂)")
+                        return False
+        except Exception:
+            pass
+
+        return False
+
+    def _click_xpath(self, xpath: str, label: str = "") -> bool:
+        try:
+            elem = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, xpath))
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", elem)
+            time.sleep(0.1)
+            try:
+                elem.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", elem)
+            print(f"  [OK] ?대┃ ?꾨즺: {label or xpath}")
+            time.sleep(0.2)
+            return True
+        except Exception as e:
+            print(f"  [寃쎄퀬] ?대┃ ?ㅽ뙣: {label or xpath} | {e}")
+            return False
+
+    def _click_required_xpaths(self) -> None:
+        for xpath in FINAL_CLICK_XPATHS:
+            self._click_xpath(xpath)
+
+    def _set_corrosion_no(self) -> bool:
+        """?ъ슜?먭? 吏?뺥븳 遺??NO 踰꾪듉 XPath瑜??대┃?쒕떎."""
+        corrosion_no_xpath = '//*[@id="condition-form"]/div[1]/div/div[1]/div/button[1]'
+        try:
+            btn = WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, corrosion_no_xpath))
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", btn)
+            time.sleep(0.3)
+            try:
+                btn.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", btn)
+            print(f"  [OK] 遺??NO ?대┃ ?꾨즺 ({corrosion_no_xpath})")
+            time.sleep(0.5)
+            return True
+        except Exception as e:
+            print(f"  [寃쎄퀬] 遺??NO ?대┃ ?ㅽ뙣: {e}")
+            return False
+
+    def _set_condition_div11_button(self, is_4wd: bool) -> bool:
+        """4瑜??щ????곕씪 condition-form div[11]??吏??踰꾪듉???대┃?쒕떎."""
+        target_xpath = (
+            '//*[@id="condition-form"]/div[1]/div/div[11]/div/button[1]'
+            if is_4wd else
+            '//*[@id="condition-form"]/div[1]/div/div[11]/div/button[3]'
+        )
+        label = "4瑜쒖슜 踰꾪듉" if is_4wd else "2瑜쒖슜 踰꾪듉"
+        try:
+            btn = WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, target_xpath))
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", btn)
+            time.sleep(0.3)
+            try:
+                btn.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", btn)
+            print(f"  [OK] {label} ?대┃ ?꾨즺 ({target_xpath})")
+            time.sleep(0.5)
+            return True
+        except Exception as e:
+            print(f"  [寃쎄퀬] {label} ?대┃ ?ㅽ뙣: {e}")
+            return False
+
+    def _save_image_upload_page(self) -> bool:
+        """?대?吏 ?낅줈???섏씠吏?????踰꾪듉???대┃?쒕떎."""
+        save_xpaths = [
+            '//*[@id="bulk_confirm_form"]/div/button',
+            "//button[@type='submit']",
+            "//input[@type='submit']",
+        ]
+        for xpath in save_xpaths:
+            try:
+                btn = self.driver.find_element(By.XPATH, xpath)
+                if not btn.is_displayed():
+                    continue
+                self.driver.execute_script("""
+                    arguments[0].removeAttribute('disabled');
+                    arguments[0].scrollIntoView({block:'center'});
+                """, btn)
+                time.sleep(0.5)
+                try:
+                    btn.click()
+                except Exception:
+                    self.driver.execute_script("arguments[0].click();", btn)
+                print(f"  [OK] ?대?吏 ???踰꾪듉 ?대┃ ?꾨즺: {xpath[:60]}")
+                time.sleep(1.5)
+                self._dismiss_popup()
+                return True
+            except Exception:
+                continue
+        print("  [寃쎄퀬] ?대?吏 ???踰꾪듉??李얠? 紐삵븿 - 怨꾩냽 吏꾪뻾")
+        return False
+
+    def _go_to_condition_page_after_image_upload(self) -> bool:
+        """?대?吏 ?낅줈?????깅뒫 ?섏씠吏濡??대룞?쒕떎."""
+        target_xpath = '//*[@id="bulk_confirm_form"]/div/a[2]'
+        if self._is_condition_page_ready():
+            print("  [OK] ?대? ?깅뒫 ?섏씠吏???꾩갑??)
+            return True
+
+        try:
+            btn = WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, target_xpath))
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", btn)
+            time.sleep(0.3)
+            try:
+                btn.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", btn)
+            if self._wait_for_condition_page_ready():
+                print(f"  [OK] ?깅뒫 ?섏씠吏 ?대룞 ?꾨즺 ({target_xpath})")
+                return True
+            print(f"  [寃쎄퀬] ?깅뒫 ?섏씠吏 ?대룞 ?대┃ ???꾩갑 ?뺤씤 ?ㅽ뙣 ({target_xpath})")
+            return False
+        except Exception as e:
+            if self._wait_for_condition_page_ready():
+                print(f"  [OK] ?대┃ ?덉쇅 ?꾩뿉???깅뒫 ?섏씠吏 ?꾩갑 ?뺤씤")
+                return True
+            print(f"  [寃쎄퀬] ?깅뒫 ?섏씠吏 ?대룞 ?대┃ ?ㅽ뙣: {e}")
+            return False
+
+    def _is_condition_page_ready(self) -> bool:
+        """?꾩옱 ?섏씠吏媛 ?깅뒫 ?섏씠吏?몄? 鍮좊Ⅴ寃??먮퀎?쒕떎."""
+        condition_xpaths = [
+            '//*[@id="condition-form"]',
+            '//*[@id="condition-form"]/div[2]/div/button',
+        ]
+        for xpath in condition_xpaths:
+            try:
+                elem = self.driver.find_element(By.XPATH, xpath)
+                if elem.is_displayed():
+                    return True
+            except Exception:
+                continue
+        return False
+
+    def _wait_for_condition_page_ready(self, timeout: int = 5) -> bool:
+        """?깅뒫 ?섏씠吏 ?꾩갑 ?щ?瑜??좎떆 湲곕떎?몃떎媛 ?뺤씤?쒕떎."""
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            if self._is_condition_page_ready():
+                return True
+            time.sleep(0.3)
+        return False
+
+    def _save_after_condition_page(self) -> bool:
+        """?깅뒫 ?섏씠吏 ?낅젰 ?????踰꾪듉???대┃?쒕떎."""
+        save_xpaths = [
+            '//*[@id="condition-form"]/div[2]/div/button',
+            '//*[@id="bulk_confirm_form"]/div/button',
+            SUBMIT_BUTTON_XPATH,
+            "//button[@type='submit']",
+            "//input[@type='submit']",
+        ]
+        for xpath in save_xpaths:
+            try:
+                save_btn = self.driver.find_element(By.XPATH, xpath)
+                if not save_btn.is_displayed():
+                    continue
+                self.driver.execute_script("""
+                    arguments[0].removeAttribute('disabled');
+                    arguments[0].scrollIntoView({block:'center'});
+                """, save_btn)
+                time.sleep(0.5)
+                try:
+                    save_btn.click()
+                except Exception:
+                    self.driver.execute_script("arguments[0].click();", save_btn)
+                print(f"[OK] ?깅뒫 ?섏씠吏 ???踰꾪듉 ?대┃ ?꾨즺: {xpath[:50]}")
+                time.sleep(1.5)
+                self._dismiss_popup()
+                return True
+            except Exception:
+                continue
+        return False
+
+    def _dismiss_popup(self) -> str:
+        """??????섑??섎뒗 ?앹뾽/alert ?リ린. alert ?띿뒪?몃? 諛섑솚."""
+        POPUP_CLOSE_XPATH = '//*[@id="lightbox"]/div[2]/div/div[2]/a[1]'
+
+        # 1. JS alert 泥섎━
+        try:
+            alert = self.driver.switch_to.alert
+            alert_text = alert.text or ""
+            print(f"  [OK] Alert ?앹뾽 ?リ린: {alert_text[:80]}")
+            alert.accept()
+            time.sleep(0.3)
+            return alert_text
+        except Exception:
+            pass
+
+        # 2. lightbox ?앹뾽 ?リ린 踰꾪듉
+        try:
+            close_btn = WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, POPUP_CLOSE_XPATH))
+            )
+            close_btn.click()
+            print(f"  [OK] ?앹뾽 ?リ린 ?꾨즺 (lightbox)")
+            time.sleep(0.3)
+            return ""
+        except Exception:
+            pass
+
+        # 3. fallback
+        for xpath in ["//button[contains(@class,'close')]", "//a[contains(@class,'close')]"]:
+            try:
+                btn = self.driver.find_element(By.XPATH, xpath)
+                if btn.is_displayed():
+                    btn.click()
+                    print(f"  [OK] ?앹뾽 ?リ린 ?꾨즺: {xpath[:60]}")
+                    time.sleep(0.3)
+                    return ""
+            except Exception:
+                continue
+        print("  [INFO] ?レ쓣 ?앹뾽 ?놁쓬 (?뺤긽)")
+        return ""
+
+    def _dump_form_fields(self) -> None:
+        """?쇱쓽 紐⑤뱺 select/input ?꾨뱶 ?대쫫??異쒕젰 (?붾쾭洹몄슜)"""
+        try:
+            result = self.driver.execute_script("""
+                const fields = {selects: [], inputs: [], radios: [], checkboxes: []};
+                document.querySelectorAll('select').forEach(el => {
+                    const name = el.getAttribute('name') || '';
+                    const id = el.getAttribute('id') || '';
+                    const opts = Array.from(el.options).slice(0, 5).map(o => o.text.trim()).filter(Boolean);
+                    fields.selects.push({name, id, options: opts});
+                });
+                document.querySelectorAll('input[type="text"], input[type="number"], input[type="hidden"], textarea').forEach(el => {
+                    const name = el.getAttribute('name') || '';
+                    const id = el.getAttribute('id') || '';
+                    const val = el.value || '';
+                    if (name) fields.inputs.push({name, id, value: val.substring(0, 30)});
+                });
+                document.querySelectorAll('input[type="radio"]').forEach(el => {
+                    const name = el.getAttribute('name') || '';
+                    const val = el.value || '';
+                    const label = el.closest('label')?.textContent?.trim() || '';
+                    if (name) fields.radios.push({name, value: val, label: label.substring(0, 30)});
+                });
+                return fields;
+            """)
+
+            print("\n" + "=" * 60)
+            print("[DEBUG] 鍮꾪룷?뚮뱶 ???꾨뱶 紐⑸줉")
+            print("=" * 60)
+
+            print("\n?? SELECT ?꾨뱶 ??")
+            for s in result.get('selects', []):
+                opts_str = ', '.join(s['options'][:3])
+                print(f"  name='{s['name']}' id='{s['id']}' opts=[{opts_str}]")
+
+            print("\n?? INPUT/TEXTAREA ?꾨뱶 ??")
+            for inp in result.get('inputs', []):
+                print(f"  name='{inp['name']}' id='{inp['id']}' val='{inp['value']}'")
+
+            print("\n?? RADIO ?꾨뱶 ??")
+            for r in result.get('radios', []):
+                print(f"  name='{r['name']}' value='{r['value']}' label='{r['label']}'")
+
+            print("=" * 60 + "\n")
+
+        except Exception as e:
+            print(f"[寃쎄퀬] ???꾨뱶 ?ㅽ봽 ?ㅽ뙣: {e}")
+
+    def close(self):
+        """?쒕씪?대쾭 醫낅즺"""
+        if self.driver:
+            try:
+                self.driver.quit()
+                print("[OK] BeForward ?낅줈???쒕씪?대쾭 醫낅즺")
+            except Exception:
+                pass
+            self.driver = None

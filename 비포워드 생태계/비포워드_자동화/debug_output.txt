@@ -1,0 +1,36 @@
+[1] 로그인 페이지: https://external-vendor.beforward.jp/tempVehDetails/edit
+    현재 URL: https://external-vendor.beforward.jp/login?ref=https%3A%2F%2Fexternal-vendor.beforward.jp%2FtempVehDetails%2Fedit
+    로그인 후 URL: https://external-vendor.beforward.jp/tempVehDetails/edit
+
+[2] 폼 페이지 접속: https://external-vendor.beforward.jp/tempVehDetails/edit
+    현재 URL: https://external-vendor.beforward.jp/tempVehDetails/edit
+
+[3] 페이지의 모든 select 요소:
+    name='language' id='app_language' options=2
+    name='TempVehDetails[make_id]' id='make-id' options=411
+    name='TempVehDetails[model_id]' id='model-id' options=1
+    name='TempVehDetails[type_id]' id='' options=20
+    name='TempVehDetails[type_2_id]' id='' options=1
+    name='TempVehDetails[registration_year]' id='registration-year' options=78
+    name='TempVehDetails[registration_month]' id='' options=13
+    name='TempVehDetails[manufacture_year]' id='' options=78
+    name='TempVehDetails[manufacture_month]' id='' options=13
+    name='TempVehDetails[mileage_unit_type]' id='' options=2
+    name='TempVehDetails[fuel_id]' id='' options=13
+    name='TempVehDetails[transmission_id]' id='' options=8
+    name='TempVehDetails[ext_color_id]' id='' options=19
+    name='TempVehDetails[stock_place_id]' id='stock-place-id' options=2
+    name='TempVehDetails[catchphrase]' id='catchphrase' options=6
+
+[4] TempVehDetails[make_id] 직접 확인:
+    결과: tagName=SELECT options=411
+
+[5] 페이지 타이틀: 매물 등록
+
+[완료] 브라우저를 닫으려면 Enter를 누르세요...
+Traceback (most recent call last):
+  File "C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\debug_make_select.py", line 101, in <module>
+    main()
+  File "C:\Users\gglee\OneDrive\Desktop\비포워드_자동화\debug_make_select.py", line 94, in main
+    input()
+EOFError: EOF when reading a line
