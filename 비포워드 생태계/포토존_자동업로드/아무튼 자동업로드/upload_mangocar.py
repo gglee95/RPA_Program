@@ -82,6 +82,7 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="망고카 매물 자동 업로드 (nodriver)")
     target = p.add_mutually_exclusive_group()
     target.add_argument("--row", type=int, help="시트의 1-based 행 번호 한 건만 처리")
+    target.add_argument("--rows", type=str, help="행 번호 범위(예: 180-193) 또는 콤마 목록(예: 180,182,190)")
     target.add_argument("--all", action="store_true", help="AC가 비어있는 모든 행 처리 (기본)")
     p.add_argument("--dry-run", action="store_true", help="제출 직전까지만 실행, 시트도 갱신하지 않음")
     p.add_argument("--headless", action="store_true", help="브라우저 창 숨김 (기본: 보이게 실행)")
@@ -287,6 +288,26 @@ async def amain() -> int:
             if not rows:
                 logging.error("행 %s 가 pending 목록에 없습니다", args.row)
                 return 1
+        elif args.rows:
+            spec = args.rows.strip()
+            wanted: set[int] = set()
+            for part in spec.split(","):
+                part = part.strip()
+                if not part:
+                    continue
+                if "-" in part:
+                    lo_s, hi_s = part.split("-", 1)
+                    lo, hi = int(lo_s), int(hi_s)
+                    if lo > hi:
+                        lo, hi = hi, lo
+                    wanted.update(range(lo, hi + 1))
+                else:
+                    wanted.add(int(part))
+            rows = [r for r in rows if r.sheet_row in wanted]
+            if not rows:
+                logging.error("--rows %s 에 해당하는 pending 행 없음", args.rows)
+                return 1
+            logging.info("--rows 필터 적용: %d건 (요청 %d개 중)", len(rows), len(wanted))
         logging.info("처리 대상 %d건", len(rows))
 
         for listing in rows:
@@ -319,14 +340,6 @@ async def amain() -> int:
                     logging.info("[행 %s] AK열 결과 기록: %s", listing.sheet_row, ak_value[:60])
                 except Exception:
                     logging.exception("[행 %s] AK열 결과 기록 실패", listing.sheet_row)
-
-                # AN열 — 차대번호 조회 실패 사유 기록 (해당 사유에만)
-                if status == "SKIP" and detail == "차대번호 없음":
-                    try:
-                        await writer.update_vin_error(listing.sheet_row, "차대번호 없음")
-                        logging.info("[행 %s] AN열 차대번호 없음 기록", listing.sheet_row)
-                    except Exception:
-                        logging.exception("[행 %s] AN열 기록 실패", listing.sheet_row)
     finally:
         browser.stop()
 

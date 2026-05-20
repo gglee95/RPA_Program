@@ -196,6 +196,6 @@ class SheetWriter:
         """AK열 — 업로드 결과 ('업로드 성공' 또는 상세 실패 사유)."""
         await self.update_cell(f"{config.COL_LETTER_UPLOAD_RESULT}{sheet_row}", value)
 
-    async def update_vin_error(self, sheet_row: int, value: str) -> None:
-        """AN열 — 차대번호 조회 실패 사유 ('차대번호 없음' 등)."""
-        await self.update_cell(f"{config.COL_LETTER_VIN_ERROR}{sheet_row}", value)
+    async def update_beforward_result(self, sheet_row: int, value: str) -> None:
+        """AL열 — 비포워드 업로드 로그."""
+        await self.update_cell(f"{config.COL_LETTER_BEFORWARD_RESULT}{sheet_row}", value)

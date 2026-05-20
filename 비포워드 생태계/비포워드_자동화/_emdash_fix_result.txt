@@ -1,2 +1,0 @@
-Fixed: beforward_suspension_manager.py, drive_image_downloader.py, encar_soldout_monitor.py, google_sheets_manager.py, test_s_column.py
-Verification: OK

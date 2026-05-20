@@ -534,21 +534,37 @@ class EncarSeleniumCrawler:
         print(f"  [DEBUG] 페이지 제목: {self.driver.title}")
 
         # 페이지 제목에서 차종 추출 (공백이 원본 그대로 유지됨)
-        # 형식: "뉴 A6 35 TDI 프리미엄 C7 울산 중고차 : 내차팔기·내차사기"
+        # 형식1: "뉴 A6 35 TDI 프리미엄 C7 울산 중고차 : 내차팔기·내차사기"  (지역명 있음)
+        # 형식2: "레인지로버 이보크 P200 SE 중고차 - 엔카"                   (지역명 없음)
         title = self.driver.title
         car_type_from_title = None
-        title_match = re.match(r'^(.+)\s+[가-힣]+\s+중고차\b', title)
+        # 콜론·대시 이후 부제목 제거 (" : 내차팔기...", " - 엔카" 등)
+        title_clean = title.split(':')[0].split(' - ')[0].strip()
+        # 패턴1: [차종] [한글지역] 중고차
+        title_match = re.match(r'^(.+)\s+[가-힣]+\s+중고차\b', title_clean)
         if title_match:
             car_type_from_title = title_match.group(1).strip()
+        else:
+            # 패턴2: [차종] 중고차  (지역명 없는 경우 — 이보크·스포츠·벨라 등)
+            m2 = re.match(r'^(.+?)\s+중고차\b', title_clean)
+            if m2 and m2.group(1).strip():
+                car_type_from_title = m2.group(1).strip()
+                print(f"  [차종] 패턴2(지역없음) 추출: '{car_type_from_title}'")
 
-        # h3 요소도 추출 (제목 추출 실패 시 폴백)
+        # h3는 비교 로그용으로만 추출 (폴백 사용 금지)
         car_type_raw = self._get_element_text(self.XPATHS['car_type'], wait, "차종")
         car_type_h3 = ' '.join(car_type_raw.split())
 
-        # 제목 기반 차종명 우선 사용 (공백 보존 정확도 높음)
-        car_type = car_type_from_title if car_type_from_title else car_type_h3
-        if car_type_from_title and car_type_from_title != car_type_h3:
-            print(f"  [차종] 제목: '{car_type_from_title}' / h3: '{car_type_h3}' → 제목 사용")
+        # 타이틀에서 차종명 추출 실패 → 잘못된 모델로 업로드되는 것을 막기 위해 즉시 실패
+        if not car_type_from_title:
+            print(f"  [오류] 차종명 추출 실패 — 제목에서 '중고차' 패턴 없음")
+            print(f"  [오류]   title_clean={title_clean!r}")
+            print(f"  [오류]   h3={car_type_h3!r} (폴백 미사용)")
+            return {}
+
+        car_type = car_type_from_title
+        if car_type != car_type_h3 and car_type_h3:
+            print(f"  [차종] 제목: '{car_type}' / h3: '{car_type_h3}'")
 
         # 상세정보 버튼 클릭
         if not self._click_element(self.XPATHS['info_button'], wait, "상세정보 버튼"):

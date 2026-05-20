@@ -17,6 +17,19 @@ def _get_bool_env(name: str, default: bool) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
+def _resolve_credentials() -> str:
+    """shared/utils/path_resolver 를 우선 사용하고, 실패 시 로컬 파일로 폴백."""
+    import sys
+    _shared = BASE_DIR.parent.parent / "shared"
+    if str(_shared) not in sys.path:
+        sys.path.insert(0, str(_shared))
+    try:
+        from utils.path_resolver import get_credentials_path
+        return get_credentials_path()
+    except Exception:
+        return str(BASE_DIR / "adjustmentdata-51a7199ac3ba.json")
+
+
 # Google Sheets Configuration
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID", "1Ovl_UFVXhBehKdqxJYVMF-87sG3jWHO13W4JDZHoVHU")
 WORKSHEET_NAME = os.getenv("WORKSHEET_NAME", "[48H AUTO]비포워드")
@@ -29,7 +42,7 @@ SOLDOUT_LOG_SPREADSHEET_ID = os.getenv(
 SOLDOUT_LOG_WORKSHEET_NAME = os.getenv("SOLDOUT_LOG_WORKSHEET_NAME", "")  # 빈값 = 첫 시트(gid=0)
 SERVICE_ACCOUNT_FILE = os.getenv(
     "SERVICE_ACCOUNT_FILE",
-    str(BASE_DIR / "adjustmentdata-51a7199ac3ba.json"),
+    _resolve_credentials(),
 )
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -45,8 +58,11 @@ VIN_COLUMN = "AB"
 DRIVE_LINK_COLUMN = "S"
 COMPLETED_COLUMN = "AI"
 FAIL_REASON_COLUMN = "AN"  # 업로드 실패 사유
+UPLOAD_RESULT_COLUMN = "AO"  # 업로드 결과 (성공 / 실패)
 PURCHASE_COLUMN = "AH"  # 매입완료 여부
 UPLOAD_DATE_COLUMN = "Z"  # 입고 날짜 — 어제까지인 행만 업로드 대상
+UPLOAD_TIMESTAMP_COLUMN = "AD"  # (미사용) 과거 업로드 성공 시각용 - AO로 통합됨
+SUSPENSION_COLUMN = "AP"  # 게시종료 시각 ("게시종료 (YYYY-MM-DD HH:MM:SS)")
 START_ROW = int(os.getenv("START_ROW", "1407"))
 
 # Monitoring Settings

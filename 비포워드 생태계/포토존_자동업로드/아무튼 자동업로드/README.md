@@ -49,6 +49,34 @@ python upload_mangocar.py --row 88 --dry-run
 python upload_mangocar.py --all --headless
 ```
 
+## 포토존 + 비포워드 연속 업로드
+
+망고카 업로드 후 같은 행을 비포워드에도 올리는 운영용 엔트리:
+대상은 AG열(비포워드 링크)에 `비포워드 업로드 요망` 이라고 적힌 행만 처리한다.
+
+```bash
+# 특정 행: 포토존/망고카 업로드 → 비포워드 업로드 → 시트 기록
+python upload_photozone_beforward.py --row 192
+
+# 여러 행 (현재 작업 대상 예시)
+python upload_photozone_beforward.py --rows 189,190
+
+# 전체 pending 행
+python upload_photozone_beforward.py --all
+
+# 망고카는 이미 성공했고 AF열 링크와 AG열 요청 문구가 있는 행의 비포워드만 재시도
+python upload_photozone_beforward.py --row 192 --beforward-only
+
+# 비포워드 폼 채우기까지만 확인
+python upload_photozone_beforward.py --row 192 --beforward-only --dry-run
+```
+
+기록 규칙:
+
+- 망고카 성공 시 AF(망고카 링크), AK(망고카 업로드 결과) 기록
+- 비포워드 성공 시 AG(비포워드 매물 링크) 기록
+- 비포워드 업로드 로그는 AL에 기록
+
 ## 디렉토리 구조
 
 ```

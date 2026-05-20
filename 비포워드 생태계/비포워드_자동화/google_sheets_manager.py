@@ -20,8 +20,11 @@ from config import (
     DRIVE_LINK_COLUMN,
     COMPLETED_COLUMN,
     FAIL_REASON_COLUMN,
+    UPLOAD_RESULT_COLUMN,
     PURCHASE_COLUMN,
     UPLOAD_DATE_COLUMN,
+    UPLOAD_TIMESTAMP_COLUMN,
+    SUSPENSION_COLUMN,
     START_ROW,
     SOLDOUT_LOG_SPREADSHEET_ID,
     SOLDOUT_LOG_WORKSHEET_NAME,
@@ -161,6 +164,7 @@ class GoogleSheetsManager:
                 'vin': get_val(VIN_COLUMN),
                 'drive_link': drive_link,
                 'completed': get_val(COMPLETED_COLUMN),
+                'purchase': get_val(PURCHASE_COLUMN),
             }
 
         except Exception as e:
@@ -275,6 +279,202 @@ class GoogleSheetsManager:
             traceback.print_exc()
             return []
 
+    def get_cycle_data(self) -> dict:
+        """모니터링 사이클에 필요한 열을 6회 col_values 호출로 일괄 읽기.
+
+        Returns:
+            dict[int, dict]: row_num -> {encar_url, soldout_status, completed, vin, purchase, suspended}
+        """
+        try:
+            encar_urls   = self.worksheet.col_values(self._col_to_num(ENCAR_LINK_COLUMN))
+            soldout_vals = self.worksheet.col_values(self._col_to_num(SOLDOUT_COLUMN))
+            completed    = self.worksheet.col_values(self._col_to_num(COMPLETED_COLUMN))
+            vin_vals     = self.worksheet.col_values(self._col_to_num(VIN_COLUMN))
+            purchase     = self.worksheet.col_values(self._col_to_num(PURCHASE_COLUMN))
+            suspended    = self.worksheet.col_values(self._col_to_num(SUSPENSION_COLUMN))
+
+            result = {}
+            max_len = max(len(encar_urls), len(completed))
+            for i in range(START_ROW - 1, max_len):
+                row_num = i + 1
+                encar_url = encar_urls[i].strip() if i < len(encar_urls) else ""
+                if not encar_url:
+                    continue
+                result[row_num] = {
+                    'encar_url':      encar_url,
+                    'soldout_status': soldout_vals[i].strip() if i < len(soldout_vals) else "",
+                    'completed':      completed[i].strip() if i < len(completed) else "",
+                    'vin':            vin_vals[i].strip() if i < len(vin_vals) else "",
+                    'purchase':       purchase[i].strip() if i < len(purchase) else "",
+                    'suspended':      suspended[i].strip() if i < len(suspended) else "",
+                }
+            return result
+
+        except Exception as e:
+            print(f"[오류] 사이클 데이터 배치 읽기 실패: {e}")
+            import traceback
+            traceback.print_exc()
+            return {}
+
+    def _parse_drive_link(self, formula_or_val: str) -> str:
+        """셀 값 또는 =HYPERLINK() 수식에서 드라이브 URL 추출."""
+        val = formula_or_val.strip()
+        if not val:
+            return ""
+        if ("drive.google.com" in val or "docs.google.com" in val
+                or "mangoworldcar.com" in val):
+            return val
+        if val.upper().startswith("=HYPERLINK("):
+            m = re.search(r'=HYPERLINK\("([^"]+)"', val, re.IGNORECASE)
+            if m:
+                return m.group(1).strip()
+        return ""
+
+    def get_drive_links_batch(self) -> dict:
+        """S열 전체에서 드라이브 링크를 단일 Sheets v4 API 호출로 추출.
+
+        세 가지 경우 모두 처리:
+        1) 리치텍스트 하이퍼링크 (셀 hyperlink 속성)
+        2) =HYPERLINK() 수식 (formulaValue)
+        3) 직접 URL 표시값 (formattedValue)
+
+        Returns:
+            dict[int, str]: row_num -> drive_link URL
+        """
+        try:
+            spreadsheet = self.gc.open_by_key(SPREADSHEET_ID)
+            resp = spreadsheet.client.request(
+                'get',
+                f'https://sheets.googleapis.com/v4/spreadsheets/{SPREADSHEET_ID}',
+                params={
+                    'ranges': f"'{WORKSHEET_NAME}'!{DRIVE_LINK_COLUMN}:{DRIVE_LINK_COLUMN}",
+                    'fields': 'sheets.data.rowData.values(hyperlink,formattedValue,userEnteredValue)',
+                    'includeGridData': 'true',
+                },
+            )
+            data = resp.json()
+            result = {}
+            sheets = data.get('sheets', [])
+            if not sheets:
+                return {}
+            rows_data = sheets[0].get('data', [{}])[0].get('rowData', [])
+            for i, row in enumerate(rows_data):
+                values = row.get('values', [])
+                if not values:
+                    continue
+                cell = values[0]
+                row_num = i + 1
+
+                # 1순위: 리치텍스트 hyperlink 속성
+                hyperlink = (cell.get('hyperlink') or '').strip()
+                if hyperlink:
+                    result[row_num] = hyperlink
+                    continue
+
+                # 2순위: =HYPERLINK() 수식
+                user_entered = cell.get('userEnteredValue', {})
+                formula = (user_entered.get('formulaValue') or '').strip()
+                if formula.upper().startswith('=HYPERLINK('):
+                    m = re.search(r'=HYPERLINK\("([^"]+)"', formula, re.IGNORECASE)
+                    if m:
+                        result[row_num] = m.group(1).strip()
+                        continue
+
+                # 3순위: formattedValue 가 직접 URL
+                formatted = (cell.get('formattedValue') or '').strip()
+                if ('drive.google.com' in formatted or 'docs.google.com' in formatted
+                        or 'mangoworldcar.com' in formatted):
+                    result[row_num] = formatted
+
+            return result
+
+        except Exception as e:
+            print(f"[오류] S열 드라이브 링크 배치 조회 실패: {e}")
+            import traceback
+            traceback.print_exc()
+            return {}
+
+    def get_upload_data(self) -> tuple:
+        """업로드 대상 행 + 필요 데이터를 배치로 읽기 (per-row API 호출 제거).
+
+        S열 드라이브 링크는 Sheets v4 API로 hyperlink 속성 / =HYPERLINK 수식 / 직접 URL 모두 한 번에 추출.
+
+        Returns:
+            tuple:
+                [0] list[int]       - 업로드 대상 행 번호
+                [1] list[dict]      - 제외된 항목 {'row', 'vin', 'reason'}
+                [2] dict[int, dict] - row_num -> {encar_url, price, vin, drive_link}
+        """
+        try:
+            encar_urls    = self.worksheet.col_values(self._col_to_num(ENCAR_LINK_COLUMN))
+            completed     = self.worksheet.col_values(self._col_to_num(COMPLETED_COLUMN))
+            date_values   = self.worksheet.col_values(self._col_to_num(UPLOAD_DATE_COLUMN))
+            soldout_vals  = self.worksheet.col_values(self._col_to_num(SOLDOUT_COLUMN))
+            purchase_vals = self.worksheet.col_values(self._col_to_num(PURCHASE_COLUMN))
+            vin_vals      = self.worksheet.col_values(self._col_to_num(VIN_COLUMN))
+            price_vals    = self.worksheet.col_values(self._col_to_num(PRICE_COLUMN))
+            # S열: 리치텍스트 hyperlink + HYPERLINK 수식 + 직접 URL 모두 처리
+            drive_links_map = self.get_drive_links_batch()
+
+            yesterday = (datetime.now() - timedelta(days=1)).date()
+
+            rows = []
+            excluded = []
+            row_data_map = {}
+
+            for i in range(START_ROW - 1, len(encar_urls)):
+                row_num = i + 1
+                encar_url = encar_urls[i].strip() if i < len(encar_urls) else ""
+                if not encar_url:
+                    continue
+                comp = completed[i].strip() if i < len(completed) else ""
+                if comp.upper() in ("UPLOADED", "게시종료", "FAILED"):
+                    continue
+                vin = vin_vals[i].strip() if i < len(vin_vals) else ""
+                soldout = soldout_vals[i].strip() if i < len(soldout_vals) else ""
+                if "SOLD OUT" in soldout.upper():
+                    excluded.append({'row': row_num, 'vin': vin, 'reason': 'SOLD OUT 제외'})
+                    continue
+                purchase = purchase_vals[i].strip() if i < len(purchase_vals) else ""
+                if "매입완료" in purchase:
+                    excluded.append({'row': row_num, 'vin': vin, 'reason': '매입완료 제외'})
+                    continue
+                raw_date = date_values[i].strip() if i < len(date_values) else ""
+                if not raw_date:
+                    print(f"[Row {row_num}] [SKIP] Z열 날짜 없음")
+                    continue
+                row_date = None
+                for fmt in ("%Y-%m-%d", "%Y.%m.%d", "%Y/%m/%d", "%m/%d/%Y", "%d/%m/%Y",
+                            "%y.%m.%d", "%y-%m-%d", "%y/%m/%d"):
+                    try:
+                        row_date = datetime.strptime(raw_date, fmt).date()
+                        break
+                    except ValueError:
+                        continue
+                if row_date is None:
+                    print(f"[Row {row_num}] [SKIP] Z열 날짜 파싱 실패: '{raw_date}'")
+                    continue
+                if row_date > yesterday:
+                    continue
+
+                drive_link = drive_links_map.get(row_num, '')
+
+                rows.append(row_num)
+                row_data_map[row_num] = {
+                    'encar_url':  encar_url,
+                    'price':      price_vals[i].strip() if i < len(price_vals) else "",
+                    'vin':        vin,
+                    'drive_link': drive_link,
+                }
+
+            return rows, excluded, row_data_map
+
+        except Exception as e:
+            print(f"[오류] 업로드 데이터 배치 읽기 실패: {e}")
+            import traceback
+            traceback.print_exc()
+            return [], [], {}
+
     def get_rows_to_monitor(self) -> list[int]:
         """모니터링 대상 행 (COMPLETED="UPLOADED"인 행만)
 
@@ -311,9 +511,8 @@ class GoogleSheetsManager:
     def get_rows_to_suspend(self) -> list[int]:
         """판매중지 대상 행 조회.
 
-        조건 (둘 중 하나):
-        - AI열=UPLOADED + U열에 SOLD OUT 포함
-        - AI열=UPLOADED + AH열에 "매입완료" 포함
+        조건: AI열=UPLOADED + (U열 SOLD OUT 또는 AH열 매입완료)
+        AP열 채워져 있어도 매번 시도 (중복 처리 허용)
         """
         try:
             encar_urls = self.worksheet.col_values(self._col_to_num(ENCAR_LINK_COLUMN))
@@ -445,29 +644,15 @@ class GoogleSheetsManager:
         except Exception as e:
             print(f"[오류] Row {row} SOLDOUT 업데이트 실패: {e}")
 
-    def update_completed_status(self, row: int, status: str):
-        """Update COMPLETED column
-
-        Args:
-            row: Row number
-            status: "TRUE" or "FALSE"
-        """
-        try:
-            cell = f"{COMPLETED_COLUMN}{row}"
-            self.worksheet.update(cell, [[status]])
+    def update_completed_status(self, row: int, status: str) -> bool:
+        """Update COMPLETED column. Returns True on success, False on failure."""
+        cell = f"{COMPLETED_COLUMN}{row}"
+        ok = self.safe_update_with_retry(cell, status, max_retries=5)
+        if ok:
             print(f"[OK] Row {row} | Updated COMPLETED: {status}")
-
-        except gspread.exceptions.APIError as e:
-            if e.response.status_code == 429:  # Quota exceeded
-                print("[경고] API quota exceeded, waiting 10 seconds...")
-                time.sleep(10)
-                # Retry once
-                self.worksheet.update(cell, [[status]])
-            else:
-                raise
-
-        except Exception as e:
-            print(f"[오류] Row {row} COMPLETED 업데이트 실패: {e}")
+        else:
+            print(f"[오류] Row {row} | COMPLETED 갱신 최종 실패 (5회 재시도): {cell}='{status}'")
+        return ok
 
     def update_fail_reason(self, row: int, reason: str):
         """Update FAIL_REASON column (AN). Pass empty string to clear on success."""
@@ -491,6 +676,38 @@ class GoogleSheetsManager:
         except Exception as e:
             print(f"[오류] Row {row} FAIL_REASON 업데이트 실패: {e}")
 
+    def update_upload_timestamp(self, row: int) -> bool:
+        """업로드 성공 시각을 AD열에 기록. Returns True on success."""
+        cell = f"{UPLOAD_TIMESTAMP_COLUMN}{row}"
+        value = f"업로드 성공 ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})"
+        ok = self.safe_update_with_retry(cell, value, max_retries=5)
+        if ok:
+            print(f"[OK] Row {row} | Updated AD: {value}")
+        else:
+            print(f"[경고] Row {row} | AD열 업로드 시각 기록 실패 (5회 재시도)")
+        return ok
+
+    def update_upload_result(self, row: int, result: str) -> bool:
+        """업로드 결과를 AO열에 기록. (성공 시: '업로드 성공 (시각)', 실패 시: '실패')"""
+        cell = f"{UPLOAD_RESULT_COLUMN}{row}"
+        ok = self.safe_update_with_retry(cell, result, max_retries=5)
+        if ok:
+            print(f"[OK] Row {row} | Updated AO: {result}")
+        else:
+            print(f"[경고] Row {row} | AO열 결과 기록 실패 (5회 재시도)")
+        return ok
+
+    def update_suspension_status(self, row: int) -> bool:
+        """게시종료 시각을 AP열에 기록. '게시종료 (YYYY-MM-DD HH:MM:SS)'."""
+        cell = f"{SUSPENSION_COLUMN}{row}"
+        value = f"게시종료 ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})"
+        ok = self.safe_update_with_retry(cell, value, max_retries=5)
+        if ok:
+            print(f"[OK] Row {row} | Updated AP: {value}")
+        else:
+            print(f"[경고] Row {row} | AP열 게시종료 기록 실패 (5회 재시도)")
+        return ok
+
     def _get_soldout_log_worksheet(self):
         """SOLD OUT 누적 로그 워크시트 핸들 획득 (lazy)."""
         if self.soldout_log_worksheet is not None:
@@ -511,23 +728,23 @@ class GoogleSheetsManager:
         """SOLD OUT 누적 로그 시트에 한 행 추가.
 
         Args:
-            vin: 차대번호 (B열)
-            status_label: 'SOLD OUT' 또는 '매입완료 SOLD OUT' (C열)
+            vin: 차대번호 (A열)
+            status_label: '게시종료' 또는 '매입완료' (C열)
 
-        시트 구조: A=시간 | B=차대번호 | C=상태
+        시트 구조: A=차대번호 | B=SOLD OUT 날짜 | C=SOLD OUT 사유
         """
         ws = self._get_soldout_log_worksheet()
         if ws is None:
             return False
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        row = [timestamp, str(vin or "").strip(), str(status_label or "").strip()]
+        row = [str(vin or "").strip(), timestamp, str(status_label or "").strip()]
 
         # 헤더가 없으면 1행에 헤더 추가 (1회성)
         try:
             first_row = ws.row_values(1)
             if not first_row:
-                ws.update("A1:C1", [["시간", "차대번호", "상태"]])
+                ws.update("A1:C1", [["차대번호", "SOLD OUT 날짜", "SOLD OUT 사유"]])
         except Exception:
             pass
 
@@ -557,26 +774,33 @@ class GoogleSheetsManager:
             value: Value to write
             max_retries: Maximum retry attempts
         """
+        last_exc = None
         for attempt in range(max_retries):
             try:
                 self.worksheet.update(cell, [[value]])
                 return True
 
             except gspread.exceptions.APIError as e:
-                if e.response.status_code == 429:  # Quota exceeded
-                    wait_time = 2 ** attempt  # Exponential backoff: 1, 2, 4, 8...
-                    print(f"[경고] API quota exceeded, waiting {wait_time} seconds...")
+                last_exc = e
+                status = getattr(e.response, 'status_code', 0)
+                if status in (429, 500, 503):
+                    wait_time = min(2 ** attempt * 5, 60)  # 5, 10, 20, 40, 60s
+                    print(f"[경고] Sheets API {status}, {wait_time}초 후 재시도 ({attempt+1}/{max_retries})...")
                     time.sleep(wait_time)
-                    if attempt < max_retries - 1:
-                        continue
-                    else:
-                        print(f"[오류] API quota exceeded after {max_retries} retries")
-                        return False
-                else:
-                    raise
+                    continue
+                print(f"[오류] Cell {cell} API 오류 (status={status}): {e}")
+                return False
 
             except Exception as e:
+                last_exc = e
+                err_s = str(e).lower()
+                if any(k in err_s for k in ('timeout', 'connection', 'reset', 'unavailable')):
+                    wait_time = min(2 ** attempt * 5, 60)
+                    print(f"[경고] Sheets 네트워크 오류, {wait_time}초 후 재시도 ({attempt+1}/{max_retries})...")
+                    time.sleep(wait_time)
+                    continue
                 print(f"[오류] Cell {cell} 업데이트 실패: {e}")
                 return False
 
+        print(f"[오류] Cell {cell} 갱신 최종 실패 ({max_retries}회): {last_exc}")
         return False

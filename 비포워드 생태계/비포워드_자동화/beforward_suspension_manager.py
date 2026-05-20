@@ -42,7 +42,7 @@ LISTING_PAGE_URL_TAB3 = (
 SEARCH_INPUT_XPATH = '//*[@id="search"]/div[2]/div/table/tbody/tr[3]/td/input'
 TOGGLE_ALL_CHECKBOX_XPATH = '//*[@id="toggle-checkbox-rule"]'
 ALL_VEHICLES_TAB_XPATH = '//*[@id="tab"]/ul/li[9]/a/span'
-UNSELLABLE_BUTTON_XPATH = '/html/body/div[2]/div[1]/div[12]/div/div/div/div/div[1]/div[1]/div/a[2]'
+UNSELLABLE_BUTTON_XPATH = '/html/body/div[2]/div[1]/div[12]/div/div/div/div/div[1]/div/div/a[2]'
 YES_BUTTON_XPATH_DIV17 = '/html/body/div[17]/button[1]'
 
 
@@ -166,6 +166,147 @@ class BeforwardSuspensionManager:
                 print(f"  [경고] 게시 정지 처리 오류 ({label}): {e}")
 
         print(f"[경고] '{chassis_no}' 게시 정지 실패")
+        return False
+
+    @staticmethod
+    def _is_dead_driver_error(e: Exception) -> bool:
+        """드라이버/세션 사망을 시사하는 예외인지 판별."""
+        s = str(e).lower()
+        return any(k in s for k in (
+            'connection refused', 'failed to establish',
+            'invalid session', 'no such window', 'session deleted',
+            'chrome not reachable', 'disconnected', 'browser has closed',
+            'max retries exceeded', 'newconnectionerror', 'connectionrefused',
+            'remote end closed', 'urlopen error',
+        ))
+
+    def _ensure_driver_alive(self) -> bool:
+        """드라이버가 살아있는지 확인, 죽었으면 재초기화 + 재로그인."""
+        try:
+            if self.driver:
+                _ = self.driver.current_url  # 헬스체크 (사망 시 즉시 예외)
+                return True
+        except Exception as e:
+            print(f"[INFO] 드라이버 헬스체크 실패 ({str(e)[:80]}) - 재초기화")
+
+        # 드라이버 사망 → 정리 + 재초기화 + 재로그인
+        self.logged_in = False
+        try:
+            if self.driver:
+                self.driver.quit()
+        except Exception:
+            pass
+        self.driver = None
+        try:
+            return self.login()
+        except Exception as e:
+            print(f"[오류] 드라이버 재초기화 실패: {e}")
+            return False
+
+    def suspend_single(self, chassis_no: str) -> bool:
+        """차대번호 하나를 판매불가(게시 정지) 처리.
+
+        1. 목록 페이지 진입 + 차대번호 검색
+        2. 모든차량 탭 전환
+        3. 모두선택 체크박스 클릭
+        4. 판매불가 버튼 클릭
+        5. YES 확인 버튼 클릭
+
+        드라이버 사망 감지 시 자동 재초기화 후 1회 재시도.
+        """
+        chassis_no = str(chassis_no).strip()
+        if not chassis_no:
+            return False
+
+        for attempt in range(2):
+            # 드라이버 헬스체크 (죽었으면 재초기화)
+            if not self._ensure_driver_alive():
+                print(f"[오류] 드라이버 복구 실패 — 게시정지 건너뜀")
+                return False
+
+            try:
+                wait = WebDriverWait(self.driver, self.WAIT_TIMEOUT)
+
+                # 1. 목록 페이지(검색창 있는 탭) 이동
+                self.driver.get(LISTING_PAGE_URL_TAB3)
+                time.sleep(1)
+
+                # 2. 차대번호 검색
+                search_input = wait.until(
+                    EC.presence_of_element_located((By.XPATH, SEARCH_INPUT_XPATH))
+                )
+                search_input.clear()
+                search_input.send_keys(chassis_no)
+                search_input.send_keys(Keys.ENTER)
+                print(f"[INFO] 검색: {chassis_no}")
+                time.sleep(2)
+
+                # 3. 모든차량 탭 전환
+                if not self._open_all_vehicles_tab():
+                    print("[경고] 모든차량 탭 전환 실패")
+                    return False
+
+                # 4. 검색 결과에 차대번호 존재 여부 확인
+                # (검색결과 tr 에 id 속성이 없어 CSS selector 카운팅 부정확 →
+                #  #search-result 영역 텍스트에서 차대번호 직접 검색)
+                try:
+                    result_area = self.driver.find_element(By.ID, 'search-result')
+                    if chassis_no not in result_area.text:
+                        print(f"[경고] 검색 결과 없음 - 비포워드에 매물 없음 ({chassis_no})")
+                        return False
+                    print(f"[INFO] 검색 결과에 차대번호 존재 확인")
+                except Exception as e:
+                    print(f"  [경고] 검색결과 영역 확인 실패 (계속 진행): {e}")
+
+                # 5. 모두선택 체크박스 클릭
+                if not self._click_toggle_all_checkbox():
+                    print("[경고] 모두선택 체크박스 클릭 실패")
+                    return False
+
+                # 6. 판매불가 버튼 클릭
+                unsellable_btn = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, UNSELLABLE_BUTTON_XPATH))
+                )
+                self.driver.execute_script(
+                    "arguments[0].scrollIntoView({block:'center'});", unsellable_btn
+                )
+                time.sleep(0.2)
+                try:
+                    unsellable_btn.click()
+                except Exception:
+                    self.driver.execute_script("arguments[0].click();", unsellable_btn)
+                print("[OK] 판매불가 버튼 클릭 완료")
+                time.sleep(0.5)
+
+                # 7. YES 확인 버튼 클릭
+                yes_btn = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, YES_BUTTON_XPATH_DIV17))
+                )
+                try:
+                    yes_btn.click()
+                except Exception:
+                    self.driver.execute_script("arguments[0].click();", yes_btn)
+                print("[OK] YES 확인 버튼 클릭 완료")
+                time.sleep(1)
+                return True
+
+            except Exception as e:
+                # 드라이버 사망 류 예외 → 1회 재시도
+                if attempt == 0 and self._is_dead_driver_error(e):
+                    print(f"[경고] 드라이버 사망 감지 ({str(e)[:80]}), 재초기화 후 재시도")
+                    self.logged_in = False
+                    try:
+                        if self.driver:
+                            self.driver.quit()
+                    except Exception:
+                        pass
+                    self.driver = None
+                    continue
+                print(f"[오류] suspend_single 오류: {e}")
+                import traceback
+                traceback.print_exc()
+                return False
+
         return False
 
     def batch_unsellable_by_chassis(self, chassis_numbers: list[str]) -> bool:
@@ -444,21 +585,44 @@ class BeforwardSuspensionManager:
 
             wait = WebDriverWait(self.driver, self.WAIT_TIMEOUT)
 
-            # 게시 정지 버튼 클릭
-            DELETE_BTN_XPATH = '//*[@id="bulk_confirm_form"]/div[1]/div[2]/table/tbody/tr[2]/td[1]/a[1]'
-            try:
-                delete_btn = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, DELETE_BTN_XPATH))
-                )
-                self.driver.execute_script(
-                    "arguments[0].scrollIntoView({block:'center'});", delete_btn
-                )
-                time.sleep(0.2)
-                delete_btn.click()
-                print(f"  [OK] 게시 정지 버튼 클릭 완료")
-            except TimeoutException:
-                print(f"  [경고] 게시 정지 버튼을 찾지 못했습니다: {DELETE_BTN_XPATH}")
+            # 게시 정지 버튼: changeStatus(id, 0) 링크 탐색
+            # status=0 = 게시정지, status=1 = 활성화
+            delete_btn = self.driver.execute_script("""
+                var links = document.querySelectorAll('a[href*="changeStatus"]');
+                for (var i = 0; i < links.length; i++) {
+                    var href = links[i].getAttribute('href') || '';
+                    if (links[i].offsetParent !== null && href.indexOf(', 0') !== -1) {
+                        return links[i];
+                    }
+                }
+                return null;
+            """)
+
+            if not delete_btn:
+                # changeStatus(id, 1) 이 있으면 이미 게시정지 완료 상태
+                already_done = self.driver.execute_script("""
+                    var links = document.querySelectorAll('a[href*="changeStatus"]');
+                    for (var i = 0; i < links.length; i++) {
+                        var href = links[i].getAttribute('href') || '';
+                        if (href.indexOf(', 1') !== -1) return true;
+                    }
+                    return false;
+                """)
+                if already_done:
+                    print(f"  [OK] 이미 게시정지 상태 (changeStatus=1 확인)")
+                    return True
+                print(f"  [경고] changeStatus 버튼 없음 (알 수 없는 상태)")
                 return False
+
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView({block:'center'});", delete_btn
+            )
+            time.sleep(0.2)
+            try:
+                delete_btn.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", delete_btn)
+            print(f"  [OK] 게시 정지 버튼 클릭 완료")
 
             time.sleep(0.5)
 
@@ -603,6 +767,151 @@ class BeforwardSuspensionManager:
 
         print(f"  [경고] Yes 확인 버튼을 찾지 못했습니다")
         return False
+
+    def _hard_delete(self, edit_url: str) -> bool:
+        """수정 페이지 하단의 실제 삭제 버튼 클릭
+
+        게시정지(changeStatus)가 아닌 완전 삭제 처리.
+        """
+        try:
+            print(f"[INFO] 수정 페이지 이동 (삭제): {edit_url[:80]}")
+            self.driver.get(edit_url)
+            time.sleep(1.5)
+
+            wait = WebDriverWait(self.driver, self.WAIT_TIMEOUT)
+
+            # 하단까지 스크롤
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(0.5)
+
+            # 삭제 버튼 탐색: 텍스트 "삭제" 버튼/링크
+            delete_btn = self.driver.execute_script("""
+                var candidates = Array.from(document.querySelectorAll('a, button, input[type="submit"], input[type="button"]'));
+                for (var i = 0; i < candidates.length; i++) {
+                    var el = candidates[i];
+                    var text = (el.textContent || el.value || '').trim();
+                    if (text === '삭제' || text.indexOf('삭제') !== -1) {
+                        return el;
+                    }
+                }
+                return null;
+            """)
+
+            if not delete_btn:
+                print(f"  [경고] 삭제 버튼을 찾지 못함")
+                # 페이지에 있는 버튼/링크 목록 출력 (디버그)
+                debug = self.driver.execute_script("""
+                    return Array.from(document.querySelectorAll('a, button, input[type="submit"]'))
+                        .map(function(e){ return (e.textContent || e.value || '').trim().substring(0,30); })
+                        .filter(function(t){ return t.length > 0; })
+                        .join(' | ');
+                """)
+                print(f"  [진단] 페이지 버튼 목록: {debug[:300] if debug else '없음'}")
+                return False
+
+            btn_text = self.driver.execute_script(
+                "return (arguments[0].textContent || arguments[0].value || '').trim();", delete_btn
+            )
+            print(f"  [INFO] 삭제 버튼 발견: '{btn_text}'")
+            self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", delete_btn)
+            time.sleep(0.3)
+            try:
+                delete_btn.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", delete_btn)
+            print(f"  [OK] 삭제 버튼 클릭 완료")
+            time.sleep(0.8)
+
+            # 확인 다이얼로그 처리 (Yes / OK / 확인 버튼)
+            confirmed = self._click_yes_confirm()
+            if not confirmed:
+                # alert 처리 시도
+                try:
+                    alert = self.driver.switch_to.alert
+                    alert.accept()
+                    confirmed = True
+                    print(f"  [OK] alert 수락 완료")
+                except Exception:
+                    pass
+
+            if confirmed:
+                print(f"[OK] 매물 삭제 완료")
+                return True
+            else:
+                print(f"  [경고] 확인 버튼 클릭 실패")
+                return False
+
+        except Exception as e:
+            print(f"[오류] 삭제 처리 중 오류: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def delete_single(self, chassis_no: str) -> bool:
+        """차대번호 하나를 실제 삭제 처리 (削除 버튼 클릭).
+
+        suspend_single과 동일한 검색 로직, _hard_delete 호출.
+        """
+        chassis_no = str(chassis_no).strip()
+        if not chassis_no:
+            return False
+
+        try:
+            wait = WebDriverWait(self.driver, self.WAIT_TIMEOUT)
+
+            self.driver.get(LISTING_PAGE_URL_TAB3)
+            time.sleep(1)
+
+            search_input = wait.until(
+                EC.presence_of_element_located((By.XPATH, SEARCH_INPUT_XPATH))
+            )
+            search_input.clear()
+            search_input.send_keys(chassis_no)
+            search_input.send_keys(Keys.ENTER)
+            print(f"[INFO] 검색: {chassis_no}")
+            time.sleep(2)
+
+            if not self._open_all_vehicles_tab():
+                print("[경고] 모든차량 탭 전환 실패")
+                return False
+
+            JS_FIND_EDIT = """
+                var chassis = arguments[0];
+                var rows = document.querySelectorAll('tr');
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i].textContent.indexOf(chassis) !== -1) {
+                        var links = rows[i].querySelectorAll('a');
+                        for (var j = 0; j < links.length; j++) {
+                            var href = links[j].getAttribute('href') || '';
+                            if (href.toLowerCase().indexOf('tempvehdetails/edit') !== -1
+                                || href.indexOf('/edit/') !== -1) {
+                                return links[j].href || href;
+                            }
+                        }
+                    }
+                }
+                return null;
+            """
+
+            page = 1
+            while True:
+                print(f"  [INFO] 페이지 {page} 탐색 중...")
+                edit_url = self.driver.execute_script(JS_FIND_EDIT, chassis_no)
+                if edit_url:
+                    print(f"  [OK] 발견 (페이지 {page}): {edit_url[:80]}")
+                    return self._hard_delete(edit_url)
+                if not self._go_next_page():
+                    break
+                page += 1
+
+            print(f"[경고] '{chassis_no}' 매물을 찾지 못함")
+            return False
+
+        except Exception as e:
+            print(f"[오류] delete_single 오류: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
 
     # ── 하위 호환: 기존 search_listing / suspend_listing 인터페이스 유지 ──
 

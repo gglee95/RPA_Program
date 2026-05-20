@@ -78,15 +78,24 @@ class EncarSoldOutMonitor:
         listings_suspended = 0
 
         try:
+            # 필요한 열 전체를 5회 col_values 호출로 일괄 읽기 (per-row API 호출 제거)
+            cycle_data = self.sheets_manager.get_cycle_data()
+            if not cycle_data:
+                print("[INFO] 사이클 데이터 없음 (빈 시트 또는 읽기 오류)")
+                return (0, 0)
+
             # ── Phase 1: 엔카 SOLD OUT 체크 → U열 기록 ───────────────────────────
-            rows_to_monitor = self.sheets_manager.get_rows_to_monitor()
+            rows_to_monitor = [
+                row_num for row_num, d in cycle_data.items()
+                if d['completed'].upper() == "UPLOADED"
+                and "SOLD OUT" not in d['soldout_status'].upper()
+            ]
 
             if rows_to_monitor:
                 print(f"[INFO] 엔카 체크 대상: {len(rows_to_monitor)}행")
                 for row_num in rows_to_monitor:
                     try:
-                        row_data = self.sheets_manager.batch_read_row(row_num)
-                        encar_url = row_data.get('encar_url', '')
+                        encar_url = cycle_data[row_num]['encar_url']
                         if not encar_url:
                             continue
 
@@ -105,6 +114,8 @@ class EncarSoldOutMonitor:
                         )
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         self.sheets_manager.update_soldout_status(row_num, timestamp)
+                        # 인메모리 캐시 갱신 → Phase 2에서 재조회 없이 바로 처리
+                        cycle_data[row_num]['soldout_status'] = f"SOLD OUT ({timestamp})"
                         time.sleep(1)
 
                     except Exception as e:
@@ -117,7 +128,12 @@ class EncarSoldOutMonitor:
                 print("[INFO] 엔카 체크 대상 없음 (UPLOADED 행 없음)")
 
             # ── Phase 2: U열=SOLD OUT 행 → 비포워드 게시정지 ────────────────────
-            rows_to_suspend = self.sheets_manager.get_rows_to_suspend()
+            # AP열 채워져 있어도 매번 게시정지 시도 (중복 처리 허용)
+            rows_to_suspend = [
+                row_num for row_num, d in cycle_data.items()
+                if d['completed'].upper() == "UPLOADED"
+                and "SOLD OUT" in d['soldout_status'].upper()
+            ]
 
             if not rows_to_suspend:
                 print("[INFO] 게시정지 대상 없음")
@@ -127,27 +143,15 @@ class EncarSoldOutMonitor:
 
             suspension_targets = []
             for row_num in rows_to_suspend:
-                try:
-                    row_data = self.sheets_manager.batch_read_row(row_num)
-                    chassis_no = (row_data.get('vin') or row_data.get('car_number') or '').strip()
-                    if not chassis_no:
-                        print(f"[Row {row_num}] [WARN] VIN/차량번호 없음 - 건너뜀")
-                        self.logger.log_warning(row_num, "No VIN or car number for suspension")
-                        continue
-                    # 매입완료 여부에 따라 SOLD OUT 로그 라벨 결정
-                    purchase_val = ''
-                    try:
-                        purchase_val = self.sheets_manager.worksheet.acell(
-                            f"AH{row_num}"
-                        ).value or ''
-                    except Exception:
-                        purchase_val = ''
-                    is_purchased = "매입완료" in purchase_val
-                    soldout_label = "매입완료 SOLD OUT" if is_purchased else "SOLD OUT"
-                    suspension_targets.append((row_num, chassis_no, soldout_label))
-                except Exception as e:
-                    print(f"[Row {row_num}] [ERR] Error: {e}")
-                    self.logger.log_error(row_num, "ROW_PROCESSING_ERROR", str(e))
+                d = cycle_data[row_num]
+                chassis_no = d.get('vin', '').strip()
+                if not chassis_no:
+                    print(f"[Row {row_num}] [WARN] VIN 없음 - 건너뜀")
+                    self.logger.log_warning(row_num, "No VIN or car number for suspension")
+                    continue
+                is_purchased = "매입완료" in d.get('purchase', '')
+                soldout_label = "매입완료" if is_purchased else "게시종료"
+                suspension_targets.append((row_num, chassis_no, soldout_label))
 
             if not suspension_targets:
                 return (rows_processed, listings_suspended)
@@ -160,23 +164,29 @@ class EncarSoldOutMonitor:
                         self.logger.log_error(row_num, "LOGIN_FAILED", "ByForward login failed")
                     return (rows_processed, listings_suspended)
 
-            chassis_numbers = [chassis_no for _, chassis_no, _ in suspension_targets]
-            suspension_ok = self.beforward_manager.batch_unsellable_by_chassis(chassis_numbers)
-
-            if not suspension_ok:
-                for row_num, chassis_no, _ in suspension_targets:
-                    self.logger.log_suspension_failed(row_num, chassis_no, "일괄 판매불가 처리 실패")
-                return (rows_processed, listings_suspended)
-
+            # 항목별 개별 처리 (배치 방식은 탭 전환 시 검색 필터 소실로 불안정)
             for row_num, chassis_no, soldout_label in suspension_targets:
-                self.logger.log_suspension_success(row_num, chassis_no, "batch unsellable")
-                self.sheets_manager.update_completed_status(row_num, "게시종료")
-                # SOLD OUT 누적 로그 시트에 기록
                 try:
-                    self.sheets_manager.append_soldout_log(chassis_no, soldout_label)
+                    print(f"\n[Row {row_num}] 게시정지 처리: {chassis_no}")
+                    ok = self.beforward_manager.suspend_single(chassis_no)
+                    if ok:
+                        print(f"[Row {row_num}] [OK] 게시정지 완료: {chassis_no}")
+                        self.logger.log_suspension_success(row_num, chassis_no, "suspend_single")
+                        # AI열은 'UPLOADED' 유지, AP열에 게시종료 시각 기록
+                        self.sheets_manager.update_suspension_status(row_num)
+                        try:
+                            self.sheets_manager.append_soldout_log(chassis_no, soldout_label)
+                        except Exception as e:
+                            print(f"[Row {row_num}] [경고] SOLD OUT 로그 기록 실패: {e}")
+                        listings_suspended += 1
+                    else:
+                        print(f"[Row {row_num}] [ERR] 게시정지 실패: {chassis_no}")
+                        self.logger.log_suspension_failed(row_num, chassis_no, "suspend_single 전체 실패")
                 except Exception as e:
-                    print(f"[Row {row_num}] [경고] SOLD OUT 로그 시트 기록 실패: {e}")
-                listings_suspended += 1
+                    print(f"[Row {row_num}] [ERR] 게시정지 오류: {e}")
+                    self.logger.log_error(row_num, "SUSPENSION_ERROR", str(e))
+                    import traceback
+                    traceback.print_exc()
                 time.sleep(1)
 
             return (rows_processed, listings_suspended)
@@ -199,8 +209,8 @@ class EncarSoldOutMonitor:
         print(f"{'='*70}\n")
 
         try:
-            # Get rows that need uploading (COMPLETED가 빈값인 행만)
-            all_rows, excluded_rows = self.sheets_manager.get_rows_to_upload()
+            # 필요한 열 전체를 배치로 읽기 (per-row API 호출 제거)
+            all_rows, excluded_rows, upload_data = self.sheets_manager.get_upload_data()
 
             # 매입완료·SOLD OUT 제외 항목 엑셀 로그 기록
             for ex in excluded_rows:
@@ -231,10 +241,19 @@ class EncarSoldOutMonitor:
 
             for row_num in all_rows:
                 try:
-                    row_data = self.sheets_manager.batch_read_row(row_num)
-                    encar_url = row_data['encar_url']
+                    row_data = upload_data.get(row_num, {})
+                    encar_url = row_data.get('encar_url', '')
 
                     if not encar_url:
+                        continue
+
+                    # 엔카 URL 검증 (kcar.com 등 타 사이트 URL 혼입 방지)
+                    if 'encar.com' not in encar_url:
+                        print(f"[Row {row_num}] [SKIP] 엔카 URL이 아님: {encar_url[:80]}")
+                        self.logger.log_upload_fail_excel(row_num, '', '', f'R열 URL이 encar.com이 아님: {encar_url[:80]}')
+                        self.sheets_manager.update_completed_status(row_num, "FAILED")
+                        self.sheets_manager.update_fail_reason(row_num, f'R열 URL이 엔카 주소가 아님: {encar_url[:80]}')
+                        self.sheets_manager.update_upload_result(row_num, "실패")
                         continue
 
                     # Crawl Encar
@@ -246,6 +265,7 @@ class EncarSoldOutMonitor:
                         self.logger.log_upload_fail_excel(row_num, '', '', '엔카 크롤링 실패')
                         self.sheets_manager.update_completed_status(row_num, "FAILED")
                         self.sheets_manager.update_fail_reason(row_num, '엔카 페이지를 열 수 없음 (URL 오류 또는 매물 삭제 가능)')
+                        self.sheets_manager.update_upload_result(row_num, "실패")
                         continue
 
                     if not car_info.car_type:
@@ -254,6 +274,7 @@ class EncarSoldOutMonitor:
                         self.logger.log_upload_fail_excel(row_num, '', '', '엔카 차종명 추출 실패')
                         self.sheets_manager.update_completed_status(row_num, "FAILED")
                         self.sheets_manager.update_fail_reason(row_num, '엔카에서 차종명을 찾지 못함')
+                        self.sheets_manager.update_upload_result(row_num, "실패")
                         continue
 
                     model_name = car_info.car_type
@@ -265,6 +286,7 @@ class EncarSoldOutMonitor:
                         self.logger.log_upload_fail_excel(row_num, model_name, '', 'P열 판매가격 없음 또는 형식 오류')
                         self.sheets_manager.update_completed_status(row_num, "FAILED")
                         self.sheets_manager.update_fail_reason(row_num, 'P열(판매가격) 비어있음 또는 형식 오류')
+                        self.sheets_manager.update_upload_result(row_num, "실패")
                         continue
 
                     upload_price = self._build_upload_price(price_from_sheet)
@@ -274,36 +296,24 @@ class EncarSoldOutMonitor:
                         self.logger.log_upload_fail_excel(row_num, model_name, '', f'업로드 가격 계산 실패 (P열 원본값: {price_from_sheet})')
                         self.sheets_manager.update_completed_status(row_num, "FAILED")
                         self.sheets_manager.update_fail_reason(row_num, f'P열(판매가격) 계산 불가 (원본값: {price_from_sheet})')
+                        self.sheets_manager.update_upload_result(row_num, "실패")
                         continue
 
                     car_info.price = upload_price
 
-                    vin_from_sheet = row_data['vin']
+                    vin_from_sheet = row_data.get('vin', '')
                     if not vin_from_sheet:
                         print(f"[Row {row_num}] [ERR] AB열 차대번호 없음 - 업로드 불가")
                         self.logger.log_diagnostic(row_num, model_name, 'AB열_차대번호', 'AB열이 비어있음 - 스프레드시트에 차대번호를 입력하세요')
                         self.logger.log_upload_fail_excel(row_num, model_name, '', 'AB열 차대번호 없음')
                         self.sheets_manager.update_completed_status(row_num, "FAILED")
                         self.sheets_manager.update_fail_reason(row_num, 'AB열(차대번호) 비어있음 - 시트에 차대번호 입력 필요')
+                        self.sheets_manager.update_upload_result(row_num, "실패")
                         continue
                     car_info.inspection_chassis_no = vin_from_sheet
 
-                    # S열 구글 드라이브 링크(이미지 업로드용)
-                    drive_link_raw = row_data.get('drive_link', '')
-                    drive_link = drive_link_raw.strip() if drive_link_raw else ''
-                    _known_link = ("drive.google.com" in drive_link or
-                                   "docs.google.com" in drive_link or
-                                   "mangoworldcar.com" in drive_link)
-                    if drive_link and not _known_link:
-                        fallback = self.sheets_manager.get_drive_link(row_num)
-                        if fallback:
-                            drive_link = fallback
-                        elif drive_link.startswith('http'):
-                            pass
-                        else:
-                            drive_link = ""
-                    elif not drive_link:
-                        drive_link = self.sheets_manager.get_drive_link(row_num)
+                    # S열 구글 드라이브 링크(이미지 업로드용) — 배치 읽기로 이미 파싱됨
+                    drive_link = row_data.get('drive_link', '')
                     if drive_link:
                         setattr(car_info, 'drive_link', drive_link)
                         setattr(car_info, 'sheet_row', row_num)
@@ -319,8 +329,19 @@ class EncarSoldOutMonitor:
                         print(f"[Row {row_num}] [OK] {model_name} | ID={listing_id}")
                         self.logger.log_upload_result(row_num, model_name, True, listing_id=listing_id)
                         self.logger.log_upload_success_excel(row_num, model_name, vin_from_sheet, listing_id)
-                        self.sheets_manager.update_completed_status(row_num, "UPLOADED")
+                        sheet_ok = self.sheets_manager.update_completed_status(row_num, "UPLOADED")
+                        self.sheets_manager.update_upload_result(row_num, f"업로드 성공 ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
                         self.sheets_manager.update_fail_reason(row_num, "")
+                        if not sheet_ok:
+                            print(f"\n{'!'*70}")
+                            print(f"[CRITICAL] Row {row_num}: 비포워드 업로드 성공 → AI{row_num} 갱신 실패!")
+                            print(f"[CRITICAL] 중복 업로드 방지를 위해 스프레드시트 AI{row_num} 셀에")
+                            print(f"[CRITICAL] 'UPLOADED' 를 수동으로 입력하세요.")
+                            print(f"{'!'*70}\n")
+                            self.logger.log_error(
+                                row_num, "SHEET_SYNC_FAILED",
+                                f"BeForward 업로드 성공했으나 AI{row_num} 갱신 실패 — 수동 입력 필요"
+                            )
                         downloads = getattr(self.beforward_uploader, '_last_downloaded_image_files', [])
                         if downloads:
                             self.beforward_uploader._cleanup_downloaded_images(downloads)
@@ -334,6 +355,7 @@ class EncarSoldOutMonitor:
                         self.logger.log_upload_fail_excel(row_num, model_name, vin_from_sheet, f"{err_step}: {err_cause}")
                         self.sheets_manager.update_completed_status(row_num, "FAILED")
                         self.sheets_manager.update_fail_reason(row_num, self._friendly_fail_reason(err_step, err_cause))
+                        self.sheets_manager.update_upload_result(row_num, "실패")
                         downloads = getattr(self.beforward_uploader, '_last_downloaded_image_files', [])
                         if downloads:
                             self.beforward_uploader._cleanup_downloaded_images(downloads)
@@ -351,6 +373,7 @@ class EncarSoldOutMonitor:
                     self.logger.log_upload_fail_excel(row_num, _exc_model, _exc_vin, f"예외 발생: {str(e)[:120]}")
                     self.sheets_manager.update_completed_status(row_num, "FAILED")
                     self.sheets_manager.update_fail_reason(row_num, f"시스템 오류: {str(e)[:120]}")
+                    self.sheets_manager.update_upload_result(row_num, "실패")
 
                     # 세션/탭 크래시 시 드라이버 재초기화
                     err_s = str(e).lower()
@@ -608,6 +631,8 @@ class EncarSoldOutMonitor:
 
     def _cleanup(self):
         """Clean shutdown - close all drivers"""
+        import logging
+        logging.getLogger("urllib3").setLevel(logging.CRITICAL)
         try:
             print("[INFO] Closing browser drivers...")
 
@@ -631,6 +656,25 @@ class EncarSoldOutMonitor:
 
         except Exception as e:
             print(f"[WARNING] Cleanup error: {e}")
+
+        # driver.quit()이 실패하거나 크래시로 좀비가 남은 경우 OS 레벨로 강제 종료
+        self._kill_zombie_browsers()
+
+    @staticmethod
+    def _kill_zombie_browsers():
+        """남은 브라우저/드라이버 프로세스 강제 종료 (Windows)"""
+        import subprocess
+        targets = ["firefox.exe", "geckodriver.exe", "chromedriver.exe"]
+        for name in targets:
+            try:
+                result = subprocess.run(
+                    ["taskkill", "/F", "/IM", name],
+                    capture_output=True, text=True
+                )
+                if "SUCCESS" in result.stdout:
+                    print(f"[OK] 좀비 프로세스 종료: {name}")
+            except Exception:
+                pass
 
 
 def main():

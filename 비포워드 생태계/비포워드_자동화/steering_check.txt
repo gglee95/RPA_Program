@@ -1,5 +1,0 @@
-URL: https://external-vendor.beforward.jp/tempVehDetails/edit
-INPUT type=hidden name=TempVehDetails[steering] value= id= label=[]
-INPUT type=radio name=TempVehDetails[steering] value=2 id= label=[좌핸들]
-INPUT type=radio name=TempVehDetails[steering] value=3 id= label=[중앙]
-INPUT type=radio name=TempVehDetails[steering] value=1 id= label=[우핸들]

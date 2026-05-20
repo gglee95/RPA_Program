@@ -100,5 +100,5 @@ PHOTO_CATEGORIES = [
 COL_LETTER_UPLOAD_DATE = "AD"      # 업로드 일자 (idx 29)
 COL_LETTER_LINK = "AF"             # 망고카 링크 (idx 31)
 COL_LETTER_BEFORWARD_LINK = "AG"   # 비포워드 링크 (idx 32)
-COL_LETTER_UPLOAD_RESULT = "AK"    # 업로드 결과 (idx 36)
-COL_LETTER_VIN_ERROR = "AN"        # 차대번호 조회 실패 사유 (idx 39)
+COL_LETTER_UPLOAD_RESULT = "AK"        # 망고카 업로드 로그 (idx 36)
+COL_LETTER_BEFORWARD_RESULT = "AL"     # 비포워드 업로드 로그 (idx 37)

@@ -1,8 +1,0 @@
-beforward_suspension_manager.py:33
-beforward_suspension_manager.py:151
-beforward_suspension_manager.py:161
-drive_image_downloader.py:3
-encar_soldout_monitor.py:67
-encar_soldout_monitor.py:112
-google_sheets_manager.py:153
-test_s_column.py:1

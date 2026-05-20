@@ -1,4 +1,6 @@
+# ========================================
 # Python
+# ========================================
 __pycache__/
 *.py[cod]
 *.pyo
@@ -9,24 +11,202 @@ env/
 *.egg-info/
 dist/
 build/
+.pytest_cache/
+.mypy_cache/
 
-# 환경 변수 (시크릿)
+# ========================================
+# 환경변수 / 시크릿
+# ========================================
 .env
 .env.docker
 .env.local
 .env.*.local
 
-# OS
+# Google Cloud 서비스 계정 키 (시크릿)
+*-[a-z0-9]*[a-z0-9].json
+adjustmentdata-*.json
+mango-car-*.json
+shared/credentials/*.json
+!shared/credentials/.gitkeep
+
+# 비밀번호/계정 파일
+ID.txt
+*credentials*.json
+*secret*.json
+secrets.toml
+secrets.json
+secrets.yaml
+secrets.yml
+secrets/
+service_account*.json
+*service_account*.json
+*api_key*
+*token*.json
+*_key.json
+*.pem
+*.key
+
+# ========================================
+# OS / IDE
+# ========================================
 .DS_Store
 Thumbs.db
 nul
-
-# IDE
 .vscode/
 .idea/
 *.suo
 *.user
+.claude/
+.claude-cache/
 
-# Google Cloud 서비스 계정 키 (시크릿)
-*-[a-z0-9]*[a-z0-9].json
-adjustmentdata-*.json
+# ========================================
+# 백업 파일
+# ========================================
+*.broken_backup
+*.pre_autofix
+*.bak
+*.backup
+*.orig
+*.rej
+
+# ========================================
+# 디버그/테스트 스크립트 및 출력
+# ========================================
+debug/
+debug_*.py
+debug_*.txt
+debug_*.log
+debug_*.png
+debug_screenshots/
+test_*.py
+test_*.txt
+test_*.log
+test_form_screenshots/
+test_output.txt
+dry_run_*.py
+inspect_*.py
+
+# 일회성 분석 출력
+_emdash_scan.txt
+_emdash_fix_result.txt
+all_opts.txt
+opts_*.txt
+*_debug.txt
+*_output.txt
+*_check.txt
+*_scan.txt
+color_opts_raw.txt
+mapping_test.txt
+steering_check.txt
+cle_check.txt
+worker_debug.txt
+worker_output.log
+
+# ========================================
+# 실행 산출물 / 로그
+# ========================================
+*.log
+logs/
+soldout_logs/
+soldout_logs/*.log
+crawler_state.json
+mango_crawler.log
+mango_to_beforward.log
+
+# 다운로드/스크린샷 (모든 스크린샷/이미지 디렉토리)
+downloaded_images/
+screenshots/
+*screenshots/
+*_screenshots/
+test_screenshots/
+debug_screenshots/
+test_form_screenshots/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.webp
+*.ico
+*.svg
+!docs/**/*.png
+!docs/**/*.jpg
+
+# ========================================
+# Docker 빌드 산출물
+# ========================================
+*.tar
+docker_build_*/
+docker_zip_*/
+
+# ========================================
+# 브라우저 프로필 / 자동화 세션 데이터
+# ========================================
+state/
+nd-profile/
+chrome_profile/
+firefox_profile/
+profile/
+Default/
+User Data/
+**/Trust Tokens
+**/Trust Tokens-journal
+**/Cookies
+**/Cookies-journal
+**/Network/
+**/Storage/
+**/Cache/
+**/IndexedDB/
+**/Local Storage/
+**/Session Storage/
+
+# ========================================
+# Debug/Test HTML 파일
+# ========================================
+debug_*.html
+test_*.html
+*debug.html
+test_download/
+test_uploads/
+
+# ========================================
+# 중첩된 Git 저장소 (서브모듈로 다루지 않음)
+# ========================================
+# 명시적으로 제외 — 각 폴더 자체는 추적하지 않음
+망고카업로드/망고카 오토/
+스트림릿/streamlit-perf/
+스프레드시트/CurrencyRateAPI-docker/
+스프레드시트/k-car/
+스프레드시트/offfer_check_autoupload/
+스프레드시트/문의로그대시보드_자동업로드_API/
+스프레드시트/오퍼검수SOLD_OUT/
+
+# desktop.ini (Windows)
+desktop.ini
+
+# ========================================
+# 압축 파일 / 백업 디렉토리
+# ========================================
+*.zip
+*.7z
+*.rar
+*.tar.gz
+
+# 날짜 스탬프된 백업 폴더 (예: _260416)
+*_[0-9][0-9][0-9][0-9][0-9][0-9]/
+백업/
+backup/
+*backup*/
+
+# PyInstaller 빌드 산출물
+build/
+dist/
+*.spec
+
+# ========================================
+# 임시 파일
+# ========================================
+*.tmp
+*.temp
+~$*
+*.swp

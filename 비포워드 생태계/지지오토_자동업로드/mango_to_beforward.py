@@ -1,6 +1,6 @@
 """
 망고월드카 지지오토 차량 → 비포워드 자동 업로드
-1. mango_crawler.py 로 지지오토 차량 목록+상세 수집
+1. Google Sheets(망고카 통합 시트)에서 지지오토 API 게시 차량 수집
 2. CarInfo 객체로 변환
 3. BefowordCrawler.fill_vehicle_data() 로 비포워드 업로드
 4. 판매 완료 차량 감지 → BeforwardSuspensionManager 로 게시 정지
@@ -14,17 +14,13 @@ import traceback
 from pathlib import Path
 from datetime import datetime
 
-# ── 비포워드_자동화 모듈 경로 추가 ────────────────────────────────────────────
-BEFORWARD_DIR = Path(r"C:\Users\gglee\OneDrive\Desktop\비포워드 생태계\비포워드_자동화")
-if str(BEFORWARD_DIR) not in sys.path:
-    sys.path.insert(0, str(BEFORWARD_DIR))
-
-from 비포워드_crawling import BefowordCrawler  # noqa: E402
-from 엔카_크롤러 import CarInfo, OptionItem     # noqa: E402
-from beforward_suspension_manager import BeforwardSuspensionManager  # noqa: E402
-
-# ── 현재 디렉토리 (지지오토_자동업로드) ──────────────────────────────────────
 HERE = Path(__file__).parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+
+from 비포워드_crawling import BefowordCrawler           # noqa: E402
+from 엔카_크롤러 import CarInfo, OptionItem             # noqa: E402
+from beforward_suspension_manager import BeforwardSuspensionManager  # noqa: E402
 
 LOG_FILE = HERE / "mango_to_beforward.log"
 logging.basicConfig(
@@ -42,18 +38,45 @@ DETAIL_BASE = "https://mangoworldcar.com/ko/car-detail"
 OPTION_MAPPING_FILE = HERE / "비포워드 엔카 옵션_망고카 추가.xlsx"
 OPTION_MAPPING_SHEET = "망고카"
 
-# 업로드 대상 브랜드/모델 리스트 (엑셀)
-# 시트: 1열=브랜드, 2열=모델 (모델 빈 칸이면 브랜드 전체)
-# 파일이 없으면 브랜드/모델 필터 없이 지지오토 전체 수집
-TARGET_LIST_FILE = HERE / "업로드대상_브랜드모델.xlsx"
-TARGET_LIST_SHEET = "대상"
-
 # 비포워드 계정 (비포워드_자동화/config.py 에서 읽어오거나 직접 지정)
 os.environ.setdefault("BEFORWARD_USERNAME", "echam@mangoworldcar.com")
 os.environ.setdefault("BEFORWARD_PASSWORD", "VJSXaPQR")
 
 # 테스트 시 True → 자동 제출 안 함 (폼 채운 상태로 멈춤)
 DRY_RUN = False
+
+# ── Google Sheets 설정 ────────────────────────────────────────────────────────
+# 망고카 통합 데이터 시트 (gid=1710203054)
+MANGO_SHEET_ID = "1P6AJOgbyksLdySg4Pn5KpGK7dKVhSfV3oxIdCkyyKS0"
+MANGO_SHEET_GID = "1710203054"   # 시트 탭 gid (워크시트 이름으로 찾을 수 없을 때 폴백용)
+
+# ── 망고카 시트 컬럼 매핑 ──────────────────────────────────────────────────────
+# 시트 구조에 맞게 열 문자를 조정하세요
+# 확인된 실제 열 구조
+# A: 회원명  B: 회사명  C: 모델  D: 등급  E: 연료  F: 배기량
+# G: 차대번호  H: 연식  I: 주행거리  J: A/M  K: 매물등록일
+# L: 최종수정일  M: 구매요청일  N: 판매완료일  O: 업로드링크
+# P: 매물상태  Q: 차량광고가
+COL_SOURCE   = "A"   # 회원명 ("망고카지지오토 api" 필터)
+COL_STATUS   = "P"   # 매물상태 ("게시" 필터)
+COL_CODE     = "G"   # 차대번호 — 식별자로 사용
+COL_CARNAME  = "C"   # 모델
+COL_FUEL     = "E"   # 연료
+COL_DISPLACE = "F"   # 배기량
+COL_VIN      = "G"   # 차대번호
+COL_YEAR     = "H"   # 연식
+COL_MILEAGE  = "I"   # 주행거리
+COL_TRANS    = "J"   # A/M (변속기)
+COL_COLOR    = ""    # 없음
+COL_LOCATION = ""    # 없음
+COL_PRICE    = "Q"   # 차량광고가
+COL_OPTIONS  = ""    # 없음
+COL_SELLER   = "B"   # 회사명
+COL_DRIVE    = "O"   # 업로드링크
+
+SOURCE_FILTER = "망고카지지오토 api"   # A열 일치 조건
+STATUS_FILTER  = "게시"               # P열 일치 조건
+SHEET_START_ROW = 2                   # 헤더 다음 행부터 읽기
 
 
 # ── 필드 변환 유틸 ────────────────────────────────────────────────────────────
@@ -131,11 +154,98 @@ def _normalize_transmission(raw: str) -> str:
     return mapping.get(raw.strip().upper(), raw.strip().lower())
 
 
+_COLOR_EN_PATCH = {
+    "navy":       "네이비",       # → 블루
+    "pearl":      "펄",           # → 펄
+    "champagne":  "샴페인골드",   # → 골드
+    "grey":       "gray",         # grey → gray (둘 다 있지만 통일)
+}
+
 def _normalize_color(raw: str) -> str:
-    """BLACK / WHITE / ... → 비포워드 COLOR_MAP_KO 키 (소문자로 전달해도 매핑됨)"""
+    """영문 색상명 → 비포워드 COLOR_MAP_KO 키로 변환."""
     if not raw:
         return ""
-    return raw.strip().lower()
+    lower = raw.strip().lower()
+    return _COLOR_EN_PATCH.get(lower, lower)
+
+
+def _extract_color_from_driver(driver) -> str:
+    """이미 로드된 페이지에서 색상값 추출."""
+    # 1) 확정 XPath
+    try:
+        el = driver.find_element(
+            "xpath",
+            "/html/body/main/div/div/section/div[1]/div[4]/div[4]/div[4]/span[2]/span"
+        )
+        val = el.text.strip()
+        if val:
+            return val
+    except Exception:
+        pass
+
+    # 2) 색상명 키워드 폴백
+    try:
+        body_text = driver.find_element("tag name", "body").text
+        m = re.search(
+            r'\b(BLACK|WHITE|SILVER|GRAY|GREY|RED|BLUE|BROWN|GOLD|GREEN|'
+            r'ORANGE|YELLOW|PURPLE|BEIGE|NAVY|PEARL|CHAMPAGNE)\b',
+            body_text, re.IGNORECASE)
+        if m:
+            return m.group().upper()
+    except Exception:
+        pass
+
+    return ""
+
+
+def _fetch_colors_batch(detail_rows: list[dict]) -> None:
+    """헤드리스 Chrome으로 망고 상세 페이지를 순회하며 색상 일괄 수집.
+    결과는 각 row의 '색상' 키에 직접 저장.
+    """
+    import undetected_chromedriver as uc
+
+    targets = [r for r in detail_rows if not r.get("색상") and r.get("_drive_link")]
+    if not targets:
+        return
+
+    log.info("색상 크롤링 시작: %d건", len(targets))
+
+    opts = uc.ChromeOptions()
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--window-size=1280,800")
+    opts.add_argument("--window-position=-32000,-32000")  # 화면 밖으로 이동
+    opts.add_argument("--lang=ko-KR")
+
+    driver = uc.Chrome(options=opts, version_main=147)
+    driver.set_page_load_timeout(30)
+
+    try:
+        for i, row in enumerate(targets, 1):
+            url = row["_drive_link"].strip()
+            code = url.split("/")[-1]
+            try:
+                driver.get(url)
+                # JS 렌더링 대기 + 스크롤
+                time.sleep(3)
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(1.5)
+                driver.execute_script("window.scrollTo(0, 0);")
+
+                color = _extract_color_from_driver(driver)
+                if color:
+                    row["색상"] = color
+                    log.info("  [%d/%d] %s → 색상: %s", i, len(targets), code, color)
+                else:
+                    log.warning("  [%d/%d] %s → 색상 미수집", i, len(targets), code)
+
+            except Exception as e:
+                log.warning("  [%d/%d] 색상 크롤링 오류 (%s): %s", i, len(targets), code, e)
+    finally:
+        try:
+            driver.quit()
+        except Exception:
+            pass
 
 
 # ── 망고카 옵션 → 비포워드 옵션 매핑 ─────────────────────────────────────────
@@ -255,8 +365,6 @@ def _make_car_info(detail: dict) -> CarInfo:
         구동방식, 연료타입, 최초등록일, 위치, 차대번호, 차대번호_상세,
         주행거리(상세), 보유옵션(전체), 판매자
     """
-    code = detail.get("상품코드", "")
-
     info = CarInfo()
 
     # 차종명 — 비포워드 재원표 조회에 사용 (가장 중요)
@@ -280,7 +388,7 @@ def _make_car_info(detail: dict) -> CarInfo:
     # 변속기
     info.transmission = _normalize_transmission(detail.get("변속기", ""))
 
-    # 색상
+    # 색상 — _fetch_colors_batch 에서 미리 채워진 값 사용
     info.color = _normalize_color(detail.get("색상", ""))
 
     # 위치
@@ -306,135 +414,123 @@ def _make_car_info(detail: dict) -> CarInfo:
     else:
         info.options = []
 
-    # 이미지 소스 — 망고 공개 상세 페이지 (MangocarImageDownloader 가 처리)
-    if code:
-        info.drive_link = f"{DETAIL_BASE}/{code}"
+    # 이미지 소스 — O열(업로드링크)의 URL을 그대로 사용
+    drive_link = (detail.get("_drive_link") or "").strip()
+    if drive_link:
+        info.drive_link = drive_link
 
     return info
 
 
 # ── 수집 단계 ─────────────────────────────────────────────────────────────────
 
-def _load_target_brand_models() -> list[tuple[str, str]]:
-    """엑셀에서 업로드 대상 (브랜드, 모델) 리스트 로드.
+def _col_to_idx(col: str) -> int:
+    """열 문자 → 0-based 인덱스 (A=0, Z=25, AA=26 …)"""
+    idx = 0
+    for c in col.upper():
+        idx = idx * 26 + (ord(c) - ord("A") + 1)
+    return idx - 1
 
-    파일/시트 없으면 빈 리스트 반환 → 필터 없이 전체 수집.
+
+def _get_service_account_file() -> str:
+    """현재 디렉토리에서 서비스 계정 JSON 파일 탐색"""
+    candidate = HERE / "adjustmentdata-51a7199ac3ba.json"
+    if candidate.exists():
+        return str(candidate)
+    raise FileNotFoundError(
+        "서비스 계정 JSON 파일을 찾을 수 없습니다.\n"
+        f"'{candidate}' 위치에 파일을 복사해 주세요."
+    )
+
+
+def collect_from_sheets() -> list[dict]:
     """
-    if not TARGET_LIST_FILE.exists():
-        log.info("대상 리스트 파일 없음 → 전체 수집 (%s)", TARGET_LIST_FILE.name)
+    Google Sheets 망고카 통합 시트에서 지지오토 게시 차량 수집.
+
+    필터 조건:
+        A열 == SOURCE_FILTER ("망고카지지오토 api")
+        P열 == STATUS_FILTER  ("게시")
+
+    반환값: _make_car_info() 가 인식하는 dict 리스트
+    """
+    log.info("Google Sheets 데이터 수집 시작 (ID=%s)", MANGO_SHEET_ID)
+
+    try:
+        import gspread
+        from google.oauth2.service_account import Credentials
+    except ImportError:
+        log.error("gspread / google-auth 패키지가 없습니다. pip install gspread google-auth")
         return []
 
-    targets: list[tuple[str, str]] = []
-    try:
-        from openpyxl import load_workbook
-        wb = load_workbook(TARGET_LIST_FILE, data_only=True, read_only=True)
-        ws = wb[TARGET_LIST_SHEET] if TARGET_LIST_SHEET in wb.sheetnames else wb.active
-        for row in ws.iter_rows(min_row=2, min_col=1, max_col=2, values_only=True):
-            brand = str(row[0]).strip() if row and row[0] is not None else ""
-            model = str(row[1]).strip() if row and len(row) > 1 and row[1] is not None else ""
-            if brand:
-                targets.append((brand, model))
-        wb.close()
-        log.info("대상 브랜드/모델 로드: %d건", len(targets))
-    except Exception as e:
-        log.warning("대상 리스트 로드 실패: %s", e)
-    return targets
+    sa_file = _get_service_account_file()
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets.readonly",
+        "https://www.googleapis.com/auth/drive.readonly",
+    ]
+    creds = Credentials.from_service_account_file(sa_file, scopes=scopes)
+    gc = gspread.authorize(creds)
 
+    spreadsheet = gc.open_by_key(MANGO_SHEET_ID)
 
-def collect_mango_data() -> list[dict]:
-    """
-    mango_crawler.py 의 함수를 직접 호출해 차량 상세 데이터 수집.
+    # gid로 워크시트 찾기
+    worksheet = None
+    for ws in spreadsheet.worksheets():
+        if str(ws.id) == MANGO_SHEET_GID:
+            worksheet = ws
+            break
+    if worksheet is None:
+        log.warning("gid=%s 시트 없음 → 첫 번째 시트 사용", MANGO_SHEET_GID)
+        worksheet = spreadsheet.sheet1
 
-    엑셀 대상 리스트가 있으면 (브랜드, 모델) 별로 순회하며 검색→누적.
-    없으면 필터 없이 전체 수집.
-    """
-    log.info("망고월드카 크롤링 시작...")
+    log.info("시트 '%s' 전체 읽기 중...", worksheet.title)
+    all_values = worksheet.get_all_values()
+    if len(all_values) < SHEET_START_ROW:
+        log.warning("시트에 데이터 행이 없습니다.")
+        return []
 
-    # mango_crawler 모듈 import (같은 디렉토리)
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        "mango_crawler", HERE / "mango_crawler.py"
-    )
-    mc = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mc)
-
-    targets = _load_target_brand_models()
-
-    driver = mc.make_driver()
     detail_rows: list[dict] = []
+    skipped_source = 0
+    skipped_status = 0
 
-    try:
-        mc.login(driver)
+    for row_num, row in enumerate(all_values[SHEET_START_ROW - 1:], start=SHEET_START_ROW):
+        def cell(col: str) -> str:
+            i = _col_to_idx(col)
+            return row[i].strip() if i < len(row) else ""
 
-        # 대상 리스트가 있으면 (브랜드, 모델) 별 순회, 없으면 1회 전체
-        if targets:
-            list_rows: list[dict] = []
-            seen_codes: set[str] = set()
-            for i, (brand, model) in enumerate(targets, 1):
-                log.info("─" * 60)
-                log.info("[%d/%d] 필터 적용: 브랜드='%s' 모델='%s'",
-                         i, len(targets), brand, model or "(전체)")
-                mc.apply_filters(driver, brand=brand, model=model or None)
-                rows = mc.collect_list(driver)
-                # 상품코드 기준 중복 제거하며 누적
-                for r in rows:
-                    code = r.get("상품코드", "")
-                    if code and code not in seen_codes:
-                        seen_codes.add(code)
-                        list_rows.append(r)
-                log.info("  → 누계 %d건", len(list_rows))
-        else:
-            mc.apply_filters(driver)
-            list_rows = mc.collect_list(driver)
+        source_val = cell(COL_SOURCE)
+        status_val = cell(COL_STATUS)
 
-        if not list_rows:
-            log.warning("목록 수집 결과 없음")
-            return []
+        if source_val != SOURCE_FILTER:
+            skipped_source += 1
+            continue
+        if status_val != STATUS_FILTER:
+            skipped_status += 1
+            continue
 
-        # ── 목록 단계에서 지지오토 매물만 1차 필터 (판매자 누수 방지) ──
-        SELLER_RE = re.compile(r"지지오토|GG[-\s]?AUTO", re.IGNORECASE)
-        filtered_rows = []
-        skipped_seller = []
-        for r in list_rows:
-            seller_name = (r.get("판매자명") or "").strip()
-            member_type = (r.get("회원구분") or "").strip()
-            seller_full = f"{member_type} {seller_name}".strip()
-            if not SELLER_RE.search(seller_full):
-                skipped_seller.append(f"{r.get('상품코드','?')}={seller_full}")
-                continue
-            filtered_rows.append(r)
-        if skipped_seller:
-            log.warning("판매자 미일치 → 제외 %d건: %s",
-                        len(skipped_seller), ", ".join(skipped_seller[:5]))
-        log.info("판매자 필터 후: %d/%d건 (지지오토)", len(filtered_rows), len(list_rows))
+        d: dict = {
+            "상품코드":       cell(COL_CODE),
+            "차량명":         cell(COL_CARNAME),
+            "연식":           cell(COL_YEAR),
+            "주행거리(상세)": cell(COL_MILEAGE),
+            "배기량":         cell(COL_DISPLACE),
+            "연료타입":       cell(COL_FUEL),
+            "변속기":         cell(COL_TRANS),
+            "색상":           cell(COL_COLOR),
+            "위치":           cell(COL_LOCATION),
+            "가격(USD)":      cell(COL_PRICE),
+            "차대번호":       cell(COL_VIN),
+            "차대번호_상세":  cell(COL_VIN),
+            "보유옵션(전체)": cell(COL_OPTIONS),
+            "판매자":         cell(COL_SELLER),
+            "_drive_link":    cell(COL_DRIVE),  # 이미지 드라이브 링크 (내부용)
+            "_sheet_row":     row_num,
+        }
+        detail_rows.append(d)
 
-        codes = [r.get("상품코드", "") for r in filtered_rows if r.get("상품코드", "").startswith("MGC_")]
-        codes = list(dict.fromkeys(codes))
-        log.info("상세 크롤링 대상: %d건", len(codes))
-
-        for i, code in enumerate(codes, 1):
-            log.info("[%d/%d] %s", i, len(codes), code)
-            d = mc.extract_detail(driver, code)
-
-            # 목록의 차대번호/판매자명 병합
-            matched = next(
-                (r for r in filtered_rows if r.get("상품코드", "") == code), None
-            )
-            if matched:
-                if matched.get("차대번호") and not d.get("차대번호"):
-                    d["차대번호"] = matched["차대번호"]
-                # 목록의 판매자명 항상 우선 (상세페이지 정규식보다 신뢰도 높음)
-                if matched.get("판매자명"):
-                    d["판매자"] = matched["판매자명"]
-
-            detail_rows.append(d)
-            time.sleep(1.5)
-
-    finally:
-        driver.quit()
-        log.info("크롤러 드라이버 종료")
-
-    log.info("총 %d건 수집 완료", len(detail_rows))
+    log.info(
+        "시트 필터 결과: %d건 수집 (구분불일치=%d, 상태불일치=%d)",
+        len(detail_rows), skipped_source, skipped_status,
+    )
     return detail_rows
 
 
@@ -449,6 +545,9 @@ def upload_to_beforward(detail_rows: list[dict]) -> tuple[int, int]:
     if not detail_rows:
         log.warning("업로드할 데이터 없음")
         return 0, 0
+
+    # 색상 없는 차량 → 망고 페이지에서 일괄 크롤링
+    _fetch_colors_batch(detail_rows)
 
     uploader = BefowordCrawler(headless=False)
 
@@ -642,30 +741,20 @@ def main():
     log.info("망고월드카 → 비포워드 자동 업로드 시작")
     log.info("=" * 60)
 
-    # 1. 수집
-    detail_rows = collect_mango_data()
+    # 1. 수집 (Google Sheets → 망고카지지오토 api + 게시 필터)
+    detail_rows = collect_from_sheets()
 
     if not detail_rows:
         log.warning("수집된 차량 없음. 종료.")
         return
 
-    # 2. 판매 완료 차량 → 게시 정지
-    sold_vins, suspended_cnt = suspend_sold_vehicles(detail_rows)
-    if sold_vins:
-        log.info("판매완료 감지: %d건 / 게시정지 성공: %d건", len(sold_vins), suspended_cnt)
+    # 2. 판매 완료 차량 → 게시 정지 (TODO: 시트 기반 감지로 재구현 예정)
 
-    # 3. 업로드 (판매 완료 차량 제외)
-    sold_vin_set = set(sold_vins)
-    upload_rows = [
-        r for r in detail_rows
-        if (r.get("차대번호_상세") or r.get("차대번호") or "").strip() not in sold_vin_set
-    ]
-
-    total, success = upload_to_beforward(upload_rows)
+    # 3. 업로드
+    total, success = upload_to_beforward(detail_rows)
 
     log.info("=" * 60)
-    log.info("완료: 업로드 %d/%d 성공 | 게시정지 %d/%d 완료",
-             success, total, suspended_cnt, len(sold_vins))
+    log.info("완료: 업로드 %d/%d 성공", success, total)
     log.info("=" * 60)
 
 

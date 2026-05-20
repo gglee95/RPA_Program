@@ -1,0 +1,15 @@
+services:
+  fastapi-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-dashboard
+    ports:
+      - "4445:8000"
+    environment:
+      POSTGRES_DB_HOST: mangoworldcar.iptime.org
+      POSTGRES_DB_PORT: "1009"
+      POSTGRES_DB_NAME: mangoperf
+      POSTGRES_DB_USERNAME: mango
+      POSTGRES_DB_PASSWORD: mango8802@!
+    restart: unless-stopped

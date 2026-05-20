@@ -1,0 +1,27 @@
+# Python 캐시
+**/__pycache__
+**/*.pyc
+**/*.pyo
+
+# 가상환경 / venv
+**/.venv
+**/venv
+
+# 호스트 전용 비밀
+secrets/
+
+# 호스트 전용 상태 (마운트 볼륨에서 가져옴)
+state/
+
+# 테스트 다운로드 / 임시 파일
+**/test_downloads/
+**/test_*.py
+
+# IDE
+.vscode
+.idea
+
+# Docs / 메타
+README.md
+.git
+.gitignore

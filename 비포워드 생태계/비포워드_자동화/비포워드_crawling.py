@@ -56,6 +56,10 @@ class _SeleniumTabAdapter:
         self._driver.get(url)
 
     async def evaluate(self, script: str):
+        stripped = script.strip()
+        # IIFE 패턴 자동 return 처리 (Selenium은 최상위 return 없으면 None 반환)
+        if stripped.startswith('(function') and not stripped.startswith('return'):
+            return self._driver.execute_script(f"return {stripped}")
         return self._driver.execute_script(script)
 
     async def select(self, css_selector: str):
@@ -346,6 +350,7 @@ class BefowordCrawler:
         self._bf_model_ref_loaded = False
         self._vehicle_ref_table = []
         self._last_downloaded_image_files = []
+        self._last_expected_image_count = 0
         # 에러 진단용 컨텍스트 (encar_soldout_monitor에서 읽어 로깅)
         self._last_error_step = ''   # 실패 단계
         self._last_error_cause = ''  # 실패 원인
@@ -433,18 +438,24 @@ class BefowordCrawler:
     def _lookup_vehicle_ref(self, car_type: str) -> dict | None:
         """엑셀 키워드가 car_type 안에 독립된 단어로 완전히 포함될 때만 매칭.
 
+        복수 키워드가 매칭될 경우 키워드가 긴 항목(더 구체적)을 우선 반환한다.
+        예) "디스커버리"와 "디스커버리 스포츠" 둘 다 매칭되면 → 긴 쪽 반환
         예) keyword="C-클래스", car_type="GLC-클래스 300" → 앞에 'L'이 붙어있으므로 불일치
             keyword="GLC-클래스", car_type="GLC-클래스 300" → 앞뒤 경계 OK → 일치
         """
         import re
         if not car_type or not self._vehicle_ref_table:
             return None
+        matches = []
         for entry in self._vehicle_ref_table:
             kw = re.escape(entry['keyword'])
             # 키워드 앞뒤에 한글/영문/숫자가 없어야 독립된 단어로 판단
             if re.search(r'(?<![가-힣a-zA-Z0-9])' + kw + r'(?![가-힣a-zA-Z0-9])', car_type):
-                return entry
-        return None
+                matches.append(entry)
+        if not matches:
+            return None
+        # 가장 긴 키워드(구체적인 매칭) 우선
+        return max(matches, key=lambda e: len(e['keyword']))
 
     def _map_ref_body_type(self, bf_type_ko: str) -> str:
         mapping = {
@@ -610,17 +621,24 @@ class BefowordCrawler:
 
     async def _navigate_to_new_form(self) -> bool:
         """신규 등록 폼으로 이동 (직접 URL 이동 - 가장 안정적)"""
-        await self.tab.get(self.FORM_URL)
-        # #bulk_confirm_form 요소가 나타날 때까지 대기 (최대 10초)
-        for _ in range(20):
-            await asyncio.sleep(0.5)
-            if 'edit' not in self.tab.url.lower():
-                continue
-            found = await self.tab.evaluate(
-                "return !!document.querySelector('#bulk_confirm_form')"
-            )
-            if found:
-                return True
+        for attempt in range(3):
+            await self.tab.get(self.FORM_URL)
+            # #bulk_confirm_form 요소가 나타날 때까지 대기 (최대 10초)
+            for _ in range(20):
+                await asyncio.sleep(0.5)
+                cur_url = self.tab.url.lower()
+                # 사진 업로드 페이지로 리다이렉트된 경우 → 재시도
+                if 'photo' in cur_url or ('edit' not in cur_url and 'tempvehdetails' not in cur_url):
+                    break
+                found = await self.tab.evaluate(
+                    "return !!document.querySelector('#bulk_confirm_form')"
+                )
+                if found:
+                    return True
+            if attempt < 2:
+                print(f"  [경고] 신규 등록 폼 로드 실패 (시도 {attempt+1}/3), 재시도...")
+                await asyncio.sleep(2)
+        print(f"  [오류] 신규 등록 폼 이동 실패 (현재 URL: {self.tab.url[:80]})")
         return False
 
     async def _navigate_to_edit_page(self, listing_id: str) -> bool:
@@ -723,8 +741,33 @@ class BefowordCrawler:
             # → 저장 후 URL에서 직접 ID 추출
             pre_save_ids = set()
 
-            # 신규 등록 폼으로 이동
-            await self._navigate_to_new_form()
+            # ── 이미지 선다운로드 (폼 로드 전에 완료) ─────────────────────────────
+            # 이미지 다운로드가 수분 걸릴 수 있으므로 폼 세션 만료 방지를 위해 폼 이동 전 처리
+            drive_link = getattr(car_info, 'drive_link', '') or ''
+            sheet_row = getattr(car_info, 'sheet_row', 0) or 0
+            _pre_image_files = []
+            is_gdrive = drive_link and ('drive.google.com' in drive_link or 'docs.google.com' in drive_link)
+            is_mango = drive_link and 'mangoworldcar.com' in drive_link
+            if is_gdrive:
+                _pre_image_files = self._download_images_from_drive_link(drive_link, sheet_row)
+                self._last_downloaded_image_files = list(_pre_image_files)
+                if not _pre_image_files:
+                    print(f"  [경고] 구글드라이브 이미지 다운로드 실패 - 이미지 없이 등록 진행")
+            elif is_mango:
+                _pre_image_files = self._download_images_from_mango_link(drive_link, sheet_row)
+                self._last_downloaded_image_files = list(_pre_image_files)
+                if not _pre_image_files:
+                    print(f"  [경고] 망고카 이미지 다운로드 실패 - 이미지 없이 등록 진행")
+            elif drive_link:
+                print(f"  [경고] 알 수 없는 링크 형식 → 이미지 없이 진행: {drive_link[:60]}")
+
+            # 신규 등록 폼으로 이동 (이미지 다운로드 완료 후)
+            form_ok = await self._navigate_to_new_form()
+            if not form_ok:
+                self._last_error_step = '신규등록폼_이동'
+                self._last_error_cause = f'폼 URL로 이동 실패 (현재: {self.tab.url[:80]})'
+                self._capture_screenshot("navigate_form_failed")
+                return False
             await self._inject_alert_interceptor()
 
             # 0. 재원표 조회 - 재원표에 없으면 업로드 불가
@@ -887,32 +930,29 @@ class BefowordCrawler:
             if options:
                 await self._fill_options(options)
 
-            # 21. 이미지 다운로드 (Google Drive 또는 망고카 링크)
-            drive_link = getattr(car_info, 'drive_link', '') or ''
-            sheet_row = getattr(car_info, 'sheet_row', 0) or 0
-            image_files = []
-            is_gdrive = drive_link and ('drive.google.com' in drive_link or 'docs.google.com' in drive_link)
-            is_mango = drive_link and 'mangoworldcar.com' in drive_link
-            if is_gdrive:
-                image_files = self._download_images_from_drive_link(drive_link, sheet_row)
-                self._last_downloaded_image_files = list(image_files)
-                if not image_files:
-                    print(f"  [경고] 구글드라이브 이미지 다운로드 실패 - 이미지 없이 등록 진행")
-            elif is_mango:
-                image_files = self._download_images_from_mango_link(drive_link, sheet_row)
-                self._last_downloaded_image_files = list(image_files)
-                if not image_files:
-                    print(f"  [경고] 망고카 이미지 다운로드 실패 - 이미지 없이 등록 진행")
-            elif drive_link:
-                print(f"  [경고] 알 수 없는 링크 형식 → 이미지 없이 진행: {drive_link[:60]}")
-            else:
+            # 21. 이미지 파일 참조 (폼 로드 전에 미리 다운로드된 파일 사용)
+            image_files = list(_pre_image_files)
+            if not image_files and not drive_link:
                 print(f"  [경고] 드라이브 링크 없음 - 이미지 없이 진행")
 
             # 22. 필수 클릭
             await self._click_required_xpaths()
 
-            # 22-1. 4WD 옵션 선택 (4WD 차량만 tr[8] 클릭)
-            # 주의: 기존 tr[2] 항상 클릭은 AM/FM 라디오(이미 기본 체크됨)를 토글로 풀어버려 제거
+            # 22-1. AM/FM 라디오(tr[2]) + 4WD(tr[8]) 옵션 선택
+            # tr[2] AM/FM 라디오: 선택 안 되어 있을 때만 클릭 (이미 체크된 경우 클릭하면 해제됨)
+            am_fm_checked = await self.tab.evaluate("""
+                (function() {
+                    var rows = document.querySelectorAll(
+                        '#bulk_confirm_form div > div > div:nth-child(2) table:nth-of-type(5) tbody tr');
+                    var tr = rows[1];
+                    if (!tr) return false;
+                    var inp = tr.querySelector('input[type="radio"]');
+                    return inp ? inp.checked : false;
+                })()
+            """)
+            if not am_fm_checked:
+                await self._click_option_radio(2)
+                print("  [INFO] AM/FM 라디오 선택 (tr[2])")
             _is_4wd = self._get_drive_type(car_info.car_type or '') == '3'
             if _is_4wd:
                 await self._click_option_radio(8)
@@ -920,9 +960,19 @@ class BefowordCrawler:
             # 23. 저장 버튼
             if auto_submit:
                 try:
-                    print("  [INFO] submit listing form")
+                    cur_url = self.tab.url
+                    print(f"  [INFO] submit listing form (현재 URL: {cur_url[:80]})")
+                    # 이미지 다운로드 중 페이지 이탈 감지
+                    has_form = await self.tab.evaluate("return !!document.querySelector('#bulk_confirm_form')")
+                    if not has_form:
+                        print(f"  [오류] 폼 페이지 이탈 감지 - submit 중단 (URL: {cur_url[:80]})")
+                        self._last_error_step = '폼_이탈_감지'
+                        self._last_error_cause = f'이미지 다운로드 중 폼 페이지 이탈 (URL: {cur_url[:80]})'
+                        self._capture_screenshot("form_lost_before_submit")
+                        return False
+                    # 1차: 절대 XPath (return 접두사 필수 - Selenium IIFE 값 캡처)
                     submitted = await self.tab.evaluate(f"""
-                        (function() {{
+                        return (function() {{
                             var btn = document.evaluate({json.dumps(SUBMIT_BUTTON_XPATH)},
                                 document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                             if (!btn) return false;
@@ -933,14 +983,23 @@ class BefowordCrawler:
                         }})()
                     """)
                     if not submitted:
+                        # 2차: CSS 셀렉터 다중 시도
                         submitted = await self.tab.evaluate("""
-                            (function() {
+                            return (function() {
                                 var selectors = [
+                                    '#bulk_confirm_form input[type="submit"]',
+                                    '#bulk_confirm_form input[type="button"]',
+                                    '#bulk_confirm_form input[type="image"]',
+                                    '#bulk_confirm_form button',
+                                    '#bulk_confirm_form input:not([type="text"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"])',
                                     'button[type="submit"]',
                                     'input[type="submit"]',
+                                    'input[type="button"]',
+                                    'input[type="image"]',
                                     'input[name="edit"]',
                                     'button[name="edit"]',
                                     'input[value*="Save"]',
+                                    'input[value*="save"]',
                                     'button:enabled'
                                 ];
                                 for (var i = 0; i < selectors.length; i++) {
@@ -955,6 +1014,29 @@ class BefowordCrawler:
                             })()
                         """)
                     if not submitted:
+                        # 3차: form.submit() 직접 호출
+                        submitted = await self.tab.evaluate("""
+                            return (function() {
+                                var frm = document.getElementById('bulk_confirm_form');
+                                if (frm) { frm.submit(); return true; }
+                                var forms = document.querySelectorAll('form');
+                                if (forms.length > 0) { forms[0].submit(); return true; }
+                                return false;
+                            })()
+                        """)
+                        if submitted:
+                            print("  [INFO] form.submit() 직접 호출 성공")
+                    if not submitted:
+                        # 진단: 페이지에 있는 모든 input/button 태그 출력
+                        diag = await self.tab.evaluate("""
+                            (function() {
+                                var els = Array.from(document.querySelectorAll('input, button'));
+                                return els.map(function(e) {
+                                    return e.tagName + '[type=' + (e.type||'') + '][name=' + (e.name||'') + '][value=' + (e.value||'').substring(0,30) + '][visible=' + (e.offsetParent!==null) + ']';
+                                }).join(' | ');
+                            })()
+                        """)
+                        print(f"  [진단] 페이지 input/button 목록: {diag[:500] if diag else '없음'}")
                         print("  [오류] 저장 버튼을 찾지 못함")
                         self._capture_screenshot("submit_button_not_found")
                         self._last_error_step = '폼_저장_버튼'
@@ -1091,10 +1173,44 @@ class BefowordCrawler:
             # 4. 저장 (버튼 클릭 + 60초 대기)
             await self._save_image_upload_page()
 
-            # 5. condition-form 처리
-            await self._set_corrosion_no()
-            await self._set_condition_div11_button(is_4wd)
-            await self._save_after_condition_page()
+            # 5. 컨디션 페이지 이동 (저장 후 자동 이동 안 된 경우 명시적 클릭)
+            await asyncio.sleep(2)
+            cur_url = self.tab.url
+            print(f"  [INFO] 이미지 저장 후 URL: {cur_url}")
+            if 'conditionssheet' not in cur_url.lower():
+                print(f"  [INFO] 컨디션 페이지로 명시적 이동 시도...")
+                nav_ok = await self._go_to_condition_page_after_image_upload()
+                if not nav_ok:
+                    nav_ok = await self._click_condition_tab_from_current()
+                if nav_ok:
+                    await asyncio.sleep(2)
+                    print(f"  [INFO] 컨디션 페이지 이동 성공: {self.tab.url}")
+                else:
+                    print(f"  [경고] 컨디션 페이지 이동 실패 — condition-form 버튼 시도 계속")
+                    self._capture_screenshot("condition_page_nav_failed")
+
+            # 6. condition-form 처리
+            corrosion_ok = await self._set_corrosion_no()
+            if not corrosion_ok:
+                print(f"  [경고] 부식 NO 버튼 클릭 실패 (페이지 URL: {self.tab.url})")
+                self._capture_screenshot("condition_corrosion_failed")
+
+            drive_ok = await self._set_condition_div11_button(is_4wd)
+            if not drive_ok:
+                print(f"  [경고] 구동방식 버튼 클릭 실패 (is_4wd={is_4wd}, URL: {self.tab.url})")
+                self._capture_screenshot("condition_drive_failed")
+
+            if not corrosion_ok and not drive_ok:
+                print(f"  [오류] 컨디션 시트 버튼 전체 실패 — 저장 건너뜀")
+                return False
+
+            save_ok = await self._save_after_condition_page()
+            if not save_ok:
+                print(f"  [경고] 컨디션 시트 저장 실패 (URL: {self.tab.url})")
+                self._capture_screenshot("condition_save_failed")
+                return False
+
+            print(f"  [OK] 컨디션 시트 저장 완료")
             return True
 
         except Exception as e:
@@ -1636,6 +1752,25 @@ class BefowordCrawler:
 
     async def _fill_options(self, options) -> None:
         checked_count = 0
+        # 폼에 실제 존재하는 체크박스/라디오 라벨 목록 출력 (디버그)
+        all_labels = await self.tab.evaluate("""
+            (function() {
+                var labels = document.querySelectorAll('label');
+                var result = [];
+                for (var i = 0; i < labels.length; i++) {
+                    var forId = labels[i].getAttribute('for');
+                    if (!forId) continue;
+                    var t = document.getElementById(forId);
+                    if (t && (t.type === 'checkbox' || t.type === 'radio')) {
+                        result.push(labels[i].textContent.trim());
+                    }
+                }
+                return result;
+            })()
+        """)
+        print(f"  [DEBUG] 폼 체크박스/라디오 라벨 목록: {all_labels}")
+        print(f"  [DEBUG] 매핑 시도 옵션: {[o.mapped_name for o in options if o.mapped_name]}")
+
         for opt in options:
             if not opt.mapped_name:
                 continue
@@ -1675,10 +1810,12 @@ class BefowordCrawler:
         """input[type=file]에 send_keys로 직접 경로 전달 (파일 다이얼로그 우회)"""
         try:
             if not image_files:
+                self._last_expected_image_count = 0
                 return False
 
             abs_paths = [os.path.abspath(p) for p in image_files if os.path.exists(p)]
             if not abs_paths:
+                self._last_expected_image_count = 0
                 return False
 
             # 기존 이미지 삭제
@@ -1691,6 +1828,7 @@ class BefowordCrawler:
                 file_inputs = self.browser.find_elements(SeleniumBy.CSS_SELECTOR,
                     'input[type="file"]')
             if not file_inputs:
+                self._last_expected_image_count = 0
                 return False
 
             file_input = file_inputs[0]
@@ -1699,6 +1837,8 @@ class BefowordCrawler:
             # 여러 파일은 \n 구분으로 한 번에 전달 (multiple 속성 있을 때)
             paths_str = "\n".join(abs_paths)
             file_input.send_keys(paths_str)
+            self._last_expected_image_count = len(abs_paths)
+            print(f"  [INFO] 이미지 {len(abs_paths)}장 전송 완료, 서버 처리 대기...")
             await asyncio.sleep(1)
             return True
 
@@ -1709,6 +1849,7 @@ class BefowordCrawler:
                 pyautogui.press('escape')
             except Exception:
                 pass
+            self._last_expected_image_count = 0
             return False
 
     async def _wait_image_save_complete(self, timeout: int = 300) -> None:
@@ -2055,9 +2196,13 @@ class BefowordCrawler:
     async def _save_image_upload_page(self) -> bool:
         SAVE_XPATH = '//*[@id="bulk_confirm_form"]/div/button'
 
-        # 업로드 썸네일 대기 (최대 30초)
+        # 업로드한 파일 개수만큼 썸네일이 모두 렌더링될 때까지 대기 (최대 180초).
+        # 카운트가 10초간 변하지 않으면 안정된 것으로 간주하고 진행.
+        expected = getattr(self, '_last_expected_image_count', 0) or 0
         prev_count = 0
-        for tick in range(30):
+        stable_since = None
+        last_log = -1
+        for tick in range(180):
             try:
                 count = self.browser.execute_script("""
                     (function() {
@@ -2069,11 +2214,31 @@ class BefowordCrawler:
                 """) or 0
             except Exception:
                 count = 0
+
+            # 진행 로그 (5초마다)
+            if tick % 5 == 0 and count != last_log:
+                print(f"  [INFO] 썸네일 {count}/{expected} 렌더링 중... ({tick}s)")
+                last_log = count
+
             if count != prev_count:
                 prev_count = count
-            if count > 0 and tick >= 2:
+                stable_since = None
+            else:
+                if stable_since is None:
+                    stable_since = tick
+
+            # 1) 기대 개수에 도달 → 즉시 진행
+            if expected > 0 and count >= expected:
+                print(f"  [OK] 전체 {expected}장 렌더링 완료 ({tick + 1}s)")
+                break
+            # 2) 최소 1장 + 10초간 카운트 무변동 → 안정된 것으로 간주
+            if count > 0 and stable_since is not None and (tick - stable_since) >= 10:
+                if count < expected:
+                    print(f"  [경고] 썸네일 {count}/{expected} 만 렌더링됨 (10초간 무변동, 진행)")
                 break
             await asyncio.sleep(1)
+        else:
+            print(f"  [경고] 썸네일 렌더링 타임아웃 (180s): {prev_count}/{expected}")
 
         try:
             btn = self.browser.find_element(SeleniumBy.XPATH, SAVE_XPATH)
@@ -2089,11 +2254,13 @@ class BefowordCrawler:
 
         # 저장 완료 감지: URL이 변경되거나 저장 버튼이 사라지면 완료 (최대 60초)
         pre_url = self.tab.url
+        url_changed = False
         for _tick in range(60):
             await asyncio.sleep(1)
             try:
                 cur_url = self.tab.url
                 if cur_url != pre_url:
+                    url_changed = True
                     break
                 # 저장 버튼이 사라졌는지 확인
                 remaining = self.browser.find_elements(SeleniumBy.XPATH, SAVE_XPATH)
@@ -2101,6 +2268,9 @@ class BefowordCrawler:
                     break
             except Exception:
                 break
+        if url_changed:
+            # 페이지 전환 후 DOM 로딩 대기
+            await asyncio.sleep(2)
         return True
 
     async def _pyautogui_click_xpath(self, xpath: str, label: str = "") -> bool:
@@ -2176,7 +2346,7 @@ class BefowordCrawler:
     async def _save_after_condition_page(self) -> bool:
         SAVE_XPATHS = [
             '//*[@id="condition-form"]/div[2]/div/button',
-            '//*[@id="bulk_confirm_form"]/div/button',
+            # bulk_confirm_form 버튼은 이미지 업로드 저장 버튼과 동일하므로 제외
             SUBMIT_BUTTON_XPATH,
             "//button[@type='submit']",
             "//input[@type='submit']",
